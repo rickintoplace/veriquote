@@ -9,7 +9,10 @@ authors:
     orcid: "https://orcid.org/0009-0009-5596-736X"
 repository-code: "https://github.com/rickintoplace/veriquote"
 license: MIT
-version: 0.1.0
+version: 0.1.1
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.21552380
 date-released: "2026-07-25"
 keywords:
   - large language models

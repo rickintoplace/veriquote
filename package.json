@@ -1,6 +1,6 @@
 {
   "name": "veriquote",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Deterministic + semantic verification of quote-grounded LLM citations (EVI1 protocol): fuzzy verbatim-quote matching and an LLM entailment judge for transparent, per-claim hallucination detection.",
   "keywords": [
     "llm",
