@@ -1,7 +1,8 @@
 # VeriQuote
 
-**Deterministic + semantic verification of quote-grounded LLM citations.**
 [![DOI](https://zenodo.org/badge/1311867832.svg)](https://doi.org/10.5281/zenodo.21552379)
+
+**Deterministic + semantic verification of quote-grounded LLM citations.**
 
 VeriQuote makes source-grounded assistant answers *auditable*. Instead of
 trusting that a `[1]` citation means anything, the answering model must attach
