@@ -1,0 +1,20 @@
+{
+  "title": "VeriQuote: deterministic and semantic verification of quote-grounded LLM citations",
+  "description": "<p>VeriQuote verifies citations in source-grounded LLM answers. The answering model must attach a verbatim quote to every cited claim (EVI1 protocol); VeriQuote then (1) locates the quote in the source with a deterministic fuzzy matcher (character-trigram Dice similarity over normalized sliding windows, with exact and typography-normalized fast paths) and (2) classifies the claim–quote entailment strength with a temperature-0 LLM judge. Results are combined conservatively into per-citation and per-answer transparency scores, giving end users direct insight into which statements are supported and which are confabulated. Zero-dependency TypeScript; runs in Node, browsers, and edge runtimes. Reference deployment: NavigNine.</p>",
+  "upload_type": "software",
+  "license": "MIT",
+  "creators": [
+    {
+      "name": "rickintoplace"
+    }
+  ],
+  "keywords": [
+    "large language models",
+    "retrieval-augmented generation",
+    "citation verification",
+    "hallucination detection",
+    "natural language inference",
+    "groundedness",
+    "fact-checking"
+  ]
+}
