@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+title: "VeriQuote: deterministic and semantic verification of quote-grounded LLM citations"
+type: software
+authors:
+  # TODO before release: replace with your real name and add your ORCID iD.
+  - family-names: "rickintoplace"
+    given-names: ""
+    email: "rickintoplace@proton.me"
+repository-code: "https://github.com/rickintoplace/veriquote"
+license: MIT
+version: 0.1.0
+date-released: "2026-07-25"
+keywords:
+  - large language models
+  - retrieval-augmented generation
+  - citation verification
+  - hallucination detection
+  - natural language inference
+  - groundedness
+abstract: >-
+  VeriQuote verifies citations in source-grounded LLM answers. The answering
+  model must attach a verbatim quote to every cited claim (EVI1 protocol);
+  VeriQuote then (1) locates the quote in the source with a deterministic
+  fuzzy matcher (character-trigram Dice similarity over normalized sliding
+  windows, with exact and typography-normalized fast paths) and (2) classifies
+  the claim-quote entailment strength with a temperature-0 LLM judge. Results
+  are combined conservatively into per-citation and per-answer transparency
+  scores, giving end users direct insight into which statements are supported
+  and which are confabulated.
