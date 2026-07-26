@@ -1,0 +1,17 @@
+{
+  "name": "verify-citations-skill",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Agent Skill: use VeriQuote as an internal hallucination gate for source-grounded research. Works with any host that supports the Agent Skills spec (OpenClaw, Hermes Agent, Claude Code, …).",
+  "type": "module",
+  "bin": {
+    "verify-citations": "bin/verify-citations.mjs",
+    "print-citation-instructions": "bin/print-citation-instructions.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "veriquote": "^0.1.1"
+  }
+}

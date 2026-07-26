@@ -4,6 +4,18 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.1.1] - 2026-07-26
+
+### Added
+- `integrations/verify-citations/`: a portable Agent Skill (SKILL.md + Node
+  CLI) that runs VeriQuote as an internal hallucination gate for
+  source-grounded agents, with a coverage check for uncited factual sentences
+  and a self-correction loop. Not part of the npm package.
+
+### Changed
+- `package.json`: added `homepage` and `bugs` for the npm listing (takes
+  effect on the next publish).
+
 ## [0.1.1] - 2026-07-25
 - DOI to README.md and CITATION.cff 
 

@@ -20,6 +20,10 @@
     "type": "git",
     "url": "https://github.com/rickintoplace/veriquote.git"
   },
+  "homepage": "https://github.com/rickintoplace/veriquote#readme",
+  "bugs": {
+    "url": "https://github.com/rickintoplace/veriquote/issues"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

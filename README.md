@@ -203,10 +203,21 @@ reproducible: the matcher is pure, and the judge runs at temperature 0 (pass
 best-effort deterministic; for strict reproducibility, pin the model version
 or use a self-hosted judge behind the `EntailmentJudge` interface.
 
+## Integrations
+
+- **[`verify-citations`](https://github.com/rickintoplace/veriquote/tree/main/integrations/verify-citations)**: a portable
+  [Agent Skill](https://github.com/rickintoplace/veriquote/blob/main/integrations/verify-citations/SKILL.md) (single `SKILL.md` +
+  bundled Node CLI) that runs VeriQuote as an **internal hallucination gate**
+  for source-grounded agents: it verifies a cited answer, flags factual
+  sentences that carry no citation, and returns a ready-to-use correction
+  prompt for a self-correction loop. The same skill works across any
+  Agent-Skills host (OpenClaw, Hermes Agent, Claude Code) and any orchestrator
+  that can run a Node CLI.
+
 ## Citing
 
 If you use VeriQuote in academic work, please cite the Zenodo record (see
-`CITATION.cff`; DOI badge will appear here after the first release).
+`CITATION.cff`).
 
 ## License
 
