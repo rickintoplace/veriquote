@@ -96,6 +96,17 @@ The two checks fail independently, and both failure modes occur in practice:
 The combined per-citation score is conservative:
 `min(textMatchScore, judgeConfidence)`.
 
+### What the prompt does not do
+
+The EVI1 prompt is a **transparency** mechanism, not a hallucination mitigation:
+it makes claims checkable, which is why the verification step is not optional.
+
+Protocol compliance also varies by answering model and by the prompt you wrap
+around it. Some models print `[n]` markers but omit the evidence appendix
+entirely, which looks perfectly well-cited to anyone reading the answer. Check
+the completeness warnings from `parseAnswer()`, and verify that a new answering
+model actually emits the appendix in *your* prompt before relying on it.
+
 ## Installation
 
 ```bash
