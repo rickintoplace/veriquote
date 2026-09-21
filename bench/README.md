@@ -110,8 +110,8 @@ usable", not enough to rank two close models. Raise `--repeats` for that.
 ```bash
 node bench/judge/prepare-alce.mjs
 node --env-file=.env bench/judge/run.mjs \
-  --model openai-gpt-oss-120b --limit 300 \
-  --json bench/results/judge-gpt-oss-120b.json
+  --model glm-5.3-flash --limit 240 \
+  --json bench/results/judge-glm-5.3-flash.json
 ```
 
 `prepare-alce.mjs` downloads the human annotations from
@@ -142,40 +142,38 @@ rate matters more than the average.
 
 ### Results (2026-09-21)
 
-`openai-gpt-oss-120b`, temperature 0, 240-pair sample, 8 judge errors reported
-(not silently dropped), 2.1% of quotes truncated by the shipped 700-character
-cap:
+Five open-weight models, the same 240 pairs (seed `20260921`), temperature 0,
+the shipped judge prompt. Judge errors are reported, not dropped; they are
+excluded from the scores.
 
-| metric | result |
-| --- | ---: |
-| binary "fully supports" — agreement with annotators | 76.7% |
-| — ALCE's own TRUE-NLI (T5-11B) baseline | 77.6% |
-| binary precision / recall | 74.6% / 84.4% |
-| three-class accuracy | 64.2% |
-| macro-F1 | 0.551 |
-| Cohen's kappa | 0.394 |
-| **false green** (gold "none" judged "full") | **25.0%** |
+| judge model | false green ↓ | binary agreement | 3-class acc. | macro-F1 | κ | `partial` F1 | errors |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `glm-5.3-flash` | **16.1%** | **80.3%** | **71.5%** | **0.668** | **0.529** | **0.509** | 1 |
+| `qwen3.5-397b-a17b` | 20.8% | 79.7% | 69.6% | 0.622 | 0.483 | 0.414 | 13 |
+| `qwen3.6-35b-a3b` | 18.2% | 78.1% | 67.1% | 0.605 | 0.454 | 0.396 | 3 |
+| `deepseek-v4-flash` | 18.2% | 78.7% | 66.5% | 0.570 | 0.435 | 0.282 | 1 |
+| `gpt-oss-120b` | 25.0% | 76.7% | 64.2% | 0.551 | 0.394 | 0.306 | 8 |
+| *TRUE-NLI (T5-11B), ALCE's own metric* | | *77.6%* | | | | | |
 
-| gold \ predicted | full | partial | none |
-| --- | ---: | ---: | ---: |
-| full | 103 | 9 | 10 |
-| partial | 21 | 13 | 20 |
-| none | 14 | 9 | 33 |
+Full output per model: [`results/judge-*.json`](results/).
 
-Full output: [`results/judge-gpt-oss-120b.json`](results/judge-gpt-oss-120b.json).
+What this says:
 
-Read this honestly. On the binary question a general-purpose open-weight model
-at temperature 0 lands within a point of a specialised 11B NLI model, which is
-a genuinely good result for a component you can swap for anything. On the
-three-way question it is much weaker: kappa 0.394 is fair agreement, and the
-`partial` class is close to useless (F1 0.306, recall 24.1%) — the judge mostly
-collapses "partially supports" into one of the other two.
+- **General-purpose open models match a specialised NLI model** on ALCE's own
+  binary question, and the best one reaches κ 0.53 against the annotators —
+  the same agreement ALCE reports for its automatic metric (0.525). With about
+  240 pairs per run the binary numbers carry roughly ±5 points of sampling
+  error, so read the top four as level with TRUE-NLI, not as beating it.
+- **Model choice matters most where it counts.** False green — an unsupported
+  citation shown as fully supported — ranges from 16% to 25%. Size is not the
+  predictor: `qwen3.6-35b-a3b`, with 3B active parameters, beats the 120B
+  `gpt-oss`.
+- **`partial` is the weak class for every model** (F1 0.28–0.51). Judges
+  mostly collapse "partially supports" into full or none.
 
-The number that should govern how you use this is the false-green rate. A
-quarter of the citations annotators marked as unsupported came back fully
-supported. The judge is not trustworthy enough to be the only check on a claim,
-which is exactly why the combined score is `min(textMatch, judgeConfidence)`
-and why judge errors become `null` rather than a passing grade.
+No judge is reliable enough to be the only check. That is why the combined
+score is `min(textMatch, judgeConfidence)` and a judge error becomes `null`,
+never a pass.
 
 ### What this does and does not measure
 

@@ -1,6 +1,6 @@
 {
   "name": "veriquote",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Deterministic + semantic verification of quote-grounded LLM citations (EVI1 protocol): fuzzy verbatim-quote matching and an LLM entailment judge for transparent, per-claim hallucination detection.",
   "keywords": [
     "llm",
@@ -12,7 +12,9 @@
     "nli",
     "entailment",
     "fact-checking",
-    "attribution"
+    "attribution",
+    "cli",
+    "agents"
   ],
   "license": "MIT",
   "author": "NavigNine (https://navignine.com)",
@@ -27,6 +29,9 @@
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "bin": {
+    "veriquote": "./bin/veriquote.mjs"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -36,6 +41,7 @@
   "files": [
     "dist",
     "src",
+    "bin",
     "README.md",
     "LICENSE",
     "CITATION.cff"

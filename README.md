@@ -135,32 +135,39 @@ construction; `npm run bench:matcher` reproduces it in ~2 s):
 
 The middle row is the point, not an embarrassment: the matcher is *supposed* to
 be blind there. Quotes that were faithfully copied never score below 0.660;
-quotes that are not in the source never score above 0.396. The default
+quotes that are not in the source never score above 0.396 in this set. The default
 threshold of 0.4 sits inside that gap, and the sweep in
 [`bench/results/matcher.json`](bench/results/matcher.json) shows the whole
 0.40–0.65 band gives 100% on both sides. Catching the middle row is the
-entailment judge's job, which is why it exists.
+entailment judge's job, which is why it exists. Hand-written fabrications that
+reuse the source's own vocabulary can land higher (0.48 in
+[`examples/ozone-answer.md`](examples/ozone-answer.md)); the CLI therefore fails
+any citation below 0.5 and leaves the rest to the judge.
 
 **Judge** — agreement with the human annotators in
 [ALCE](https://github.com/princeton-nlp/ALCE) (Gao et al., EMNLP 2023, MIT),
-class mapping fixed before any model ran. 240-pair sample, `gpt-oss-120b` at
+class mapping fixed before any model ran. Same 240 pairs for every model,
 temperature 0:
 
-| metric | result |
-| --- | --- |
-| binary "fully supports", agreement with annotators | **76.7%** (ALCE's own TRUE-NLI baseline: 77.6%) |
-| three-class accuracy / macro-F1 / Cohen's kappa | 64.2% / 0.551 / 0.394 |
-| false green — source supports nothing, judged fully supported | **25.0%** |
+| judge model | false green ↓ | binary agreement | Cohen's κ |
+| --- | ---: | ---: | ---: |
+| `glm-5.3-flash` | **16.1%** | **80.3%** | **0.529** |
+| `qwen3.5-397b-a17b` | 20.8% | 79.7% | 0.483 |
+| `qwen3.6-35b-a3b` | 18.2% | 78.1% | 0.454 |
+| `deepseek-v4-flash` | 18.2% | 78.7% | 0.435 |
+| `gpt-oss-120b` | 25.0% | 76.7% | 0.394 |
+| *ALCE's TRUE-NLI (T5-11B)* | | *77.6%* | |
 
-So a general-purpose open-weight model at temperature 0 matches a specialised
-T5-11B NLI model on the binary question, and is much weaker on the three-way
-one (the `partial` class carries F1 0.306; kappa 0.394 is fair agreement, not
-good). **Read the false-green rate before trusting any of this.** One cited
-claim in four that annotators said the source does not support at all came back
-"fully supported". That is the strongest argument in this README for
-`min(textMatchScore, judgeConfidence)`: the judge is not reliable enough to be
-the only check, and the deterministic matcher is the floor that no judge error
-can raise. Pick your judge model by running this, not by reputation.
+Open general-purpose models are level with a specialised NLI model on ALCE's
+binary question, and the best reaches κ 0.53 — the agreement ALCE reports for
+its own automatic metric. **Read the first column before trusting any of this:**
+false green is the share of citations annotators said the source does not
+support at all that still came back "fully supported", and even the best judge
+does that one time in six. That is the case for
+`min(textMatchScore, judgeConfidence)`: no judge is reliable enough to be the
+only check, and the deterministic matcher is a floor no judge error can raise.
+Pick your judge by running the benchmark, not by reputation or size — a 3B-active
+MoE beats a 120B model here. Details in [`bench/`](bench).
 
 **Protocol compliance** — does a model actually emit the appendix? Decided
 mechanically by `parseAnswer()` over 18 tasks, three of which the sources
@@ -208,6 +215,23 @@ answering model pinned to a quote *before* it generates, you want the
 deterministic half of the check to run anywhere including a browser with no
 dependencies, and you want per-claim numbers to put in front of a reader rather
 than an aggregate score for a dashboard.
+
+## Command line
+
+```bash
+npx veriquote prompt                  # the rules to give the answering model
+npx veriquote check answer.md \
+  --source https://en.wikipedia.org/wiki/Ozone_layer --source notes.txt
+```
+
+Sources are numbered in the order given. URLs are fetched by VeriQuote itself,
+so the check never depends on the answering model's copy of a page. Without
+configuration only the quotes are checked; set `VERIQUOTE_JUDGE_API_KEY` and
+`VERIQUOTE_JUDGE_MODEL` (any OpenAI-compatible endpoint) to also check that each
+quote supports its claim. `--json` gives machine-readable output; the exit
+status is `0` pass, `2` revise, `1` error. Try it on
+[`examples/ozone-answer.md`](examples/ozone-answer.md), which contains one
+correct citation and three different ways of getting it wrong.
 
 ## Installation
 
@@ -324,21 +348,22 @@ An agent that reads sources and writes conclusions is exactly the case this was
 built for: the claims are checkable, so they should be checked before the agent
 hands them over — not after a human notices.
 
-**[`verify-citations`](integrations/verify-citations)** packages the whole
-pipeline as a portable [Agent Skill](integrations/verify-citations/SKILL.md)
-(one `SKILL.md` plus a bundled Node CLI). The agent runs it as an internal gate
-on its own draft: the skill verifies every cited claim, flags factual sentences
-carrying no citation at all, and returns a ready-to-use correction prompt, with
-an exit code the orchestrator can branch on.
+**[`verify-citations`](integrations/verify-citations)** is an
+[Agent Skill](integrations/verify-citations/SKILL.md) that has the agent write
+its sourced answer in the checkable format and run `veriquote check` on it
+before presenting it. The CLI fetches every cited URL itself, so an agent cannot
+pass the check with its own (truncated, misremembered) copy of a page. On failure
+it returns a ready-to-use correction prompt, and the exit code lets the agent
+branch without parsing anything:
 
 ```
-exit 0  verdict "pass"    every cited claim is grounded  -> present the answer
-exit 2  verdict "revise"  problems[] + instructionsForModel -> self-correct and retry
-exit 1  bad input or internal error -> do NOT claim the answer was verified
+exit 0  verdict "pass"    every cited claim is grounded     -> present the answer
+exit 2  verdict "revise"  problems[] + instructionsForModel -> fix and re-check
+exit 1  bad input or unreachable source -> do NOT claim the answer was verified
 ```
 
-It works in any Agent-Skills host (Claude Code, OpenClaw, Hermes Agent) and in
-any orchestrator that can run a Node CLI.
+It works in any host that reads Agent Skills, such as Claude Code,
+and in anything that can run a shell command.
 
 ## Citing
 

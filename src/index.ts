@@ -43,3 +43,7 @@ export {
 } from './judge/chat-judge.js';
 
 export { verifyAnswer, type VerifyOptions } from './report.js';
+
+export { gateReport, type GateResult, type GateProblem, type GateThresholds, type ProblemType } from './gate.js';
+export { fetchSource, sourceFromBody, type FetchSourceOptions } from './source/fetch.js';
+export { htmlToText } from './source/html.js';
