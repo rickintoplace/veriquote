@@ -155,7 +155,7 @@ excluded from the scores.
 | `gpt-oss-120b` | 25.0% | 76.7% | 64.2% | 0.551 | 0.394 | 0.306 | 8 |
 | *TRUE-NLI (T5-11B), ALCE's own metric* | | *77.6%* | | | | | |
 
-Full output per model: [`results/judge-*.json`](results/).
+Full output per model: [`results/judge-*.json`](results/). Plotted with 95% intervals in [`figures/`](figures).
 
 What this says:
 
@@ -164,10 +164,11 @@ What this says:
   the same agreement ALCE reports for its automatic metric (0.525). With about
   240 pairs per run the binary numbers carry roughly ±5 points of sampling
   error, so read the top four as level with TRUE-NLI, not as beating it.
-- **Model choice matters most where it counts.** False green — an unsupported
-  citation shown as fully supported — ranges from 16% to 25%. Size is not the
-  predictor: `qwen3.6-35b-a3b`, with 3B active parameters, beats the 120B
-  `gpt-oss`.
+- **False green** — an unsupported citation shown as fully supported — ranges
+  from 16% to 25%. With 56 unsupported pairs per run the 95% intervals overlap,
+  so neighbouring models are not separated; a larger `--limit` would settle the
+  ranking. Size is not the predictor: `qwen3.6-35b-a3b`, with 3B active
+  parameters, lands ahead of the 120B `gpt-oss`.
 - **`partial` is the weak class for every model** (F1 0.28–0.51). Judges
   mostly collapse "partially supports" into full or none.
 

@@ -124,72 +124,96 @@ Three benchmarks, kept separate on purpose — a single blended number for a
 two-stage pipeline would hide the failure modes the pipeline exists to
 separate. Everything is in [`bench/`](bench), including how to reproduce it.
 
-**Matcher** (2,061 items, no API key, no labels — ground truth by
-construction; `npm run bench:matcher` reproduces it in ~2 s):
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/tango-dark.svg">
+  <img alt="Matcher catches 100% of quotes that are not in the source and 0% of real quotes attached to unsupported claims; the judge catches 84% of the latter and cannot see the former; together they cover both." src="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/tango-light.svg">
+</picture>
 
-| quote family | n | median score | accepted at 0.4 |
-| --- | ---: | ---: | ---: |
-| faithful but reformatted (whitespace, typography, OCR noise, elision, PDF hyphenation) | 1,121 | 1.000 | **100.0%** |
-| near-verbatim but meaning changed (number swapped, negated, hedge strengthened, spliced) | 586 | 0.932 | 100.0% |
-| absent from the source (real quote / wrong document, honest paraphrase) | 187 | 0.249 | **0.0%** |
+The two checks are blind in opposite places. The matcher cannot tell whether a
+real quote supports the claim; the judge only compares claim and quote, so a
+fabricated quote that fits the claim sails through it — in
+[`examples/ozone-answer.md`](examples/ozone-answer.md) `deepseek-v4-flash` rates an
+invented quote "entailed 1.00", and only the matcher notices it is not in the
+source. That is why the combined score is `min(textMatchScore, judgeConfidence)`.
 
-The middle row is the point, not an embarrassment: the matcher is *supposed* to
-be blind there. Quotes that were faithfully copied never score below 0.660;
-quotes that are not in the source never score above 0.396 in this set. The default
-threshold of 0.4 sits inside that gap, and the sweep in
-[`bench/results/matcher.json`](bench/results/matcher.json) shows the whole
-0.40–0.65 band gives 100% on both sides. Catching the middle row is the
-entailment judge's job, which is why it exists. Hand-written fabrications that
-reuse the source's own vocabulary can land higher (0.48 in
-[`examples/ozone-answer.md`](examples/ozone-answer.md)); the CLI therefore fails
-any citation below 0.5 and leaves the rest to the judge.
+### Matcher
 
-**Judge** — agreement with the human annotators in
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/matcher-dark.svg">
+  <img alt="Matcher score ranges per mutation: faithful quotes score 0.66 to 1.0, quotes not in the source 0.14 to 0.40, meaning-changed quotes score high by design." src="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/matcher-light.svg">
+</picture>
+
+2,061 quotes, no API key, no labels — ground truth by construction;
+`npm run bench:matcher` reproduces it in about two seconds. Faithfully copied
+quotes never score below 0.660, missing ones never above 0.396, and the default
+threshold of 0.4 sits in that gap. The orange rows are the point, not an
+embarrassment: a quote whose meaning was changed is still near-verbatim, and
+catching it is the judge's job. Two honest limits: invented prose built from the
+source's own words (adversarial) scores high, and so can hand-written
+fabrications that reuse the source's vocabulary (0.48 in the example above) —
+the CLI therefore fails any citation below 0.5 and leaves the rest to the judge.
+
+### Judge
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/judges-dark.svg">
+  <img alt="Five open judge models against ALCE human labels: false green from 16.1% (glm-5.3-flash) to 25.0% (gpt-oss-120b); binary agreement 76.7% to 80.3%, around the TRUE-NLI baseline of 77.6%." src="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/judges-light.svg">
+</picture>
+
+Agreement with the human annotators of
 [ALCE](https://github.com/princeton-nlp/ALCE) (Gao et al., EMNLP 2023, MIT),
-class mapping fixed before any model ran. Same 240 pairs for every model,
-temperature 0:
+class mapping fixed before any model ran. Open general-purpose models are level
+with a specialised 11B NLI model on ALCE's binary question, and the best reaches
+Cohen's κ 0.53 — the agreement ALCE reports for its own automatic metric.
+**Read the left panel before trusting any of this:** even the best judge calls
+one unsupported citation in six "fully supported", which is why no judge should
+be the only check. The intervals are wide (56 unsupported pairs per run), so
+the ranking between neighbouring models is not settled; size is not what
+decides it — a 3B-active MoE lands ahead of a 120B model.
+
+### Does the answering model play along?
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/protocol-dark.svg">
+  <img alt="Protocol compliance: gpt-oss-120b complete in 30.8% of answers, mistral-medium quotes verbatim in 66.5% of citations; gemma-4-31b and llama-3.1-8b shown for comparison." src="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/protocol-light.svg">
+</picture>
+
+Decided mechanically by `parseAnswer()` over 18 tasks, three of which the
+sources deliberately cannot answer. Two ways to fail, neither visible to a
+reader: `gpt-oss-120b` always prints an appendix, but only 30.8% of its answers
+give every citation a quote — the rest are footnotes with nothing behind them.
+`mistral-medium` is almost always complete, yet a third of its "quotes" are not
+in the source: it paraphrased into the quote slot. Both answers look impeccably
+cited. All four models cited nothing on the three unanswerable questions.
+
+<details>
+<summary>The numbers behind the figures</summary>
 
 | judge model | false green ↓ | binary agreement | Cohen's κ |
 | --- | ---: | ---: | ---: |
-| `glm-5.3-flash` | **16.1%** | **80.3%** | **0.529** |
+| `glm-5.3-flash` | 16.1% | 80.3% | 0.529 |
 | `qwen3.5-397b-a17b` | 20.8% | 79.7% | 0.483 |
 | `qwen3.6-35b-a3b` | 18.2% | 78.1% | 0.454 |
 | `deepseek-v4-flash` | 18.2% | 78.7% | 0.435 |
 | `gpt-oss-120b` | 25.0% | 76.7% | 0.394 |
-| *ALCE's TRUE-NLI (T5-11B)* | | *77.6%* | |
+| ALCE's TRUE-NLI (T5-11B) | | 77.6% | |
 
-Open general-purpose models are level with a specialised NLI model on ALCE's
-binary question, and the best reaches κ 0.53 — the agreement ALCE reports for
-its own automatic metric. **Read the first column before trusting any of this:**
-false green is the share of citations annotators said the source does not
-support at all that still came back "fully supported", and even the best judge
-does that one time in six. That is the case for
-`min(textMatchScore, judgeConfidence)`: no judge is reliable enough to be the
-only check, and the deterministic matcher is a floor no judge error can raise.
-Pick your judge by running the benchmark, not by reputation or size — a 3B-active
-MoE beats a 120B model here. Details in [`bench/`](bench).
+| quote family | n | median score | accepted at 0.4 |
+| --- | ---: | ---: | ---: |
+| faithful but reformatted | 1,121 | 1.000 | 100.0% |
+| near-verbatim, meaning changed | 586 | 0.932 | 100.0% |
+| absent from the source | 187 | 0.249 | 0.0% |
 
-**Protocol compliance** — does a model actually emit the appendix? Decided
-mechanically by `parseAnswer()` over 18 tasks, three of which the sources
-deliberately cannot answer:
-
-| model | appendix | complete | verbatim | warning-free |
+| answering model | appendix | complete | verbatim | warning-free |
 | --- | ---: | ---: | ---: | ---: |
-| openai-gpt-oss-120b | 100% | **30.8%** | 93.3% | 23.1% |
-| mistral-medium-3.5-128b | 100% | 92.3% | **66.5%** | 92.3% |
+| gpt-oss-120b | 100% | 30.8% | 93.3% | 23.1% |
+| mistral-medium-3.5-128b | 100% | 92.3% | 66.5% | 92.3% |
 | gemma-4-31b-it | 86.7% | 86.7% | 100% | 86.7% |
-| meta-llama-3.1-8b-instruct | 71.4% | 50.0% | 62.8% | 14.3% |
+| llama-3.1-8b-instruct | 71.4% | 50.0% | 62.8% | 14.3% |
 
-Two different ways to fail, and neither is visible to a reader:
-`gpt-oss-120b` always prints an appendix, but only 30.8% of its answers give
-every citation an evidence line — the rest are footnotes with nothing behind
-them. `mistral-medium` is almost always complete, yet a third of the quotes it
-supplies are not literally in the source: it paraphrased into the quote slot.
-An answer with either defect looks impeccably cited.
-
-This is why compliance is a per-model measurement and not an assumption, and
-why `parseAnswer()` returns warnings you are meant to check. One encouraging
-result: all four models cited nothing on all three unanswerable questions.
+Figures are rendered from `bench/results/*.json` by
+[`bench/figures/render.mjs`](bench/figures/render.mjs).
+</details>
 
 ## How this differs from the alternatives
 

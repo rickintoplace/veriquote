@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="364" viewBox="0 0 760 364" role="img" aria-label="Which check catches which failure" font-family="system-ui, -apple-system, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif">
+<title>Which check catches which failure</title>
+<rect width="760" height="364" rx="8" fill="#ffffff"/>
+<text x="24" y="32" font-size="16" font-weight="600" fill="#0b0b0b" text-anchor="start">It takes two: each check catches what the other cannot see</text>
+<text x="24" y="52" font-size="12" font-weight="400" fill="#52514e" text-anchor="start">Share of bad citations each check catches, by kind of failure.</text>
+<rect x="280" y="80" width="10" height="10" rx="2" fill="#2a78d6"/>
+<text x="296" y="89" font-size="13" font-weight="600" fill="#0b0b0b" text-anchor="start">Matcher</text>
+<text x="280" y="106" font-size="11" font-weight="400" fill="#898781" text-anchor="start">deterministic</text>
+<rect x="440" y="80" width="10" height="10" rx="2" fill="#eb6834"/>
+<text x="456" y="89" font-size="13" font-weight="600" fill="#0b0b0b" text-anchor="start">Judge</text>
+<text x="440" y="106" font-size="11" font-weight="400" fill="#898781" text-anchor="start">glm-5.3-flash</text>
+<rect x="600" y="80" width="10" height="10" rx="2" fill="#1baf7a"/>
+<text x="616" y="89" font-size="13" font-weight="600" fill="#0b0b0b" text-anchor="start">Together</text>
+<text x="600" y="106" font-size="11" font-weight="400" fill="#898781" text-anchor="start">fails if either fails</text>
+<line x1="24" y1="120" x2="736" y2="120" stroke="#e1e0d9" stroke-width="1"/>
+<text x="24" y="148" font-size="13" font-weight="600" fill="#0b0b0b" text-anchor="start">Quote is not in the source</text>
+<text x="24" y="166" font-size="11" font-weight="400" fill="#52514e" text-anchor="start">invented, paraphrased, or from another document</text>
+<text x="280" y="154" font-size="22" font-weight="600" fill="#0b0b0b" text-anchor="start">100%</text>
+<rect x="280" y="166" width="136" height="8" rx="4" fill="#2a78d6" fill-opacity="0.16"/>
+<rect x="280" y="166" width="136" height="8" rx="4" fill="#2a78d6"/>
+<text x="280" y="192" font-size="11" font-weight="400" fill="#52514e" text-anchor="start">187 of 187 rejected</text>
+<text x="440" y="154" font-size="22" font-weight="600" fill="#898781" text-anchor="start">—</text>
+<rect x="440" y="166" width="136" height="8" rx="4" fill="#eb6834" fill-opacity="0.16"/>
+<text x="440" y="192" font-size="11" font-weight="400" fill="#52514e" text-anchor="start">never sees the source</text>
+<text x="600" y="154" font-size="22" font-weight="600" fill="#0b0b0b" text-anchor="start">100%</text>
+<rect x="600" y="166" width="136" height="8" rx="4" fill="#1baf7a" fill-opacity="0.16"/>
+<rect x="600" y="166" width="136" height="8" rx="4" fill="#1baf7a"/>
+<text x="600" y="192" font-size="11" font-weight="400" fill="#52514e" text-anchor="start">caught by the matcher</text>
+<line x1="24" y1="210" x2="736" y2="210" stroke="#e1e0d9" stroke-width="1"/>
+<text x="24" y="238" font-size="13" font-weight="600" fill="#0b0b0b" text-anchor="start">Quote is real, claim is not</text>
+<text x="24" y="256" font-size="11" font-weight="400" fill="#52514e" text-anchor="start">the source does not support what is claimed</text>
+<text x="280" y="244" font-size="22" font-weight="600" fill="#898781" text-anchor="start">0%</text>
+<rect x="280" y="256" width="136" height="8" rx="4" fill="#2a78d6" fill-opacity="0.16"/>
+<text x="280" y="282" font-size="11" font-weight="400" fill="#52514e" text-anchor="start">586 of 586 accepted</text>
+<text x="440" y="244" font-size="22" font-weight="600" fill="#0b0b0b" text-anchor="start">84%</text>
+<rect x="440" y="256" width="136" height="8" rx="4" fill="#eb6834" fill-opacity="0.16"/>
+<rect x="440" y="256" width="114.14285714285714" height="8" rx="4" fill="#eb6834"/>
+<text x="440" y="282" font-size="11" font-weight="400" fill="#52514e" text-anchor="start">47 of 56 flagged</text>
+<text x="600" y="244" font-size="22" font-weight="600" fill="#0b0b0b" text-anchor="start">84%</text>
+<rect x="600" y="256" width="136" height="8" rx="4" fill="#1baf7a" fill-opacity="0.16"/>
+<rect x="600" y="256" width="114.14285714285714" height="8" rx="4" fill="#1baf7a"/>
+<text x="600" y="282" font-size="11" font-weight="400" fill="#52514e" text-anchor="start">caught by the judge</text>
+<text x="24" y="328" font-size="11" font-weight="400" fill="#898781" text-anchor="start">Matcher: synthetic quotes from bench/results/matcher.json (n = 187 and 586). Judge: ALCE citations that human annotators</text>
+<text x="24" y="344" font-size="11" font-weight="400" fill="#898781" text-anchor="start">marked “does not support” (n = 56), counted as caught unless judged fully supported. Different test sets; see bench/.</text>
+</svg>

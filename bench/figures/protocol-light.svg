@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="342" viewBox="0 0 760 342" role="img" aria-label="Citation protocol compliance per answering model" font-family="system-ui, -apple-system, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif">
+<title>Citation protocol compliance per answering model</title>
+<rect width="760" height="342" rx="8" fill="#ffffff"/>
+<text x="24" y="32" font-size="16" font-weight="600" fill="#0b0b0b" text-anchor="start">Two ways to fail that a reader never sees</text>
+<text x="24" y="52" font-size="12" font-weight="400" fill="#52514e" text-anchor="start">Answering models given the citation protocol, 18 tasks each, one run. Parsed and matched mechanically, no labels.</text>
+<line x1="222" y1="98" x2="222" y2="280" stroke="#e1e0d9" stroke-width="1"/>
+<text x="222" y="296" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">0%</text>
+<line x1="341.5" y1="98" x2="341.5" y2="280" stroke="#e1e0d9" stroke-width="1"/>
+<text x="341.5" y="296" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">25%</text>
+<line x1="461" y1="98" x2="461" y2="280" stroke="#e1e0d9" stroke-width="1"/>
+<text x="461" y="296" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">50%</text>
+<line x1="580.5" y1="98" x2="580.5" y2="280" stroke="#e1e0d9" stroke-width="1"/>
+<text x="580.5" y="296" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">75%</text>
+<line x1="700" y1="98" x2="700" y2="280" stroke="#e1e0d9" stroke-width="1"/>
+<text x="700" y="296" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">100%</text>
+<rect x="24" y="69" width="10" height="10" rx="2" fill="#2a78d6"/>
+<text x="40" y="78" font-size="12" font-weight="400" fill="#52514e" text-anchor="start">Complete — every cited claim carries a quote</text>
+<rect x="352" y="69" width="10" height="10" rx="2" fill="#eb6834"/>
+<text x="368" y="78" font-size="12" font-weight="400" fill="#52514e" text-anchor="start">Verbatim — the quote is really in the source</text>
+<text x="206" y="121" font-size="12" font-weight="400" fill="#0b0b0b" text-anchor="end">gpt-oss-120b</text>
+<path d="M222,104 h143.0769230769231 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-143.0769230769231 z" fill="#2a78d6"/>
+<text x="375.0769230769231" y="114" font-size="11" font-weight="400" fill="#52514e" text-anchor="start" font-variant-numeric="tabular-nums">30.8%</text>
+<path d="M222,118 h442.13333333333344 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-442.13333333333344 z" fill="#eb6834"/>
+<text x="674.1333333333334" y="128" font-size="11" font-weight="400" fill="#52514e" text-anchor="start" font-variant-numeric="tabular-nums">93.3%</text>
+<text x="206" y="165" font-size="12" font-weight="400" fill="#0b0b0b" text-anchor="end">mistral-medium-3.5-128b</text>
+<path d="M222,148 h437.2307692307693 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-437.2307692307693 z" fill="#2a78d6"/>
+<text x="669.2307692307693" y="158" font-size="11" font-weight="400" fill="#52514e" text-anchor="start" font-variant-numeric="tabular-nums">92.3%</text>
+<path d="M222,162 h314.05384615384617 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-314.05384615384617 z" fill="#eb6834"/>
+<text x="546.0538461538462" y="172" font-size="11" font-weight="400" fill="#52514e" text-anchor="start" font-variant-numeric="tabular-nums">66.5%</text>
+<text x="206" y="209" font-size="12" font-weight="400" fill="#0b0b0b" text-anchor="end">gemma-4-31b-it</text>
+<path d="M222,192 h410.26666666666665 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-410.26666666666665 z" fill="#2a78d6"/>
+<text x="642.2666666666667" y="202" font-size="11" font-weight="400" fill="#52514e" text-anchor="start" font-variant-numeric="tabular-nums">86.7%</text>
+<path d="M222,206 h474 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-474 z" fill="#eb6834"/>
+<text x="706" y="216" font-size="11" font-weight="400" fill="#52514e" text-anchor="start" font-variant-numeric="tabular-nums">100.0%</text>
+<text x="206" y="253" font-size="12" font-weight="400" fill="#0b0b0b" text-anchor="end">llama-3.1-8b-instruct</text>
+<path d="M222,236 h235 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-235 z" fill="#2a78d6"/>
+<text x="467" y="246" font-size="11" font-weight="400" fill="#52514e" text-anchor="start" font-variant-numeric="tabular-nums">50.0%</text>
+<path d="M222,250 h296.34333333333325 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-296.34333333333325 z" fill="#eb6834"/>
+<text x="528.3433333333332" y="260" font-size="11" font-weight="400" fill="#52514e" text-anchor="start" font-variant-numeric="tabular-nums">62.8%</text>
+<line x1="222" y1="98" x2="222" y2="280" stroke="#c3c2b7" stroke-width="1"/>
+<text x="24" y="324" font-size="11" font-weight="400" fill="#898781" text-anchor="start">Source: bench/results/protocol.json</text>
+</svg>
