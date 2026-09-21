@@ -9,11 +9,12 @@ authors:
     orcid: "https://orcid.org/0009-0009-5596-736X"
 repository-code: "https://github.com/rickintoplace/veriquote"
 license: MIT
-version: 0.1.1
+version: 0.2.0
 identifiers:
   - type: doi
-    value: 10.5281/zenodo.21552380
-date-released: "2026-07-25"
+    value: 10.5281/zenodo.21552379
+    description: Concept DOI, resolves to the latest version
+date-released: "2026-09-22"
 keywords:
   - large language models
   - retrieval-augmented generation

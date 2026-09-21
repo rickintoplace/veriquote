@@ -1,94 +1,76 @@
 ---
 name: verify-citations
-description: Verify that a source-grounded research answer is actually backed by its cited sources before showing it to the user. Use after producing or synthesizing any answer that cites retrieved documents. Catches fabricated/paraphrased quotes, claims the source does not support, and factual sentences with no citation, then drives a self-correction loop.
+description: Check that a research answer built from web pages or documents is actually backed by them before showing it to the user. Use whenever you answer from fetched sources (web search, docs, RAG results). Catches quotes that are not in the source, claims the source does not support, and factual sentences with no citation, then drives a self-correction loop.
 user-invocable: true
 metadata:
   openclaw:
     requires:
       bins: [node]
-      env: [VERIQUOTE_JUDGE_API_KEY]
 ---
 
 # verify-citations
 
-Use this skill as an **internal hallucination gate**: whenever you have produced
-(or orchestrated sub-models to produce) a research answer that cites retrieved
-sources, verify it **before** presenting it to the user, and self-correct if it
-fails.
+Use this as a gate: whenever you answer from sources you fetched, verify the
+answer **before** presenting it, and fix it if it fails. Do not skip it because
+you feel confident; confidence is exactly what this check does not rely on.
 
-## Prerequisites
+## 1. Write the answer in the checkable format
 
-1. **Install once** (from this skill directory): `npm install`.
-2. **The answering/synthesizer model must emit the EVI1 protocol** — every
-   cited sentence ends with `[n]` source markers and a `{cX}` claim marker, and
-   the answer ends with a machine-readable quote appendix. Inject the required
-   instructions into that model's system prompt:
-
-   ```
-   node bin/print-citation-instructions.mjs
-   ```
-
-   Append the output to your synthesizer system prompt. Provide the retrieved
-   sources to the model as numbered blocks `[1]`, `[2]`, … in the same order you
-   will pass them to the verifier.
-3. **Keep the full text of every retrieved source**, indexed by the same `[n]`.
-   You control retrieval, so keep each fetched document's extracted text in a
-   list; its position is its citation index.
-
-## How to run the gate
-
-Build a JSON job and pipe it to the verifier:
+Print the rules once and follow them when you write the answer:
 
 ```
-echo '{
-  "answer":  "<the raw model answer INCLUDING its EVI1 appendix>",
-  "sources": [ { "title": "…", "url": "…", "text": "<full extracted source text>" }, … ]
-}' | node bin/verify-citations.mjs
+npx -y veriquote prompt
 ```
 
-The verifier prints JSON and sets an exit code:
+Number your sources `[1]`, `[2]`, … in a fixed order. Every cited sentence ends
+with its markers and a claim id, e.g. `…expands when freezing.[2]{c1}`, and the
+answer ends with an `EVI1` appendix holding a **verbatim** quote per citation.
+Save the full answer, appendix included, to a file such as `answer.md`.
 
-- **exit 0 / `"verdict":"pass"`** — every cited claim is grounded in its source
-  and nothing factual is left uncited. Present the answer to the user.
-- **exit 2 / `"verdict":"revise"`** — problems were found. The output contains:
-  - `problems[]` — cited claims that fail (quote not in source, contradicted,
-    overstated, or weakly supported), each with the reason.
-  - `uncited[]` — factual sentences that assert something but cite nothing.
-  - `instructionsForModel` — a ready-to-use correction prompt.
-- **exit 1** — bad input or internal error (see stderr); do not claim the answer
-  was verified.
+## 2. Check it
 
-## The self-correction loop
+Pass the sources in the same order as their numbers:
 
-1. Run the gate on the draft answer.
-2. If `verdict` is `revise`, send `instructionsForModel` back to the synthesizer
-   model together with the original answer and sources, and ask it to re-output
-   the full answer with a corrected EVI1 appendix. If a claim cannot be
-   supported by any available source, retrieve a better source or drop the claim.
-3. Re-run the gate. Repeat at most **3** times; if it still fails, present only
-   the claims that passed and tell the user which points could not be verified.
+```
+npx -y veriquote check answer.md --source <url-or-file-for-[1]> --source <…[2]> --json
+```
 
-## Configure the judge (recommended)
+URLs are fetched by veriquote itself, so the check does not depend on your copy
+of the page. For sources without a URL (RAG chunks, tool output, local docs),
+save each to a file and pass the path; `.html` files are converted to text. PDFs
+are not supported: extract the text first (e.g. `pdftotext`).
 
-The deterministic quote match runs with no configuration. The semantic
-entailment check (which catches verbatim-but-unsupported quotes — the c2 case)
-needs an OpenAI-compatible endpoint, configured via environment variables,
-**server-side only**:
+- **exit 0**, `"verdict": "pass"` — present the answer.
+- **exit 2**, `"verdict": "revise"` — `problems[]` lists failing citations,
+  `uncited[]` lists factual sentences without a citation, and
+  `instructionsForModel` says how to fix them.
+- **exit 1** — bad input or a source could not be loaded (see stderr). Do not
+  claim the answer was verified.
 
-- `VERIQUOTE_JUDGE_API_KEY` (or `OPENROUTER_API_KEY`)
-- `VERIQUOTE_JUDGE_MODEL` (default `google/gemini-2.5-flash-lite`)
-- `VERIQUOTE_JUDGE_BASE_URL` (default `https://openrouter.ai/api/v1`)
+## 3. Fix and re-check
 
-With no key present, verification degrades to text-match-only (still catches
-fabricated/paraphrased quotes and uncited sentences, but not overstatement or
-contradiction).
+Apply `instructionsForModel`: replace a quote with real text from the source,
+weaken an overstated claim, cite or drop an uncited statement. If no source
+supports a claim, find a better source or remove the claim. Re-run the check, at
+most three rounds; if it still fails, present only what passed and tell the user
+which points could not be verified.
 
-## What this gate does and does NOT establish — state this honestly to the user
+## Semantic check
 
-- It **does** establish that cited claims are **faithful to the cited sources**:
-  the quotes are real and they support the claims.
-- It does **not** establish that the answer is **true**. If a source is itself
-  wrong or outdated, a faithful quote still passes. Phrase results to the user as
-  **"supported by the cited sources,"** never "verified true."
-- The uncited-sentence check is a **heuristic** (tune `options.thresholds`); it
-  reduces, but does not eliminate, unsupported assertions slipping through.
+Without configuration, veriquote only checks that every quote really occurs in
+its source. To also check that the quote **supports** the claim (catches
+verbatim quotes attached to a claim they contradict), set:
+
+- `VERIQUOTE_JUDGE_API_KEY` — any OpenAI-compatible endpoint
+- `VERIQUOTE_JUDGE_MODEL` — e.g. an open model such as GLM, Qwen or DeepSeek
+- `VERIQUOTE_JUDGE_BASE_URL` — default `https://openrouter.ai/api/v1`
+
+The JSON field `judge` is `null` when only quotes were checked; say so when you
+report the result.
+
+## What a pass means — tell the user honestly
+
+A pass means the cited claims are **faithful to the cited sources**: the quotes
+are real and they support the claims. It does not mean the answer is **true**; a
+wrong source quoted faithfully still passes. Say "supported by the cited
+sources", never "verified true". The uncited-sentence check is a heuristic.
