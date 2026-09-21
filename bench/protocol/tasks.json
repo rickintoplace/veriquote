@@ -1,0 +1,95 @@
+[
+  {
+    "id": "vitd-synthesis",
+    "question": "How do people obtain vitamin D, and why is it not considered a vitamin in the strict sense?",
+    "sources": ["Vitamin D"]
+  },
+  {
+    "id": "vitd-metabolism",
+    "question": "What happens to cholecalciferol after it is produced or ingested, and what is measured in serum to assess status?",
+    "sources": ["Vitamin D"]
+  },
+  {
+    "id": "insulin-regulation",
+    "question": "How do beta cells regulate insulin secretion, and what does insulin do to the liver's glucose output?",
+    "sources": ["Insulin"]
+  },
+  {
+    "id": "insulin-anabolic",
+    "question": "In what sense is insulin an anabolic hormone, and what happens when blood insulin is low?",
+    "sources": ["Insulin"]
+  },
+  {
+    "id": "ozone-discovery",
+    "question": "Who discovered the ozone layer and how was its existence deduced from solar measurements?",
+    "sources": ["Ozone layer"]
+  },
+  {
+    "id": "ozone-location",
+    "question": "Where in the atmosphere is the ozone layer located, and how was it monitored historically?",
+    "sources": ["Ozone layer"]
+  },
+  {
+    "id": "photo-oxygen",
+    "question": "What role does photosynthesis play in Earth's atmospheric oxygen, and which organisms perform it without producing oxygen?",
+    "sources": ["Photosynthesis"]
+  },
+  {
+    "id": "photo-storage",
+    "question": "In what form do photosynthetic organisms store the energy they convert, and how is it later used?",
+    "sources": ["Photosynthesis"]
+  },
+  {
+    "id": "amr-drivers",
+    "question": "What drives antimicrobial resistance, and by what mechanisms does it arise?",
+    "sources": ["Antimicrobial resistance"]
+  },
+  {
+    "id": "amr-burden",
+    "question": "What is the estimated global mortality burden of antimicrobial resistance according to the WHO?",
+    "sources": ["Antimicrobial resistance"]
+  },
+  {
+    "id": "cross-hormones",
+    "question": "Compare how vitamin D and insulin are each described in terms of what kind of signalling molecule they are and how their levels are controlled.",
+    "sources": ["Vitamin D", "Insulin"]
+  },
+  {
+    "id": "cross-atmosphere",
+    "question": "How do the ozone layer and photosynthesis each relate to the composition of Earth's atmosphere?",
+    "sources": ["Ozone layer", "Photosynthesis"]
+  },
+  {
+    "id": "cross-biology",
+    "question": "What do these sources say about the role of selective pressure in antimicrobial resistance and about the role of light absorption in photosynthesis?",
+    "sources": ["Antimicrobial resistance", "Photosynthesis"]
+  },
+  {
+    "id": "cross-measurement",
+    "question": "How is vitamin D status measured, and how was stratospheric ozone measured from the ground?",
+    "sources": ["Vitamin D", "Ozone layer"]
+  },
+  {
+    "id": "cross-three",
+    "question": "Summarise what each source says about why its subject matters for human health or for the planet.",
+    "sources": ["Vitamin D", "Antimicrobial resistance", "Ozone layer"]
+  },
+  {
+    "id": "unanswerable-dosing",
+    "question": "What is the recommended daily vitamin D dose in micrograms for adults over 70 in Germany, and what is the cost per tablet?",
+    "sources": ["Vitamin D"],
+    "note": "deliberately not answerable from the source: a well-behaved model should cite little or nothing"
+  },
+  {
+    "id": "unanswerable-insulin-price",
+    "question": "How much did a vial of insulin cost in the United States in 2024, and which manufacturer had the largest market share?",
+    "sources": ["Insulin"],
+    "note": "deliberately not answerable from the source"
+  },
+  {
+    "id": "unanswerable-ozone-treaty",
+    "question": "Which countries refused to sign the Montreal Protocol and what penalties did they face?",
+    "sources": ["Ozone layer"],
+    "note": "deliberately not answerable from the source"
+  }
+]

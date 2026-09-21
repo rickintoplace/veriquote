@@ -18,9 +18,9 @@ The result is a transparent, per-citation report telling users exactly which
 statements are verbatim-backed and supported, which are overstated, and which
 are unsupported or confabulated.
 
-VeriQuote is extracted from and battle-tested in
-[NavigNine](https://navignine.com), a source-grounded research assistant,
-which serves as the reference deployment.
+**Try the matcher in your browser** — [`demo/index.html`](demo/index.html) is a
+single self-contained page: open the file, or host it anywhere. No API key, no
+server, no build step, nothing leaves the page.
 
 - **Zero runtime dependencies.** Runs in Node ≥ 18, browsers, and edge runtimes.
 - **Deterministic by construction.** The text matcher is pure; the judge runs
@@ -89,23 +89,125 @@ The two checks fail independently, and both failure modes occur in practice:
   doesn't support its claim (scope drift, outcome switching, overstatement).
   Text match passes; the entailment judge catches it.
 - A quote can be **paraphrased or fabricated**: the claim may even be true,
-  but the "quote" is not in the source. The entailment judge might pass; the
-  deterministic matcher catches it, with a percent score that distinguishes
-  light paraphrase (high fuzzy score) from fabrication (low score).
+  but the "quote" is not in the source. The entailment judge might wave it
+  through; the deterministic matcher rejects it outright.
 
 The combined per-citation score is conservative:
 `min(textMatchScore, judgeConfidence)`.
 
+**Read the text-match score correctly.** It measures *fidelity of copying*, not
+truth, and the two run in opposite directions. Change one digit in a real quote
+and it still scores 0.968; write an honest paraphrase of the same passage and it
+scores 0.306. A high score means the characters were copied faithfully — it says
+nothing about whether the sentence built on them is true. That is not a defect to
+be tuned away: it is why the entailment judge is not optional, and the numbers
+behind it are in [`bench/`](bench).
+
 ### What the prompt does not do
 
-The EVI1 prompt is a **transparency** mechanism, not a hallucination mitigation:
-it makes claims checkable, which is why the verification step is not optional.
+The EVI1 prompt is a **transparency** mechanism, not a hallucination mitigation.
+Asking a model for verbatim quotes does not measurably reduce how often it makes
+things up; it changes what happens afterwards, because now every claim carries
+something that can be mechanically checked. That is the whole design, and it is
+why the verification step is not optional: run the prompt without the verifier
+and you have added ceremony, not safety.
 
 Protocol compliance also varies by answering model and by the prompt you wrap
 around it. Some models print `[n]` markers but omit the evidence appendix
 entirely, which looks perfectly well-cited to anyone reading the answer. Check
-the completeness warnings from `parseAnswer()`, and verify that a new answering
-model actually emits the appendix in *your* prompt before relying on it.
+the completeness warnings from `parseAnswer()`, and measure a new answering
+model with [`bench/protocol`](bench) before relying on it.
+
+## Does it actually work?
+
+Three benchmarks, kept separate on purpose — a single blended number for a
+two-stage pipeline would hide the failure modes the pipeline exists to
+separate. Everything is in [`bench/`](bench), including how to reproduce it.
+
+**Matcher** (2,061 items, no API key, no labels — ground truth by
+construction; `npm run bench:matcher` reproduces it in ~2 s):
+
+| quote family | n | median score | accepted at 0.4 |
+| --- | ---: | ---: | ---: |
+| faithful but reformatted (whitespace, typography, OCR noise, elision, PDF hyphenation) | 1,121 | 1.000 | **100.0%** |
+| near-verbatim but meaning changed (number swapped, negated, hedge strengthened, spliced) | 586 | 0.932 | 100.0% |
+| absent from the source (real quote / wrong document, honest paraphrase) | 187 | 0.249 | **0.0%** |
+
+The middle row is the point, not an embarrassment: the matcher is *supposed* to
+be blind there. Quotes that were faithfully copied never score below 0.660;
+quotes that are not in the source never score above 0.396. The default
+threshold of 0.4 sits inside that gap, and the sweep in
+[`bench/results/matcher.json`](bench/results/matcher.json) shows the whole
+0.40–0.65 band gives 100% on both sides. Catching the middle row is the
+entailment judge's job, which is why it exists.
+
+**Judge** — agreement with the human annotators in
+[ALCE](https://github.com/princeton-nlp/ALCE) (Gao et al., EMNLP 2023, MIT),
+class mapping fixed before any model ran. 240-pair sample, `gpt-oss-120b` at
+temperature 0:
+
+| metric | result |
+| --- | --- |
+| binary "fully supports", agreement with annotators | **76.7%** (ALCE's own TRUE-NLI baseline: 77.6%) |
+| three-class accuracy / macro-F1 / Cohen's kappa | 64.2% / 0.551 / 0.394 |
+| false green — source supports nothing, judged fully supported | **25.0%** |
+
+So a general-purpose open-weight model at temperature 0 matches a specialised
+T5-11B NLI model on the binary question, and is much weaker on the three-way
+one (the `partial` class carries F1 0.306; kappa 0.394 is fair agreement, not
+good). **Read the false-green rate before trusting any of this.** One cited
+claim in four that annotators said the source does not support at all came back
+"fully supported". That is the strongest argument in this README for
+`min(textMatchScore, judgeConfidence)`: the judge is not reliable enough to be
+the only check, and the deterministic matcher is the floor that no judge error
+can raise. Pick your judge model by running this, not by reputation.
+
+**Protocol compliance** — does a model actually emit the appendix? Decided
+mechanically by `parseAnswer()` over 18 tasks, three of which the sources
+deliberately cannot answer:
+
+| model | appendix | complete | verbatim | warning-free |
+| --- | ---: | ---: | ---: | ---: |
+| openai-gpt-oss-120b | 100% | **30.8%** | 93.3% | 23.1% |
+| mistral-medium-3.5-128b | 100% | 92.3% | **66.5%** | 92.3% |
+| gemma-4-31b-it | 86.7% | 86.7% | 100% | 86.7% |
+| meta-llama-3.1-8b-instruct | 71.4% | 50.0% | 62.8% | 14.3% |
+
+Two different ways to fail, and neither is visible to a reader:
+`gpt-oss-120b` always prints an appendix, but only 30.8% of its answers give
+every citation an evidence line — the rest are footnotes with nothing behind
+them. `mistral-medium` is almost always complete, yet a third of the quotes it
+supplies are not literally in the source: it paraphrased into the quote slot.
+An answer with either defect looks impeccably cited.
+
+This is why compliance is a per-model measurement and not an assumption, and
+why `parseAnswer()` returns warnings you are meant to check. One encouraging
+result: all four models cited nothing on all three unanswerable questions.
+
+## How this differs from the alternatives
+
+| | verbatim quote checked | claim↔evidence checked | model-agnostic | runtime |
+| --- | --- | --- | --- | --- |
+| **VeriQuote** | yes, deterministic | yes, pluggable judge | yes | TS, zero deps, browser/edge |
+| [Anthropic Citations API](https://platform.claude.com/docs/en/build-with-claude/citations) | n/a — spans are extracted, so they are real by construction | no | Claude only | hosted |
+| [LettuceDetect](https://github.com/KRLabsOrg/LettuceDetect) | no — no quote protocol | yes, span-level model | yes | Python + model weights |
+| [RAGAS](https://github.com/explodinggradients/ragas) and eval frameworks | no | yes, as an offline metric | yes | Python, offline eval |
+
+**Use the Citations API instead** if you are on Claude and only need to know
+that a span is real: it guarantees that by construction, which is stronger than
+any matcher. It does not tell you whether the span supports the sentence built
+on it — for that, pair it with this library's judge and skip the matcher.
+
+**Use LettuceDetect instead** if you want unsupported spans flagged in an
+answer that has no citation protocol at all, and you are happy running a model
+in Python. It solves the post-hoc problem; VeriQuote changes what the answering
+model commits to in the first place.
+
+VeriQuote's own niche is narrow and worth stating plainly: you want the
+answering model pinned to a quote *before* it generates, you want the
+deterministic half of the check to run anywhere including a browser with no
+dependencies, and you want per-claim numbers to put in front of a reader rather
+than an aggregate score for a dashboard.
 
 ## Installation
 
@@ -132,7 +234,7 @@ import { ChatCompletionsJudge, verifyAnswer } from 'veriquote';
 const judge = new ChatCompletionsJudge({
   baseUrl: 'https://openrouter.ai/api/v1',   // any OpenAI-compatible endpoint
   apiKey: process.env.OPENROUTER_API_KEY,    // server-side only!
-  model: 'google/gemini-2.5-flash-lite',
+  model: 'your-judge-model',                 // pick one with bench/judge
 });
 
 const report = await verifyAnswer({
@@ -160,8 +262,10 @@ render (the `[n]` markers remain as human-readable citations).
 ### 3. Show it to the user
 
 Render each citation's `textMatch.score` (percent), `entailment.class`, and
-combined `score` next to the footnote — e.g. green/yellow/red per claim. This
-is exactly what the NavigNine UI does with tooltips and colored footnotes.
+combined `score` next to the footnote — e.g. colour each footnote by its worst
+score and put both check results in the tooltip. The whole point is that the
+reader can see which sentence is load-bearing and which is not, without
+opening a single source.
 
 ## API overview
 
@@ -214,16 +318,27 @@ reproducible: the matcher is pure, and the judge runs at temperature 0 (pass
 best-effort deterministic; for strict reproducibility, pin the model version
 or use a self-hosted judge behind the `EntailmentJudge` interface.
 
-## Integrations
+## Use from an agent
 
-- **[`verify-citations`](https://github.com/rickintoplace/veriquote/tree/main/integrations/verify-citations)**: a portable
-  [Agent Skill](https://github.com/rickintoplace/veriquote/blob/main/integrations/verify-citations/SKILL.md) (single `SKILL.md` +
-  bundled Node CLI) that runs VeriQuote as an **internal hallucination gate**
-  for source-grounded agents: it verifies a cited answer, flags factual
-  sentences that carry no citation, and returns a ready-to-use correction
-  prompt for a self-correction loop. The same skill works across any
-  Agent-Skills host (OpenClaw, Hermes Agent, Claude Code) and any orchestrator
-  that can run a Node CLI.
+An agent that reads sources and writes conclusions is exactly the case this was
+built for: the claims are checkable, so they should be checked before the agent
+hands them over — not after a human notices.
+
+**[`verify-citations`](integrations/verify-citations)** packages the whole
+pipeline as a portable [Agent Skill](integrations/verify-citations/SKILL.md)
+(one `SKILL.md` plus a bundled Node CLI). The agent runs it as an internal gate
+on its own draft: the skill verifies every cited claim, flags factual sentences
+carrying no citation at all, and returns a ready-to-use correction prompt, with
+an exit code the orchestrator can branch on.
+
+```
+exit 0  verdict "pass"    every cited claim is grounded  -> present the answer
+exit 2  verdict "revise"  problems[] + instructionsForModel -> self-correct and retry
+exit 1  bad input or internal error -> do NOT claim the answer was verified
+```
+
+It works in any Agent-Skills host (Claude Code, OpenClaw, Hermes Agent) and in
+any orchestrator that can run a Node CLI.
 
 ## Citing
 

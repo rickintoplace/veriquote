@@ -1,0 +1,102 @@
+[
+  {
+    "source": "Vitamin D",
+    "original": "Unlike the other twelve vitamins, vitamin D is only conditionally essential in the diet",
+    "paraphrase": "Of all thirteen vitamins, this is the only one the body does not strictly have to obtain from food under every circumstance."
+  },
+  {
+    "source": "Vitamin D",
+    "original": "For most people, skin synthesis contributes more than dietary sources.",
+    "paraphrase": "In the typical person, what the skin manufactures outweighs what is eaten as a contribution to overall supply."
+  },
+  {
+    "source": "Vitamin D",
+    "original": "In the United States, milk and plant-based milk substitutes are fortified with vitamin D3, as are many breakfast cereals.",
+    "paraphrase": "American dairy products, their plant-derived alternatives and a good number of morning cereals all have the nutrient added to them during manufacture."
+  },
+  {
+    "source": "Vitamin D",
+    "original": "technically vitamin D is not a vitamin, but rather a fat-soluble secosteroid hormone",
+    "paraphrase": "Strictly speaking the substance belongs to the hormone family rather than the vitamin family, being a secosteroid that dissolves in fat."
+  },
+  {
+    "source": "Insulin",
+    "original": "Beta cells are sensitive to blood sugar levels so that they secrete insulin into the blood in response to high level of glucose, and inhibit secretion of insulin when glucose levels are low.",
+    "paraphrase": "These particular pancreatic cells track how much sugar is circulating and release the hormone when that figure climbs, holding back when it falls."
+  },
+  {
+    "source": "Insulin",
+    "original": "Glucose production and secretion by the liver are strongly inhibited by high concentrations of insulin in the blood.",
+    "paraphrase": "When a lot of the hormone is circulating, the liver sharply curtails how much sugar it makes and releases."
+  },
+  {
+    "source": "Insulin",
+    "original": "It is thus an anabolic hormone, promoting the conversion of small molecules in the blood into large molecules in the cells.",
+    "paraphrase": "Its role is therefore a building one: it drives the assembly of larger cellular molecules out of smaller circulating ones."
+  },
+  {
+    "source": "Insulin",
+    "original": "Low insulin in the blood has the opposite effect, promoting widespread catabolism, especially of reserve body fat.",
+    "paraphrase": "Scarcity of the hormone reverses the picture and encourages tissue breakdown throughout the body, with stored fat affected most."
+  },
+  {
+    "source": "Ozone layer",
+    "original": "The ozone layer was discovered in 1913 by French physicists Charles Fabry and Henri Buisson.",
+    "paraphrase": "Two physicists from France identified this atmospheric region shortly before the First World War."
+  },
+  {
+    "source": "Ozone layer",
+    "original": "The ozone layer is mainly found in the lower portion of the stratosphere, from approximately 15 to 35 kilometers (9 to 22 mi) above Earth",
+    "paraphrase": "Most of it sits in the stratosphere's bottom reaches, roughly nine to twenty-two miles up."
+  },
+  {
+    "source": "Ozone layer",
+    "original": "Between 1928 and 1958, Dobson established a worldwide network of ozone monitoring stations",
+    "paraphrase": "Over three decades in the mid-twentieth century the British meteorologist built up a global set of measuring stations for the gas."
+  },
+  {
+    "source": "Ozone layer",
+    "original": "It was deduced that the missing radiation was being absorbed by something in the atmosphere.",
+    "paraphrase": "Researchers inferred that some atmospheric constituent must be soaking up the radiation that failed to arrive."
+  },
+  {
+    "source": "Photosynthesis",
+    "original": "Photosynthesis plays a critical role in producing and maintaining the oxygen content of the Earth's atmosphere",
+    "paraphrase": "The process is central both to generating the planet's atmospheric oxygen and to keeping that level steady."
+  },
+  {
+    "source": "Photosynthesis",
+    "original": "Some organisms also perform anoxygenic photosynthesis, which does not produce oxygen.",
+    "paraphrase": "There are also life forms running a version of the process that yields no oxygen at all."
+  },
+  {
+    "source": "Photosynthesis",
+    "original": "Some bacteria (e.g. purple bacteria) use bacteriochlorophyll to split hydrogen sulfide as a reductant instead of water, releasing sulfur instead of oxygen",
+    "paraphrase": "Certain microbes substitute a sulfur-bearing gas for water as their electron donor, so what they give off is sulfur rather than oxygen."
+  },
+  {
+    "source": "Antimicrobial resistance",
+    "original": "Misuse and improper management of antimicrobials are primary drivers of this resistance, though it can also occur naturally through genetic mutations",
+    "paraphrase": "Careless and incorrect handling of these drugs is the leading cause, although the phenomenon also arises spontaneously through changes in the genome."
+  },
+  {
+    "source": "Antimicrobial resistance",
+    "original": "Microbes resistant to multiple drugs are termed multidrug-resistant (MDR) and are sometimes called superbugs.",
+    "paraphrase": "Organisms that shrug off several medicines at once go by a technical label and a popular nickname alike."
+  },
+  {
+    "source": "Antimicrobial resistance",
+    "original": "estimating that bacterial AMR was directly responsible for 1.27 million global deaths in 2019",
+    "paraphrase": "The agency puts the worldwide toll attributable to resistant bacteria at well over a million lives in the year before the pandemic."
+  },
+  {
+    "source": "Antimicrobial resistance",
+    "original": "Preventive measures, such as using narrow-spectrum antibiotics and improving hygiene practices, aim to reduce the spread of resistance.",
+    "paraphrase": "Narrowing the range of drugs prescribed and raising cleanliness standards are among the steps intended to slow how far the problem travels."
+  },
+  {
+    "source": "Antimicrobial resistance",
+    "original": "Resistance arises through spontaneous mutation, horizontal gene transfer, and increased selective pressure from antibiotic overuse",
+    "paraphrase": "It emerges from random genomic change, from genes passed sideways between organisms, and from the evolutionary squeeze that excessive prescribing applies."
+  }
+]
