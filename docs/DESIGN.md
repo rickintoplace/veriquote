@@ -108,9 +108,9 @@ Per citation: `score = min(textMatchScore, judgeConfidence)`. A claim is only
 as trustworthy as its weakest check. Judge errors yield `score = null`
 (unknown ≠ supported). Per answer, the report aggregates: citation count,
 verbatim rate, entailed rate, mean and minimum combined score, plus all
-protocol warnings. UIs are expected to surface the per-citation results (e.g.
-NavigNine colors each footnote by its worst score and shows both checks with
-percentages in the citation tooltip).
+protocol warnings. UIs are expected to surface the per-citation results:
+colour each footnote by its worst score and show both checks, with
+percentages, in the citation tooltip.
 
 ## 6. Threat model and limitations
 
@@ -129,8 +129,49 @@ percentages in the citation tooltip).
   for a misleading claim in context. VeriQuote verifies claim<->quote<->source
   consistency, not overall answer balance.
 
-## 7. Reference deployment
+## 7. Empirical validation
 
-NavigNine (https://navignine.com) runs this pipeline in production: the
-matcher in the browser, the judge behind a serverless endpoint, with per-claim
-colored footnotes and tooltips exposing both check results to end users.
+The method claims above are measured, not asserted; `bench/` holds the
+harnesses and `bench/README.md` the protocol.
+
+**Matcher** (2,061 items, ground truth by construction, no labels or API
+needed). Quotes that are faithful but reformatted -- whitespace damage,
+typography, OCR-style noise, scholarly elision, PDF hyphenation -- are accepted
+at 100% (n=1,121, median score 1.000). Quotes absent from the source -- a real
+quote attributed to the wrong document, or an honest paraphrase offered in
+place of a quote -- are rejected at 100% (n=187, median 0.249). The two
+distributions do not overlap: no faithful quote scores below 0.660 and no
+absent quote above 0.396. The default `fuzzyThreshold` of 0.4 sits in that gap,
+and the whole band from 0.40 to 0.65 yields 100% on both sides.
+
+Quotes that are near-verbatim but semantically altered (a figure swapped, a
+negation inserted, a hedge strengthened, two fragments spliced) are accepted at
+100%, median score 0.932. This is the designed blind spot quantified: character
+trigrams cannot see which character carried the meaning. It bounds what
+Section 3 can contribute and is the empirical case for Section 4 not being
+optional. A worked example: swapping one digit in a real quote costs 0.032 of
+score, while paraphrasing the same sentence honestly costs 0.694 -- fidelity of
+copying and truth of the claim run in opposite directions, and only the first
+is what the matcher measures.
+
+**Judge**. Agreement with human annotators is measured against the ALCE human
+evaluation set (Gao et al., EMNLP 2023; MIT): 2,896 (sentence, cited document)
+pairs rated *fully supports* / *partially supports* / *does not support*. The
+mapping from the five classes of Section 4 onto those three levels is fixed
+before any model is run. Reported as three-class accuracy, macro-F1 and Cohen's
+kappa, plus the binary "fully supports" precision and recall that ALCE itself
+publishes, keeping the figures comparable to its TRUE-NLI baseline. One rate is
+called out separately -- how often the judge calls a claim fully supported when
+annotators found no support at all -- because a wrong citation displayed in
+green is worse than one flagged for review. Note that ALCE pairs a sentence
+with a whole passage rather than a model-selected quote, so this measures the
+judge in isolation, under a harder condition than deployment.
+
+**Protocol compliance**. Whether a given answering model emits a parseable
+appendix at all is decided mechanically by `parseAnswer()` over 18 tasks, three
+of which the sources deliberately cannot answer. Compliance varies enough
+between models that it must be measured per model before deployment, not
+assumed. Separately, prompting for verbatim quotes is not itself a
+hallucination mitigation: it does not measurably reduce how often a model
+fabricates, it makes the fabrication checkable. The verification step is
+therefore not optional.

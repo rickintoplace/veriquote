@@ -1,0 +1,302 @@
+{
+  "generatedBy": "bench/matcher/run.mjs",
+  "seed": 20260921,
+  "threshold": 0.4,
+  "corpus": [
+    {
+      "title": "Antimicrobial resistance",
+      "revid": 1374703868
+    },
+    {
+      "title": "Insulin",
+      "revid": 1373900133
+    },
+    {
+      "title": "Ozone layer",
+      "revid": 1371936690
+    },
+    {
+      "title": "Photosynthesis",
+      "revid": 1371284103
+    },
+    {
+      "title": "Vitamin D",
+      "revid": 1375852830
+    }
+  ],
+  "itemCount": 2061,
+  "operators": [
+    {
+      "operator": "identity",
+      "family": "faithful",
+      "n": 167,
+      "medianScore": 1,
+      "minScore": 0.97,
+      "maxScore": 1,
+      "acceptedRate": 1,
+      "realism": "natural",
+      "note": "untouched passage"
+    },
+    {
+      "operator": "whitespace",
+      "family": "faithful",
+      "n": 167,
+      "medianScore": 1,
+      "minScore": 0.97,
+      "maxScore": 1,
+      "acceptedRate": 1,
+      "realism": "natural",
+      "note": "line breaks, double spaces"
+    },
+    {
+      "operator": "typography",
+      "family": "faithful",
+      "n": 167,
+      "medianScore": 1,
+      "minScore": 0.97,
+      "maxScore": 1,
+      "acceptedRate": 1,
+      "realism": "natural",
+      "note": "smart quotes, dashes, NBSP"
+    },
+    {
+      "operator": "case",
+      "family": "faithful",
+      "n": 167,
+      "medianScore": 1,
+      "minScore": 0.97,
+      "maxScore": 1,
+      "acceptedRate": 1,
+      "realism": "natural",
+      "note": "lowercased"
+    },
+    {
+      "operator": "ocr_noise",
+      "family": "faithful",
+      "n": 167,
+      "medianScore": 0.957,
+      "minScore": 0.854,
+      "maxScore": 0.983,
+      "acceptedRate": 1,
+      "realism": "natural",
+      "note": "extraction typos (~1 per 60 chars)"
+    },
+    {
+      "operator": "elision",
+      "family": "faithful",
+      "n": 119,
+      "medianScore": 0.701,
+      "minScore": 0.66,
+      "maxScore": 0.853,
+      "acceptedRate": 1,
+      "realism": "natural",
+      "note": "middle replaced by an ellipsis"
+    },
+    {
+      "operator": "hyphenation",
+      "family": "faithful",
+      "n": 167,
+      "medianScore": 0.944,
+      "minScore": 0.851,
+      "maxScore": 1,
+      "acceptedRate": 1,
+      "realism": "natural",
+      "note": "PDF column hyphen + newline"
+    },
+    {
+      "operator": "number_swap",
+      "family": "manipulated",
+      "n": 52,
+      "medianScore": 0.979,
+      "minScore": 0.855,
+      "maxScore": 0.987,
+      "acceptedRate": 1,
+      "realism": "natural",
+      "note": "a figure was changed"
+    },
+    {
+      "operator": "negation",
+      "family": "manipulated",
+      "n": 166,
+      "medianScore": 0.961,
+      "minScore": 0.793,
+      "maxScore": 0.979,
+      "acceptedRate": 1,
+      "realism": "natural",
+      "note": "negation inserted or removed"
+    },
+    {
+      "operator": "quantifier_upgrade",
+      "family": "manipulated",
+      "n": 39,
+      "medianScore": 0.942,
+      "minScore": 0.832,
+      "maxScore": 0.97,
+      "acceptedRate": 1,
+      "realism": "natural",
+      "note": "hedge strengthened"
+    },
+    {
+      "operator": "entity_swap",
+      "family": "manipulated",
+      "n": 167,
+      "medianScore": 0.927,
+      "minScore": 0.749,
+      "maxScore": 0.971,
+      "acceptedRate": 1,
+      "realism": "natural",
+      "note": "content word replaced"
+    },
+    {
+      "operator": "splice",
+      "family": "manipulated",
+      "n": 162,
+      "medianScore": 0.683,
+      "minScore": 0.529,
+      "maxScore": 0.984,
+      "acceptedRate": 1,
+      "realism": "natural",
+      "note": "two distant fragments joined"
+    },
+    {
+      "operator": "wrong_source",
+      "family": "absent",
+      "n": 167,
+      "medianScore": 0.241,
+      "minScore": 0.143,
+      "maxScore": 0.361,
+      "acceptedRate": 0,
+      "realism": "natural",
+      "note": "real quote, wrong document"
+    },
+    {
+      "operator": "scramble",
+      "family": "absent",
+      "n": 167,
+      "medianScore": 0.871,
+      "minScore": 0.763,
+      "maxScore": 0.936,
+      "acceptedRate": 1,
+      "realism": "adversarial",
+      "note": "source's vocabulary, invented prose"
+    },
+    {
+      "operator": "paraphrase",
+      "family": "absent",
+      "n": 20,
+      "medianScore": 0.306,
+      "minScore": 0.251,
+      "maxScore": 0.396,
+      "acceptedRate": 0,
+      "realism": "natural",
+      "note": "same meaning, different words (hand-written)"
+    }
+  ],
+  "families": [
+    {
+      "family": "faithful",
+      "realism": "natural",
+      "n": 1121,
+      "medianScore": 1,
+      "acceptedRate": 1
+    },
+    {
+      "family": "manipulated",
+      "realism": "natural",
+      "n": 586,
+      "medianScore": 0.932,
+      "acceptedRate": 1
+    },
+    {
+      "family": "absent",
+      "realism": "natural",
+      "n": 187,
+      "medianScore": 0.249,
+      "acceptedRate": 0
+    },
+    {
+      "family": "absent",
+      "realism": "adversarial",
+      "n": 167,
+      "medianScore": 0.871,
+      "acceptedRate": 1
+    }
+  ],
+  "separation": {
+    "lowestFaithfulScore": 0.66,
+    "highestAbsentScore": 0.396,
+    "gap": 0.264
+  },
+  "thresholdSweep": [
+    {
+      "threshold": 0.2,
+      "faithfulKept": 1,
+      "absentRejected": 0.11229946524064172
+    },
+    {
+      "threshold": 0.25,
+      "faithfulKept": 1,
+      "absentRejected": 0.5026737967914439
+    },
+    {
+      "threshold": 0.3,
+      "faithfulKept": 1,
+      "absentRejected": 0.8502673796791443
+    },
+    {
+      "threshold": 0.35,
+      "faithfulKept": 1,
+      "absentRejected": 0.9679144385026738
+    },
+    {
+      "threshold": 0.4,
+      "faithfulKept": 1,
+      "absentRejected": 1
+    },
+    {
+      "threshold": 0.45,
+      "faithfulKept": 1,
+      "absentRejected": 1
+    },
+    {
+      "threshold": 0.5,
+      "faithfulKept": 1,
+      "absentRejected": 1
+    },
+    {
+      "threshold": 0.55,
+      "faithfulKept": 1,
+      "absentRejected": 1
+    },
+    {
+      "threshold": 0.6,
+      "faithfulKept": 1,
+      "absentRejected": 1
+    },
+    {
+      "threshold": 0.65,
+      "faithfulKept": 1,
+      "absentRejected": 1
+    },
+    {
+      "threshold": 0.7,
+      "faithfulKept": 0.9509366636931311,
+      "absentRejected": 1
+    },
+    {
+      "threshold": 0.75,
+      "faithfulKept": 0.9107939339875112,
+      "absentRejected": 1
+    },
+    {
+      "threshold": 0.8,
+      "faithfulKept": 0.8974130240856378,
+      "absentRejected": 1
+    },
+    {
+      "threshold": 0.85,
+      "faithfulKept": 0.8947368421052632,
+      "absentRejected": 1
+    }
+  ]
+}

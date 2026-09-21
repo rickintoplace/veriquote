@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VeriQuote Matcher</title>
+<meta name="description" content="Check whether a quote is really in a source. Runs entirely in your browser, no API key.">
+<style>
+  :root {
+    --bg: #fbfbfa; --panel: #ffffff; --ink: #1c1c1a; --muted: #6b6b64;
+    --line: #e4e3de; --accent: #2f5d50; --ok: #2f7a55; --warn: #9a6a12; --bad: #a33a2c;
+    --mark: #d9ead5; --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #16171a; --panel: #1e2024; --ink: #e8e8e4; --muted: #9a9a92;
+      --line: #2e3036; --accent: #7fc0aa; --ok: #6fbd90; --warn: #d6a94a; --bad: #e0705e;
+      --mark: #2b4a3c;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #16171a; --panel: #1e2024; --ink: #e8e8e4; --muted: #9a9a92;
+    --line: #2e3036; --accent: #7fc0aa; --ok: #6fbd90; --warn: #d6a94a; --bad: #e0705e;
+    --mark: #2b4a3c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 40px 16px 72px; }
+  header h1 { font-size: 1.6rem; margin: 0 0 .3em; letter-spacing: -.01em; }
+  header p { color: var(--muted); margin: 0 0 1.6em; max-width: 60ch; }
+  header code { font-family: var(--mono); font-size: .85em; }
+  .panel {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 10px; padding: 18px; margin-bottom: 18px;
+  }
+  label { display: block; font-size: .78rem; text-transform: uppercase;
+          letter-spacing: .06em; color: var(--muted); margin-bottom: .5em; }
+  textarea, input {
+    width: 100%; background: transparent; color: var(--ink);
+    border: 1px solid var(--line); border-radius: 7px; padding: 10px 12px;
+    font-family: var(--mono); font-size: .86rem; line-height: 1.5; resize: vertical;
+  }
+  textarea:focus, input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  #source { min-height: 190px; }
+  #quote { min-height: 74px; }
+  .examples { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
+  .examples button {
+    font: inherit; font-size: .82rem; cursor: pointer; padding: 5px 11px;
+    border: 1px solid var(--line); border-radius: 999px;
+    background: var(--panel); color: var(--ink);
+  }
+  .examples button:hover { border-color: var(--accent); color: var(--accent); }
+  .examples button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  .verdict { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 18px; margin-bottom: .8em; }
+  .score { font-family: var(--mono); font-size: 2.1rem; font-weight: 600; line-height: 1; }
+  .method { font-family: var(--mono); font-size: .8rem; padding: 3px 9px;
+            border: 1px solid currentColor; border-radius: 999px; }
+  .ok { color: var(--ok); } .warn { color: var(--warn); } .bad { color: var(--bad); }
+  .reading { color: var(--muted); font-size: .92rem; margin: 0; max-width: 62ch; }
+  .reading strong { color: var(--ink); font-weight: 600; }
+  .excerpt {
+    margin-top: 14px; padding: 12px; border-radius: 7px; border: 1px solid var(--line);
+    font-family: var(--mono); font-size: .82rem; white-space: pre-wrap; word-break: break-word;
+    max-height: 190px; overflow: auto;
+  }
+  .excerpt mark { background: var(--mark); color: inherit; border-radius: 2px; padding: 1px 0; }
+  .note { color: var(--muted); font-size: .86rem; }
+  footer { margin-top: 34px; padding-top: 18px; border-top: 1px solid var(--line);
+           color: var(--muted); font-size: .86rem; }
+  a { color: var(--accent); }
+  @media (max-width: 560px) { .score { font-size: 1.7rem; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Is this quote really in the source?</h1>
+  <p>
+    VeriQuote's deterministic matcher, running entirely in this page &mdash; no server, no API key,
+    no network after load. Pick an example or paste your own. This is check&nbsp;1 of&nbsp;2;
+    the entailment judge that decides whether a quote <em>supports</em> a claim needs a model and
+    runs server-side.
+  </p>
+</header>
+
+<div class="examples" id="examples"></div>
+
+<div class="panel">
+  <label for="source">Source text</label>
+  <textarea id="source" spellcheck="false"></textarea>
+</div>
+
+<div class="panel">
+  <label for="quote">Quote the model claims to have taken from it</label>
+  <textarea id="quote" spellcheck="false"></textarea>
+</div>
+
+<div class="panel" id="result" aria-live="polite">
+  <div class="verdict">
+    <span class="score" id="score">&mdash;</span>
+    <span class="method" id="method">waiting</span>
+  </div>
+  <p class="reading" id="reading">Enter a source and a quote.</p>
+  <div class="excerpt" id="excerpt" hidden></div>
+</div>
+
+<footer>
+  <p>
+    The matcher is pure and dependency-free: normalization with an offset map, then a sliding
+    character-trigram window. Same inputs, same score, every time.
+    <a href="https://github.com/rickintoplace/veriquote">Source and benchmarks on GitHub</a>.
+  </p>
+</footer>
+
+</div>
+
+<script type="module">
+import { matchQuoteAgainstSource } from 'https://esm.sh/veriquote@0.1.1';
+
+const SOURCE = `In this randomised controlled trial of 2,300 adults aged 65 and over, daily vitamin D supplementation reduced the rate of falls by 19% over a 24-month follow-up period, and the effect was most pronounced among participants with baseline deficiency. No significant effect on fracture incidence was observed. Adherence exceeded 90% in both arms, and serious adverse events were evenly distributed between the supplementation and placebo groups.`;
+
+const OTHER_SOURCE = `Stratospheric ozone concentrations have recovered measurably since the Montreal Protocol entered into force, although the Antarctic ozone hole is not expected to close fully before the second half of this century.`;
+
+const EXAMPLES = [
+  {
+    label: 'Verbatim',
+    quote: 'daily vitamin D supplementation reduced the rate of falls by 19% over a 24-month follow-up period',
+    reading: 'A literal hit. The quote is character-for-character in the source, so the matcher can point at the exact offsets.',
+  },
+  {
+    label: 'Messy extraction',
+    quote: 'daily vitamin  D supplementation reduced the rate of falls by 19%\nover a 24-month follow-up period',
+    reading: 'Broken whitespace from a PDF or HTML extractor. Normalization absorbs it, and the offsets still point into the raw source.',
+  },
+  {
+    label: 'Number changed',
+    quote: 'daily vitamin D supplementation reduced the rate of falls by 79% over a 24-month follow-up period',
+    reading: 'One digit was altered &mdash; and the score barely moves. Character trigrams cannot see which character mattered. This is the clearest reason the entailment judge is not optional: it gets the surrounding source text and is asked whether the quote actually says this.',
+  },
+  {
+    label: 'Negated',
+    quote: 'daily vitamin D supplementation did not reduce the rate of falls over a 24-month follow-up period',
+    reading: 'The meaning is inverted, the characters are nearly identical. Same lesson: a high text-match score means <em>faithfully copied</em>, never <em>true</em>.',
+  },
+  {
+    label: 'Honest paraphrase',
+    quote: 'vitamin D given daily lowered how often older participants fell, by roughly a fifth, across two years',
+    reading: 'Accurate, but not a quote. The protocol demands verbatim text precisely so that this case is visible rather than invisible &mdash; the model should have quoted instead of paraphrasing.',
+  },
+  {
+    label: 'Wrong source',
+    source: OTHER_SOURCE,
+    quote: 'daily vitamin D supplementation reduced the rate of falls by 19% over a 24-month follow-up period',
+    reading: 'A real quote attributed to the wrong document &mdash; the most common attribution failure in multi-source answers. The matcher rejects it outright.',
+  },
+  {
+    label: 'Fabricated',
+    quote: 'the authors concluded that magnesium infusions eliminated hospital readmissions across all study arms',
+    reading: 'Plausible-sounding, entirely invented. Nothing close to it exists in the source.',
+  },
+];
+
+const $ = (id) => document.getElementById(id);
+const sourceEl = $('source'), quoteEl = $('quote');
+let activeReading = null;
+
+const bar = $('examples');
+EXAMPLES.forEach((ex, i) => {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.textContent = ex.label;
+  b.setAttribute('aria-pressed', 'false');
+  b.addEventListener('click', () => {
+    sourceEl.value = ex.source ?? SOURCE;
+    quoteEl.value = ex.quote;
+    activeReading = ex.reading;
+    for (const other of bar.children) other.setAttribute('aria-pressed', String(other === b));
+    run();
+  });
+  bar.appendChild(b);
+  if (i === 0) queueMicrotask(() => b.click());
+});
+
+for (const el of [sourceEl, quoteEl]) {
+  el.addEventListener('input', () => {
+    activeReading = null;
+    for (const b of bar.children) b.setAttribute('aria-pressed', 'false');
+    run();
+  });
+}
+
+const escapeHtml = (s) =>
+  s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
+
+function run() {
+  const source = sourceEl.value;
+  const quote = quoteEl.value.trim();
+  const scoreEl = $('score'), methodEl = $('method'), readingEl = $('reading'), excerptEl = $('excerpt');
+
+  if (!source.trim() || !quote) {
+    scoreEl.textContent = '—';
+    scoreEl.className = 'score';
+    methodEl.textContent = 'waiting';
+    methodEl.className = 'method';
+    readingEl.textContent = 'Enter a source and a quote.';
+    excerptEl.hidden = true;
+    return;
+  }
+
+  const m = matchQuoteAgainstSource(quote, { title: 'demo', text: source });
+  const tone = m.method === 'not_found' ? 'bad' : m.score >= 0.9 ? 'ok' : 'warn';
+
+  scoreEl.textContent = `${(m.score * 100).toFixed(1)}%`;
+  scoreEl.className = `score ${tone}`;
+  methodEl.textContent = m.method;
+  methodEl.className = `method ${tone}`;
+
+  readingEl.innerHTML =
+    activeReading ??
+    (m.method === 'not_found'
+      ? 'Below the acceptance threshold: this text is not in the source. The citation should be dropped.'
+      : 'Found in the source. That means the characters were copied faithfully &mdash; not that the claim built on them is true.');
+
+  if (m.method !== 'not_found' && typeof m.start === 'number' && typeof m.end === 'number') {
+    const pad = 160;
+    const from = Math.max(0, m.start - pad), to = Math.min(source.length, m.end + pad);
+    excerptEl.innerHTML =
+      (from > 0 ? '…' : '') +
+      escapeHtml(source.slice(from, m.start)) +
+      `<mark>${escapeHtml(source.slice(m.start, m.end))}</mark>` +
+      escapeHtml(source.slice(m.end, to)) +
+      (to < source.length ? '…' : '');
+    excerptEl.hidden = false;
+  } else {
+    excerptEl.hidden = true;
+  }
+}
+</script>
+</body>
+</html>

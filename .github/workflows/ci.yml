@@ -22,3 +22,23 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: node examples/basic.mjs
+
+  bench:
+    # The matcher benchmark is deterministic and needs no API key, so it runs
+    # on every commit: a regression that makes the matcher accept fabricated
+    # quotes should fail CI, not surface in a release.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: node bench/matcher/run.mjs --json /tmp/matcher.json
+      - run: node bench/matcher/assert.mjs /tmp/matcher.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: matcher-benchmark
+          path: /tmp/matcher.json

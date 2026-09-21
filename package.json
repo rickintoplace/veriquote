@@ -49,7 +49,12 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run typecheck && npm run test && npm run build"
+    "prepublishOnly": "npm run typecheck && npm run test && npm run build",
+    "bench:matcher": "npm run build && node bench/matcher/run.mjs --json bench/results/matcher.json",
+    "bench:probe": "npm run build && node --env-file=.env bench/probe.mjs",
+    "bench:protocol": "npm run build && node --env-file=.env bench/protocol/run.mjs --json bench/results/protocol.json",
+    "bench:judge:prepare": "node bench/judge/prepare-alce.mjs",
+    "bench:judge": "npm run build && node --env-file=.env bench/judge/run.mjs"
   },
   "devDependencies": {
     "typescript": "^5.5.0",
