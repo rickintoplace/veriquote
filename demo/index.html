@@ -63,8 +63,30 @@
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--ground); color: var(--ink); font: 16px/1.55 var(--sans); }
   .page { max-width: 1080px; margin: 0 auto; padding: 40px 16px 72px; }
-  h1 { font-size: 1.75rem; font-weight: 600; letter-spacing: -.015em; margin: 0 0 .3em; text-wrap: balance; }
-  .lede { color: var(--muted); max-width: 62ch; margin: 0 0 32px; }
+  h1 { font-size: 1.9rem; font-weight: 600; letter-spacing: -.015em; line-height: 1.2; margin: 0 0 .5em; text-wrap: balance; }
+  .eyebrow { font: 500 .78rem/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; }
+  .lede { color: var(--ink); max-width: 64ch; margin: 0 0 12px; font-size: 1.06rem; }
+  .lede + .lede { color: var(--muted); font-size: 1rem; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 56px; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 8px; font-size: .92rem;
+         font-weight: 500; text-decoration: none; border: 1px solid var(--line); color: var(--ink); background: var(--surface); }
+  .btn:hover { border-color: var(--muted); }
+  .btn.primary { background: var(--ink); color: var(--ground); border-color: var(--ink); }
+  .btn.primary:hover { opacity: .88; }
+  .btn code { font: .84rem var(--mono); }
+  .section-title { font-size: 1.35rem; font-weight: 600; letter-spacing: -.01em; margin: 0 0 .3em; }
+  .section-note { color: var(--muted); max-width: 66ch; margin: 0 0 22px; }
+  a.cite { font-size: .72em; vertical-align: super; line-height: 0; margin-left: 1px; color: var(--muted);
+           text-decoration: underline dotted; text-underline-offset: 2px; }
+  a.cite:hover { color: var(--ink); }
+  .sources { margin-top: 56px; padding-top: 22px; border-top: 1px solid var(--line); }
+  .sources summary { cursor: pointer; font: 500 .72rem/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .sources summary:hover { color: var(--ink); }
+  .sources ol { list-style: none; margin: 20px 0 0; padding: 0; display: grid; gap: 14px; font-size: .86rem; color: var(--muted); }
+  .sources li { display: grid; grid-template-columns: 2.2rem 1fr; gap: 6px; scroll-margin-top: 80px; }
+  .sources li > span:first-child { font: .8rem var(--mono); color: var(--muted); }
+  .sources a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; word-break: break-all; }
+  .sources a.back { color: var(--muted); text-decoration: none; word-break: normal; }
   button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
   :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
   .id { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
@@ -260,11 +282,31 @@
   <span class="knob"><svg class="ic" data-icon="sun"></svg><svg class="ic" data-icon="moon"></svg></span>
 </button>
 
-<h1>Is the quote real, and does it say that?</h1>
-<p class="lede">
-  The model attaches a verbatim quote to every cited claim. Two checks then look at different pairs:
-  first the matcher compares the quote with the source, then the judge compares the quote with the claim.
-  A citation passes only if neither blocks it.
+<header>
+  <p class="eyebrow">VeriQuote · open-source library and CLI</p>
+  <h1>Is the quote real, and does it say that?</h1>
+  <p class="lede">
+    Language models put citations like [1] behind their claims, and almost nobody checks them. In a recent
+    study, a frontier model quoted its source word for word for 98% of its claims but fully supported only
+    37% of them.<a class="cite" data-cite="zhang"></a>
+  </p>
+  <p class="lede">
+    VeriQuote makes the model attach a verbatim quote to every citation and checks each quote twice. A
+    deterministic matcher looks for the quote in the source. An LLM judge reads the quote next to the claim
+    and decides whether it supports it. A citation passes only if both let it through.
+  </p>
+  <div class="actions">
+    <a class="btn primary" href="https://github.com/rickintoplace/veriquote"><svg class="ic" data-icon="github"></svg>Code and benchmarks on GitHub</a>
+    <a class="btn" href="https://www.npmjs.com/package/veriquote"><svg class="ic" data-icon="package"></svg><code>npm install veriquote</code></a>
+    <a class="btn" href="https://doi.org/10.5281/zenodo.21552379"><svg class="ic" data-icon="quote"></svg>Cite (DOI)</a>
+  </div>
+</header>
+
+<h2 class="section-title">Eight examples</h2>
+<p class="section-note">
+  Pick an example. The matcher only compares the quote with the source, the judge only compares the quote
+  with the claim, and each misses what the other catches. The source texts were written for this demo;
+  the trial they describe is fictional.
 </p>
 
 <div class="matrix-wrap">
@@ -329,14 +371,15 @@
 <section class="numbers" id="numbers">
   <h2>Measured, not claimed</h2>
   <p>
-    The examples above are hand-picked. These are the benchmark results behind them: thousands of
-    generated quotes for the matcher, human-labelled citations for the judge, and eight answering
-    models following the citation protocol. Hover a mark for its numbers.
+    The examples above are hand-picked. The results below are not: thousands of generated quotes for the
+    matcher, citations labelled by human annotators for the judge,<a class="cite" data-cite="alce"></a> and
+    eight answering models following the citation instructions. All of it can be rerun from the
+    repository.<a class="cite" data-cite="veriquote"></a> Hover over a mark to see its numbers.
   </p>
 
   <figure>
     <h3>Each check catches what the other cannot see</h3>
-    <p class="sub">Share of bad citations blocked, by kind of failure. A citation is blocked if either check blocks it.</p>
+    <p class="sub">Share of bad citations blocked, by kind of failure. A citation is blocked as soon as one check blocks it.</p>
     <div class="controls">
       <span class="key"><i style="background:var(--c-matcher)"></i>Matcher</span>
       <span class="key"><i style="background:var(--c-judge)"></i>Judge</span>
@@ -367,9 +410,11 @@
 
   <figure>
     <h3>Which model should judge?</h3>
-    <p class="sub">Against human annotators (ALCE), the same 240 claim–source pairs for every model, temperature 0.
-      Caught: of the citations annotators marked unsupported, the share the judge did not wave through.
-      Higher is better in both panels.</p>
+    <p class="sub">Each judge rated the same 240 claim–source pairs from ALCE at temperature 0, and its verdicts
+      were compared with those of the human annotators.<a class="cite" data-cite="alce"></a> <em>Caught</em> is the
+      share of citations the annotators marked as unsupported that the judge did not call fully supported.
+      Higher is better in both panels. The vertical line is TRUE,<a class="cite" data-cite="true"></a> the
+      specialised NLI model that ALCE uses to score citations automatically.</p>
     <div class="controls">
       <span>Reasoning</span>
       <span class="seg" id="reasoning-seg">
@@ -401,9 +446,15 @@
   </details>
 </section>
 
+<details class="sources" id="sources">
+  <summary>Sources (<span id="source-count"></span>)</summary>
+  <ol id="source-list"></ol>
+</details>
+
 <p class="about">
-  VeriQuote is a TypeScript library and CLI with no dependencies.
-  <a href="https://github.com/rickintoplace/veriquote">Source, benchmarks and CLI on GitHub</a>. Icons: Lucide (ISC).
+  VeriQuote is a TypeScript library and CLI with no dependencies, MIT licensed.
+  <a href="https://github.com/rickintoplace/veriquote">Code, benchmarks and raw results are on GitHub</a>.
+  Icons by Lucide (ISC licence).
 </p>
 
 <footer class="site-footer">
@@ -479,6 +530,8 @@ const ICONS = {
   github: '<path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/>',
   'file-text': '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
   shield: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+  package: '<path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><polyline points="3.29 7 12 12 20.71 7"/><path d="m7.5 4.27 9 5.15"/>',
+  quote: '<path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/>',
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
   moon: '<path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/>',
 };
@@ -634,7 +687,7 @@ async function render() {
       : !d.matcherBlocks && d.judgeBlocks ? 'The matcher alone would have let it through.' : '';
     setVerdict('block', `Blocked by ${who}`, alone);
   } else if (d.judgeBlocks === null) {
-    setVerdict('none', 'The quote is in the source', 'Whether it supports the claim needs the judge: add a key below.');
+    setVerdict('none', 'The quote is in the source', 'To check whether it supports the claim, run the judge below.');
   } else {
     setVerdict('pass', 'Passes both checks', 'The quote is in the source and supports the claim.');
   }
@@ -754,7 +807,7 @@ function tangoChart(W) {
     y += 30;
     for (const r of g.bars) {
       const cy = y + 12;
-      const tip = r.v === null ? `${r.who}: ${r.cap}` : `${r.who}: ${pc(r.v)} — ${r.cap}`;
+      const tip = r.v === null ? `${r.who}: ${r.cap}` : `${r.who}: ${pc(r.v)}, ${r.cap}`;
       b.push(`<g class="row" ${tipAttr(tip)}><rect class="hit" x="0" y="${cy - 12}" width="${W}" height="24"/>`);
       b.push(`<circle cx="4" cy="${cy}" r="4" fill="${r.c}"/>`, T(14, cy + 4, r.who, r.bold ? 'b' : ''));
       if (r.v === null) {
@@ -768,7 +821,6 @@ function tangoChart(W) {
       y += 26;
     }
   }
-  $('fig-tango-foot').textContent = `Matcher: generated quotes (n = ${t.absent.n} and ${t.unsupported.manipulatedN}). Judge: ${t.judgeModel} on human-labelled citations that annotators marked as unsupported (n = ${t.unsupported.judgeN}).`;
   return svgOf(W, y + 4, 'Which check catches which failure', b);
 }
 
@@ -802,7 +854,7 @@ function matcherChart(W) {
   for (const r of rows) {
     if (r.head) {
       b.push(`<circle cx="5" cy="${r.y + 15}" r="5" fill="${r.head.color}"/>`,
-        T(16, r.y + 19, r.head.name, 'b'), narrow ? '' : T(16 + r.head.name.length * 7.6 + 10, r.y + 19, r.head.note, 'm s'));
+        T(16, r.y + 19, r.head.name, 'b'));
       continue;
     }
     const cy = r.y + rowH / 2;
@@ -836,7 +888,7 @@ function placeThreshold() {
   $('thr-readout').innerHTML = icon(ok ? 'circle-check' : 'triangle-alert') +
     `<span>At <b>${s.threshold.toFixed(2)}</b>: <b>${pc(s.faithfulKept, 1)}</b> of faithful quotes kept, ` +
     `<b>${pc(s.absentRejected, 1)}</b> of missing quotes rejected. ` +
-    (ok ? `Inside the gap, so nothing is lost either way${s.threshold === m.threshold ? ' — this is the default' : ''}.` : cost) + '</span>';
+    (ok ? `Inside the gap, so nothing is lost either way${s.threshold === m.threshold ? ' (the default)' : ''}.` : cost) + '</span>';
 }
 
 // --- 3. judges, reasoning on or off
@@ -871,7 +923,7 @@ function judgesChart(W) {
     labels(top);
     panel(labelW, labelW + pw, top, 'Unsupported citations caught ↑', [0.6, 1], [0.6, 0.7, 0.8, 0.9, 1], 'caught');
     const y1 = panel(labelW + pw + 60, W - 50, top, 'Agreement with annotators ↑', [0.65, 0.9], [0.7, 0.8, 0.9], 'agreement',
-      { v: BENCH.trueNli, label: `specialised NLI model ${pc(BENCH.trueNli, 1)}` });
+      { v: BENCH.trueNli, label: `TRUE ${pc(BENCH.trueNli, 1)}` });
     h = y1 + 40;
   } else {
     labels(top);
@@ -879,7 +931,7 @@ function judgesChart(W) {
     const top2 = y1 + 60;
     labels(top2);
     h = panel(labelW, W - 50, top2, 'Agreement with annotators ↑', [0.65, 0.9], [0.7, 0.8, 0.9], 'agreement',
-      { v: BENCH.trueNli, label: `specialised NLI ${pc(BENCH.trueNli, 1)}` }) + 40;
+      { v: BENCH.trueNli, label: `TRUE ${pc(BENCH.trueNli, 1)}` }) + 40;
   }
   return svgOf(W, h, 'Judge models compared against human annotators', body);
 }
@@ -904,12 +956,12 @@ function placeJudges() {
     val.style.transform = `translateX(${Math.min(sx(ci[1]) + 8, Number(g.dataset.x1) + 6)}px)`;
     val.textContent = pc(j[key], 1);
     g.style.opacity = faded ? '.3' : '';
-    g.dataset.tip = faded ? `${g.dataset.model}: has no reasoning switch — showing its only run`
+    g.dataset.tip = faded ? `${g.dataset.model} has no reasoning switch; this is its only run`
       : `${g.dataset.model}${reasoning === 'off' ? ', reasoning off' : ''}: ${pc(j[key], 1)} (95% interval ${pc(ci[0])}–${pc(ci[1])})`;
   }
   $('judges-foot').textContent = reasoning === 'off'
-    ? `Hollow: reasoning switched off (5–10× faster). Faded: ${missing.join(', ')} ha${missing.length > 1 ? 've' : 's'} no switch.`
-    : 'With reasoning, the default. Switch it off to see what the speed costs.';
+    ? `Hollow dots: reasoning switched off, which answers five to ten times faster. Greyed out: ${missing.join(' and ')} ha${missing.length > 1 ? 've' : 's'} no such switch.`
+    : 'Reasoning is on by default. Switch it off to see what the extra speed costs.';
 }
 
 // --- 4. protocol compliance, sortable
@@ -958,7 +1010,7 @@ function renderTables() {
   $('tables').innerHTML =
     `<table><tr><th>Judge</th><th>Unsupported caught</th><th>False green</th><th>Agreement</th></tr>${judges.map((j) =>
       row([`${j.model}${j.reasoning ? '' : ', no reasoning'}`, pc(1 - j.falseGreen, 1), pc(j.falseGreen, 1), pc(j.agreement, 1)])).join('')}
-      ${row(['Specialised NLI model (TRUE, T5-11B)', '—', '—', pc(BENCH.trueNli, 1)])}</table>` +
+      ${row(['TRUE (T5-11B), as reported by ALCE', '', '', pc(BENCH.trueNli, 1)])}</table>` +
     `<table><tr><th>Answering model</th><th>Complete</th><th>Verbatim</th><th>Answers</th></tr>${BENCH.protocol.models.map((r) =>
       row([r.model, pc(r.complete, 1), pc(r.verbatim, 1), r.answers])).join('')}</table>`;
 }
@@ -981,8 +1033,10 @@ function renderNumbers() {
     j.caughtCi = [1 - j.falseGreenCi[1], 1 - j.falseGreenCi[0]];
   }
   const m = BENCH.matcher;
-  $('fig-matcher-sub').textContent = `Matcher score for ${m.items.toLocaleString('en')} generated quotes from five Wikipedia articles. Drag the threshold: anywhere in the shaded gap, every faithful quote is kept and every missing one rejected.`;
-  $('fig-protocol-sub').textContent = `Eight models got the citation instructions: ${BENCH.protocol.tasks} questions, ${BENCH.protocol.runs} runs each, checked mechanically.`;
+  $('fig-matcher-sub').innerHTML = `The matcher's score for ${m.items.toLocaleString('en')} quotes built from five Wikipedia articles, then copied faithfully, reformatted, altered or replaced in fifteen ways.<a class="cite" data-cite="veriquote"></a> Drag the threshold: anywhere in the shaded gap, every faithful quote is kept and every missing one is rejected.`;
+  $('fig-protocol-sub').textContent = `Eight answering models got the citation instructions and answered ${BENCH.protocol.tasks} questions, ${BENCH.protocol.runs === 2 ? 'twice each' : `${BENCH.protocol.runs} times each`}. A parser checked every answer, so no human labels were needed.`;
+  const t = BENCH.tango;
+  $('fig-tango-foot').innerHTML = `Matcher: generated quotes (n = ${t.absent.n} and ${t.unsupported.manipulatedN}). Judge: ${t.judgeModel} on the ${t.unsupported.judgeN} ALCE citations that annotators marked as unsupported.<a class="cite" data-cite="alce"></a>`;
   thrIndex = Math.max(0, m.sweep.findIndex((s) => s.threshold === m.threshold));
   $('thr').max = String(m.sweep.length - 1);
   $('thr').value = String(thrIndex);
@@ -1020,6 +1074,53 @@ function renderNumbers() {
 }
 
 renderNumbers();
+
+// ------------------------------------------------------------ sources
+
+// APA 7. Numbered in order of first appearance; the list below stays collapsed until a note is used.
+const SOURCES = {
+  zhang: {
+    citation: 'Zhang, J., Chen, Y., Commodore-Mensah, Y., & Oberst, M. (2026). <i>Verifiable by construction: Claim-level evaluation of verbatim citation in clinical question answering</i> (Version 2) [Preprint]. arXiv.',
+    doi: '10.48550/arXiv.2609.15964',
+  },
+  alce: {
+    citation: 'Gao, T., Yen, H., Yu, J., & Chen, D. (2023). Enabling large language models to generate text with citations. In <i>Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing</i> (pp. 6465–6488). Association for Computational Linguistics.',
+    doi: '10.18653/v1/2023.emnlp-main.398',
+  },
+  veriquote: {
+    citation: 'Heilmann, E. (2026). <i>VeriQuote: Deterministic and semantic verification of quote-grounded LLM citations</i> (Version 0.2.0) [Computer software]. Zenodo.',
+    doi: '10.5281/zenodo.21552379',
+  },
+  true: {
+    citation: 'Honovich, O., Aharoni, R., Herzig, J., Taitelbaum, H., Kukliansy, D., Cohen, V., Scialom, T., Szpektor, I., Hassidim, A., & Matias, Y. (2022). TRUE: Re-evaluating factual consistency evaluation. In <i>Proceedings of the 2022 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies</i> (pp. 3905–3920). Association for Computational Linguistics.',
+    doi: '10.18653/v1/2022.naacl-main.287',
+  },
+};
+
+function renderSources() {
+  const order = [];
+  for (const a of document.querySelectorAll('a.cite')) {
+    const id = a.dataset.cite;
+    if (!SOURCES[id]) continue;
+    if (!order.includes(id)) {
+      order.push(id);
+      a.id = `ref-${id}`;
+    }
+    const n = order.indexOf(id) + 1;
+    a.href = `#source-${id}`;
+    a.textContent = `[${n}]`;
+    a.setAttribute('aria-label', `Source ${n}`);
+    a.addEventListener('click', () => { $('sources').open = true; });
+  }
+  $('source-count').textContent = String(order.length);
+  $('source-list').innerHTML = order.map((id, i) => {
+    const src = SOURCES[id];
+    const url = `https://doi.org/${src.doi}`;
+    return `<li id="source-${id}"><span>[${i + 1}]</span><span>${src.citation} <a href="${url}">${url}</a> ` +
+      `<a class="back" href="#ref-${id}" aria-label="Back to the text">↩</a></span></li>`;
+  }).join('');
+}
+renderSources();
 
 await buildMatrix();
 select(location.hash.slice(1));

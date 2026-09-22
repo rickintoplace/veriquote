@@ -3,20 +3,20 @@
 <rect width="760" height="424" rx="8" fill="#0d1117"/>
 <text x="24" y="32" font-size="16" font-weight="600" fill="#ffffff" text-anchor="start">Which model should judge? Measured against human annotators</text>
 <text x="24" y="52" font-size="12" font-weight="400" fill="#c3c2b7" text-anchor="start">ALCE human labels, the same 240 claim–source pairs for every model, temperature 0. Dot: measured · line: 95% interval.</text>
-<text x="256" y="84" font-size="13" font-weight="600" fill="#ffffff" text-anchor="start">False green ↓</text>
-<text x="256" y="99" font-size="11" font-weight="400" fill="#898781" text-anchor="start">unsupported, yet judged fully supported</text>
+<text x="256" y="84" font-size="13" font-weight="600" fill="#ffffff" text-anchor="start">Unsupported citations caught ↑</text>
+<text x="256" y="99" font-size="11" font-weight="400" fill="#898781" text-anchor="start">not called fully supported by the judge</text>
 <text x="530" y="84" font-size="13" font-weight="600" fill="#ffffff" text-anchor="start">Agreement with annotators ↑</text>
 <text x="530" y="99" font-size="11" font-weight="400" fill="#898781" text-anchor="start">“fully supports”: yes or no</text>
 <line x1="256" y1="102" x2="256" y2="348" stroke="#2c2c2a" stroke-width="1"/>
-<text x="256" y="364" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">0%</text>
+<text x="256" y="364" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">60%</text>
 <line x1="309.5" y1="102" x2="309.5" y2="348" stroke="#2c2c2a" stroke-width="1"/>
-<text x="309.5" y="364" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">10%</text>
+<text x="309.5" y="364" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">70%</text>
 <line x1="363" y1="102" x2="363" y2="348" stroke="#2c2c2a" stroke-width="1"/>
-<text x="363" y="364" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">20%</text>
+<text x="363" y="364" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">80%</text>
 <line x1="416.5" y1="102" x2="416.5" y2="348" stroke="#2c2c2a" stroke-width="1"/>
-<text x="416.5" y="364" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">30%</text>
+<text x="416.5" y="364" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">90%</text>
 <line x1="470" y1="102" x2="470" y2="348" stroke="#2c2c2a" stroke-width="1"/>
-<text x="470" y="364" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">40%</text>
+<text x="470" y="364" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">100%</text>
 <line x1="530" y1="102" x2="530" y2="348" stroke="#2c2c2a" stroke-width="1"/>
 <text x="530" y="364" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">65%</text>
 <line x1="571.1999999999999" y1="102" x2="571.1999999999999" y2="348" stroke="#2c2c2a" stroke-width="1"/>
@@ -30,62 +30,62 @@
 <line x1="736" y1="102" x2="736" y2="348" stroke="#2c2c2a" stroke-width="1"/>
 <text x="736" y="364" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">90%</text>
 <line x1="633.824" y1="102" x2="633.824" y2="348" stroke="#c3c2b7" stroke-width="1.5"/>
-<text x="633.824" y="380" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="middle">TRUE-NLI 77.6%</text>
+<text x="633.824" y="380" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="middle">TRUE (NLI model) 77.6%</text>
 <text x="236" y="127" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">glm-5.3-flash</text>
-<line x1="302.5052475771526" y1="123" x2="404.764531305765" y2="123" stroke="#3987e5" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
-<circle cx="341.9821428571429" cy="123" r="4.5" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
-<text x="411.764531305765" y="127" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">16.1%</text>
-<line x1="611.0216345530976" y1="123" x2="693.7863245445199" y2="123" stroke="#3987e5" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
-<circle cx="656.3581589958159" cy="123" r="4.5" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
+<line x1="321.23546869423507" y1="123" x2="423.49475242284745" y2="123" stroke="#d95926" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
+<circle cx="384.01785714285717" cy="123" r="4.5" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
+<text x="430.49475242284745" y="127" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">83.9%</text>
+<line x1="611.0216345530976" y1="123" x2="693.7863245445199" y2="123" stroke="#d95926" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
+<circle cx="656.3581589958159" cy="123" r="4.5" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
 <text x="700.7863245445199" y="127" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">80.3%</text>
 <text x="236" y="157" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">deepseek-v4-flash</text>
-<line x1="310.5034537469643" y1="153" x2="418.2693056613454" y2="153" stroke="#3987e5" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
-<circle cx="353.27272727272725" cy="153" r="4.5" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
-<text x="425.2693056613454" y="157" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">18.2%</text>
-<line x1="596.2065329361017" y1="153" x2="681.456159452682" y2="153" stroke="#3987e5" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
-<circle cx="642.5673640167364" cy="153" r="4.5" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
+<line x1="307.7306943386546" y1="153" x2="415.4965462530357" y2="153" stroke="#d95926" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
+<circle cx="372.7272727272727" cy="153" r="4.5" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
+<text x="422.4965462530357" y="157" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">81.8%</text>
+<line x1="596.2065329361017" y1="153" x2="681.456159452682" y2="153" stroke="#d95926" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
+<circle cx="642.5673640167364" cy="153" r="4.5" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
 <text x="688.456159452682" y="157" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">78.7%</text>
 <text x="236" y="187" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">qwen3.6-35b-a3b</text>
-<line x1="310.5034537469643" y1="183" x2="418.2693056613454" y2="183" stroke="#3987e5" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
-<circle cx="353.27272727272725" cy="183" r="4.5" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
-<text x="425.2693056613454" y="187" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">18.2%</text>
-<line x1="590.6930247196027" y1="183" x2="677.1446431915887" y2="183" stroke="#3987e5" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
-<circle cx="637.6067510548523" cy="183" r="4.5" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
+<line x1="307.7306943386546" y1="183" x2="415.4965462530357" y2="183" stroke="#d95926" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
+<circle cx="372.7272727272727" cy="183" r="4.5" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
+<text x="422.4965462530357" y="187" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">81.8%</text>
+<line x1="590.6930247196027" y1="183" x2="677.1446431915887" y2="183" stroke="#d95926" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
+<circle cx="637.6067510548523" cy="183" r="4.5" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
 <text x="684.1446431915887" y="187" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">78.1%</text>
 <text x="236" y="217" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">qwen3.5-397b-a17b</text>
-<line x1="320.223945151873" y1="213" x2="435.0003131378303" y2="213" stroke="#3987e5" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
-<circle cx="367.0377358490566" cy="213" r="4.5" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
-<text x="442.0003131378303" y="217" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">20.8%</text>
-<line x1="604.4217259816332" y1="213" x2="690.2671536657093" y2="213" stroke="#3987e5" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
-<circle cx="651.422026431718" cy="213" r="4.5" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
+<line x1="290.9996868621697" y1="213" x2="405.77605484812693" y2="213" stroke="#d95926" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
+<circle cx="358.96226415094344" cy="213" r="4.5" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
+<text x="412.77605484812693" y="217" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">79.2%</text>
+<line x1="604.4217259816332" y1="213" x2="690.2671536657093" y2="213" stroke="#d95926" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
+<circle cx="651.422026431718" cy="213" r="4.5" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
 <text x="697.2671536657093" y="217" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">79.7%</text>
 <text x="236" y="247" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">qwen3.5-397b-a17b, no reasoning</text>
-<line x1="323.9759246838831" y1="243" x2="436.9354680596265" y2="243" stroke="#3987e5" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
-<circle cx="370.6428571428571" cy="243" r="4.5" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
-<text x="443.9354680596265" y="247" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">21.4%</text>
-<line x1="587.9142258087859" y1="243" x2="674.6347007613326" y2="243" stroke="#3987e5" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
-<circle cx="634.9042016806723" cy="243" r="4.5" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
+<line x1="289.06453194037357" y1="243" x2="402.02407531611686" y2="243" stroke="#d95926" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
+<circle cx="355.3571428571429" cy="243" r="4.5" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
+<text x="409.02407531611686" y="247" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">78.6%</text>
+<line x1="587.9142258087859" y1="243" x2="674.6347007613326" y2="243" stroke="#d95926" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
+<circle cx="634.9042016806723" cy="243" r="4.5" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
 <text x="681.6347007613326" y="247" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">77.7%</text>
 <text x="236" y="277" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">qwen3.6-35b-a3b, no reasoning</text>
-<line x1="323.9759246838831" y1="273" x2="436.9354680596265" y2="273" stroke="#3987e5" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
-<circle cx="370.6428571428571" cy="273" r="4.5" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
-<text x="443.9354680596265" y="277" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">21.4%</text>
-<line x1="584.2248957266256" y1="273" x2="671.509653168188" y2="273" stroke="#3987e5" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
-<circle cx="631.4420168067227" cy="273" r="4.5" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
+<line x1="289.06453194037357" y1="273" x2="402.02407531611686" y2="273" stroke="#d95926" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
+<circle cx="355.3571428571429" cy="273" r="4.5" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
+<text x="409.02407531611686" y="277" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">78.6%</text>
+<line x1="584.2248957266256" y1="273" x2="671.509653168188" y2="273" stroke="#d95926" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
+<circle cx="631.4420168067227" cy="273" r="4.5" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
 <text x="678.509653168188" y="277" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">77.3%</text>
 <text x="236" y="307" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">glm-5.3-flash, no reasoning</text>
-<line x1="332.15904238647465" y1="303" x2="462.9040841286272" y2="303" stroke="#3987e5" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
-<circle cx="386.77777777777777" cy="303" r="4.5" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
-<text x="469.9040841286272" y="307" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">24.4%</text>
-<line x1="551.4010911621866" y1="303" x2="649.92555605377" y2="303" stroke="#3987e5" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
-<circle cx="604.321568627451" cy="303" r="4.5" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
+<line x1="263.09591587137277" y1="303" x2="393.84095761352535" y2="303" stroke="#d95926" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
+<circle cx="339.22222222222223" cy="303" r="4.5" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
+<text x="400.84095761352535" y="307" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">75.6%</text>
+<line x1="551.4010911621866" y1="303" x2="649.92555605377" y2="303" stroke="#d95926" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
+<circle cx="604.321568627451" cy="303" r="4.5" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
 <text x="656.92555605377" y="307" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">74.0%</text>
 <text x="236" y="337" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">gpt-oss-120b</text>
-<line x1="339.01549644291003" y1="333" x2="457.65697220766083" y2="333" stroke="#3987e5" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
-<circle cx="389.75" cy="333" r="4.5" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
-<text x="464.65697220766083" y="337" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">25.0%</text>
-<line x1="578.4336180327234" y1="333" x2="667.6063192811348" y2="333" stroke="#3987e5" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
-<circle cx="626.6068965517242" cy="333" r="4.5" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
+<line x1="268.3430277923392" y1="333" x2="386.98450355708997" y2="333" stroke="#d95926" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
+<circle cx="336.25" cy="333" r="4.5" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
+<text x="393.98450355708997" y="337" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">75.0%</text>
+<line x1="578.4336180327234" y1="333" x2="667.6063192811348" y2="333" stroke="#d95926" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
+<circle cx="626.6068965517242" cy="333" r="4.5" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
 <text x="674.6063192811348" y="337" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">76.7%</text>
-<text x="24" y="406" font-size="11" font-weight="400" fill="#898781" text-anchor="start">False green over the pairs annotators marked “does not support” (45–56 per model). Source: bench/results/judge-*.json</text>
+<text x="24" y="406" font-size="11" font-weight="400" fill="#898781" text-anchor="start">Caught: share of the pairs annotators marked “does not support” (45–56 per model). TRUE: Honovich et al. (2022), as reported by Gao et al. (2023).</text>
 </svg>

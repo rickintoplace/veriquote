@@ -16,7 +16,7 @@ quote support the claim?).
   accepts browser requests works (OpenRouter does).
 
 - **Measured, not claimed:** below the examples, four charts show the
-  benchmark results — which check catches which failure, the matcher's score
+  benchmark results: which check catches which failure, the matcher's score
   gap, the judge models against human labels (with and without reasoning), and
   how well eight answering models follow the protocol. The numbers sit in one
   data block that `node bench/figures/render.mjs` rewrites from

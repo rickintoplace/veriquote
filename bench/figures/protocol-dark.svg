@@ -13,49 +13,49 @@
 <text x="580.5" y="472" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">75%</text>
 <line x1="700" y1="98" x2="700" y2="456" stroke="#2c2c2a" stroke-width="1"/>
 <text x="700" y="472" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">100%</text>
-<rect x="24" y="69" width="10" height="10" rx="2" fill="#3987e5"/>
-<text x="40" y="78" font-size="12" font-weight="400" fill="#c3c2b7" text-anchor="start">Complete — every cited claim carries a quote</text>
-<rect x="352" y="69" width="10" height="10" rx="2" fill="#d95926"/>
-<text x="368" y="78" font-size="12" font-weight="400" fill="#c3c2b7" text-anchor="start">Verbatim — the quote is really in the source</text>
+<rect x="24" y="69" width="10" height="10" rx="2" fill="#3dab85"/>
+<text x="40" y="78" font-size="12" font-weight="400" fill="#c3c2b7" text-anchor="start">Complete: every cited claim carries a quote</text>
+<rect x="345.5" y="69" width="10" height="10" rx="2" fill="#107a5c"/>
+<text x="361.5" y="78" font-size="12" font-weight="400" fill="#c3c2b7" text-anchor="start">Verbatim: the quote is really in the source</text>
 <text x="206" y="121" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">qwen3.6-35b-a3b</text>
-<path d="M222,104 h474 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-474 z" fill="#3987e5"/>
+<path d="M222,104 h474 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-474 z" fill="#3dab85"/>
 <text x="706" y="114" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">100.0%</text>
-<path d="M222,118 h474 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-474 z" fill="#d95926"/>
+<path d="M222,118 h474 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-474 z" fill="#107a5c"/>
 <text x="706" y="128" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">100.0%</text>
 <text x="206" y="165" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">qwen3.5-397b-a17b</text>
-<path d="M222,148 h474 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-474 z" fill="#3987e5"/>
+<path d="M222,148 h474 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-474 z" fill="#3dab85"/>
 <text x="706" y="158" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">100.0%</text>
-<path d="M222,162 h474 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-474 z" fill="#d95926"/>
+<path d="M222,162 h474 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-474 z" fill="#107a5c"/>
 <text x="706" y="172" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">100.0%</text>
 <text x="206" y="209" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">deepseek-v4-flash</text>
-<path d="M222,192 h474 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-474 z" fill="#3987e5"/>
+<path d="M222,192 h474 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-474 z" fill="#3dab85"/>
 <text x="706" y="202" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">100.0%</text>
-<path d="M222,206 h470.01666666666665 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-470.01666666666665 z" fill="#d95926"/>
+<path d="M222,206 h470.01666666666665 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-470.01666666666665 z" fill="#107a5c"/>
 <text x="702.0166666666667" y="216" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">99.2%</text>
 <text x="206" y="253" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">glm-5.3-flash</text>
-<path d="M222,236 h457.51724137931035 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-457.51724137931035 z" fill="#3987e5"/>
+<path d="M222,236 h457.51724137931035 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-457.51724137931035 z" fill="#3dab85"/>
 <text x="689.5172413793103" y="246" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">96.6%</text>
-<path d="M222,250 h471.86607142857144 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-471.86607142857144 z" fill="#d95926"/>
+<path d="M222,250 h471.86607142857144 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-471.86607142857144 z" fill="#107a5c"/>
 <text x="703.8660714285714" y="260" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">99.6%</text>
 <text x="206" y="297" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">gemma-4-31b-it</text>
-<path d="M222,280 h378.4000000000001 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-378.4000000000001 z" fill="#3987e5"/>
+<path d="M222,280 h378.4000000000001 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-378.4000000000001 z" fill="#3dab85"/>
 <text x="610.4000000000001" y="290" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">80.0%</text>
-<path d="M222,294 h457.8769841269841 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-457.8769841269841 z" fill="#d95926"/>
+<path d="M222,294 h457.8769841269841 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-457.8769841269841 z" fill="#107a5c"/>
 <text x="689.8769841269841" y="304" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">96.6%</text>
 <text x="206" y="341" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">mistral-medium-3.5-128b</text>
-<path d="M222,324 h442.1333333333333 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-442.1333333333333 z" fill="#3987e5"/>
+<path d="M222,324 h442.1333333333333 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-442.1333333333333 z" fill="#3dab85"/>
 <text x="674.1333333333333" y="334" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">93.3%</text>
-<path d="M222,338 h383.34482758620686 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-383.34482758620686 z" fill="#d95926"/>
+<path d="M222,338 h383.34482758620686 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-383.34482758620686 z" fill="#107a5c"/>
 <text x="615.3448275862069" y="348" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">81.0%</text>
 <text x="206" y="385" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">gpt-oss-120b</text>
-<path d="M222,368 h155.33333333333331 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-155.33333333333331 z" fill="#3987e5"/>
+<path d="M222,368 h155.33333333333331 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-155.33333333333331 z" fill="#3dab85"/>
 <text x="387.3333333333333" y="378" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">33.3%</text>
-<path d="M222,382 h431.419540229885 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-431.419540229885 z" fill="#d95926"/>
+<path d="M222,382 h431.419540229885 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-431.419540229885 z" fill="#107a5c"/>
 <text x="663.419540229885" y="392" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">91.1%</text>
 <text x="206" y="429" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">llama-3.1-8b-instruct</text>
-<path d="M222,412 h203.13333333333333 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-203.13333333333333 z" fill="#3987e5"/>
+<path d="M222,412 h203.13333333333333 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-203.13333333333333 z" fill="#3dab85"/>
 <text x="435.1333333333333" y="422" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">43.3%</text>
-<path d="M222,426 h236.42261904761904 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-236.42261904761904 z" fill="#d95926"/>
+<path d="M222,426 h236.42261904761904 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-236.42261904761904 z" fill="#107a5c"/>
 <text x="468.42261904761904" y="436" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">50.3%</text>
 <line x1="222" y1="98" x2="222" y2="456" stroke="#383835" stroke-width="1"/>
 <text x="24" y="500" font-size="11" font-weight="400" fill="#898781" text-anchor="start">Source: bench/results/protocol.json</text>
