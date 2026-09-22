@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="760" height="575" viewBox="0 0 760 575" role="img" aria-label="Matcher score ranges per mutation family" font-family="system-ui, -apple-system, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif">
 <title>Matcher score ranges per mutation family</title>
 <rect width="760" height="575" rx="8" fill="#ffffff"/>
-<text x="24" y="32" font-size="16" font-weight="600" fill="#0b0b0b" text-anchor="start">A clear gap between faithful and missing quotes</text>
+<text x="24" y="32" font-size="16" font-weight="600" fill="#0b0b0b" text-anchor="start">How the matcher scores faithful, altered and missing quotes</text>
 <text x="24" y="52" font-size="12" font-weight="400" fill="#52514e" text-anchor="start">Matcher score per mutation, 2,061 quotes from 5 pinned Wikipedia articles. Line: min–max · dot: median.</text>
 <circle cx="29" cy="74" r="5" fill="#008300"/>
 <text x="40" y="78" font-size="12" font-weight="400" fill="#52514e" text-anchor="start">Faithful, reformatted: must pass</text>

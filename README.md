@@ -84,7 +84,7 @@ found, and a failed judge call is reported as an error, never counted as
 support. Quoting does not make a model hallucinate less. It makes every claim
 checkable, which is the point.
 
-## Does it actually work?
+## Benchmarks
 
 There are three benchmarks, kept separate on purpose: one blended number for a
 two-stage pipeline would hide exactly the failures it exists to separate.
@@ -145,7 +145,7 @@ so neighbouring models are not really separated. Reasoning helps: with it
 switched off, all three hybrid models catch less and agree less, in exchange
 for answering five to ten times faster.
 
-### Does the answering model play along?
+### Answering models
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/protocol-dark.svg">

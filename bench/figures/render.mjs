@@ -132,7 +132,7 @@ function matcherFigure(t) {
   });
   const sep = m.separation;
   const body = [
-    text(24, 32, 'A clear gap between faithful and missing quotes', { size: 16, weight: 600, fill: t.ink }),
+    text(24, 32, 'How the matcher scores faithful, altered and missing quotes', { size: 16, weight: 600, fill: t.ink }),
     text(24, 52, `Matcher score per mutation, ${m.itemCount.toLocaleString('en')} quotes from 5 pinned Wikipedia articles. Line: min–max · dot: median.`, { size: 12, fill: t.ink2 }),
   ];
   // legend
@@ -208,7 +208,7 @@ function tangoFigure(t) {
   const rowY = [132, 222];
   const H = 364;
   const body = [
-    text(24, 32, 'It takes two: each check catches what the other cannot see', { size: 16, weight: 600, fill: t.ink }),
+    text(24, 32, 'Which check catches which kind of bad citation', { size: 16, weight: 600, fill: t.ink }),
     text(24, 52, 'Share of bad citations each check catches, by kind of failure.', { size: 12, fill: t.ink2 }),
   ];
   COLS.forEach((c, i) => {
@@ -268,7 +268,7 @@ function judgeFigure(t) {
   const a1 = xAxis(t, { x0: p1[0], x1: p1[1], y0: top - 6, y1: bottom, domain: [0.6, 1], ticks: [0.6, 0.7, 0.8, 0.9, 1], fmt: (v) => `${Math.round(v * 100)}%` });
   const a2 = xAxis(t, { x0: p2[0], x1: p2[1], y0: top - 6, y1: bottom, domain: [0.65, 0.9], ticks: [0.65, 0.7, 0.75, 0.8, 0.85, 0.9], fmt: (v) => `${Math.round(v * 100)}%` });
   const body = [
-    text(24, 32, 'Which model should judge? Measured against human annotators', { size: 16, weight: 600, fill: t.ink }),
+    text(24, 32, 'Judge models compared with human annotators', { size: 16, weight: 600, fill: t.ink }),
     text(24, 52, `ALCE human labels, the same ${rows[0].requested} claim–source pairs for every model, temperature 0. Dot: measured · line: 95% interval.`, { size: 12, fill: t.ink2 }),
     text(p1[0], 84, 'Unsupported citations caught ↑', { size: 13, weight: 600, fill: t.ink }),
     text(p1[0], 99, 'not called fully supported by the judge', { size: 11, fill: t.muted }),
@@ -279,7 +279,7 @@ function judgeFigure(t) {
   ];
   const trueNli = 0.776;
   body.push(`<line x1="${a2.sx(trueNli)}" y1="${top - 6}" x2="${a2.sx(trueNli)}" y2="${bottom}" stroke="${t.ink2}" stroke-width="1.5"/>`);
-  body.push(text(a2.sx(trueNli), bottom + 32, 'TRUE (NLI model) 77.6%', { size: 11, fill: t.ink2, anchor: 'middle' }));
+  body.push(text(a2.sx(trueNli), bottom + 32, 'specialised NLI model 77.6%', { size: 11, fill: t.ink2, anchor: 'middle' }));
 
   rows.forEach((r, i) => {
     const cy = top + i * rowH + rowH / 2;
@@ -290,7 +290,7 @@ function judgeFigure(t) {
       body.push(text(ax.sx(ci[1]) + 7, cy + 4, pct(v), { size: 11, fill: t.ink2, mono: true }));
     }
   });
-  body.push(text(24, H - 18, `Caught: share of the pairs annotators marked “does not support” (${Math.min(...rows.map((r) => r.noneN))}–${Math.max(...rows.map((r) => r.noneN))} per model). TRUE: Honovich et al. (2022), as reported by Gao et al. (2023).`, { size: 11, fill: t.muted }));
+  body.push(text(24, H - 18, `Caught: share of the pairs annotators marked “does not support” (${Math.min(...rows.map((r) => r.noneN))}–${Math.max(...rows.map((r) => r.noneN))} per model). Specialised NLI model: TRUE (Honovich et al., 2022), as reported by Gao et al. (2023).`, { size: 11, fill: t.muted }));
   return svg(W, H, t, body, 'Judge models compared against human annotators');
 }
 
@@ -319,7 +319,7 @@ function protocolFigure(t) {
   const H = bottom + 62;
   const { sx, marks } = xAxis(t, { x0, x1, y0: top - 6, y1: bottom, domain: [0, 1], ticks: [0, 0.25, 0.5, 0.75, 1], fmt: (v) => `${v * 100}%` });
   const body = [
-    text(24, 32, 'Two ways to fail that a reader never sees', { size: 16, weight: 600, fill: t.ink }),
+    text(24, 32, 'How well answering models follow the citation instructions', { size: 16, weight: 600, fill: t.ink }),
     text(24, 52, `Answering models given the citation protocol: 18 tasks, ${p.repeats} runs each. Parsed and matched mechanically, no labels.`, { size: 12, fill: t.ink2 }),
     ...marks,
   ];

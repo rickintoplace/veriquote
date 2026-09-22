@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="760" height="424" viewBox="0 0 760 424" role="img" aria-label="Judge models compared against human annotators" font-family="system-ui, -apple-system, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif">
 <title>Judge models compared against human annotators</title>
 <rect width="760" height="424" rx="8" fill="#0d1117"/>
-<text x="24" y="32" font-size="16" font-weight="600" fill="#ffffff" text-anchor="start">Which model should judge? Measured against human annotators</text>
+<text x="24" y="32" font-size="16" font-weight="600" fill="#ffffff" text-anchor="start">Judge models compared with human annotators</text>
 <text x="24" y="52" font-size="12" font-weight="400" fill="#c3c2b7" text-anchor="start">ALCE human labels, the same 240 claim–source pairs for every model, temperature 0. Dot: measured · line: 95% interval.</text>
 <text x="256" y="84" font-size="13" font-weight="600" fill="#ffffff" text-anchor="start">Unsupported citations caught ↑</text>
 <text x="256" y="99" font-size="11" font-weight="400" fill="#898781" text-anchor="start">not called fully supported by the judge</text>
@@ -30,7 +30,7 @@
 <line x1="736" y1="102" x2="736" y2="348" stroke="#2c2c2a" stroke-width="1"/>
 <text x="736" y="364" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">90%</text>
 <line x1="633.824" y1="102" x2="633.824" y2="348" stroke="#c3c2b7" stroke-width="1.5"/>
-<text x="633.824" y="380" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="middle">TRUE (NLI model) 77.6%</text>
+<text x="633.824" y="380" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="middle">specialised NLI model 77.6%</text>
 <text x="236" y="127" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">glm-5.3-flash</text>
 <line x1="321.23546869423507" y1="123" x2="423.49475242284745" y2="123" stroke="#d95926" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
 <circle cx="384.01785714285717" cy="123" r="4.5" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
@@ -87,5 +87,5 @@
 <line x1="578.4336180327234" y1="333" x2="667.6063192811348" y2="333" stroke="#d95926" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
 <circle cx="626.6068965517242" cy="333" r="4.5" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
 <text x="674.6063192811348" y="337" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">76.7%</text>
-<text x="24" y="406" font-size="11" font-weight="400" fill="#898781" text-anchor="start">Caught: share of the pairs annotators marked “does not support” (45–56 per model). TRUE: Honovich et al. (2022), as reported by Gao et al. (2023).</text>
+<text x="24" y="406" font-size="11" font-weight="400" fill="#898781" text-anchor="start">Caught: share of the pairs annotators marked “does not support” (45–56 per model). Specialised NLI model: TRUE (Honovich et al., 2022), as reported by Gao et al. (2023).</text>
 </svg>
