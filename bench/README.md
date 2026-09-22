@@ -85,7 +85,7 @@ Reported per model:
 | openai-gpt-oss-120b | 36 | 0 | 0.0% | 96.7% | 33.3% | 100.0% | 91.1% | 33.3% | 0.0% |
 | meta-llama-3.1-8b-instruct | 36 | 0 | 0.0% | 66.7% | 43.3% | 76.7% | 50.3% | 20.0% | 0.0% |
 
-- **The open models we would recommend comply almost perfectly.**
+- **The open models recommended here comply almost perfectly.**
   `qwen3.6-35b-a3b` is complete and verbatim on every answer; `deepseek-v4-flash`,
   `glm-5.3-flash` and `qwen3.5-397b` miss at most one quote or one appendix.
 - **`gpt-oss-120b` almost always prints an appendix and is rarely complete**:

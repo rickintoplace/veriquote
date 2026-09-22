@@ -16,10 +16,12 @@
     base.href = `${location.pathname}/`;
     document.head.prepend(base);
   }
-  // Follow the theme chosen on rickinto.place, if there is one.
+  // Same theme key as rickinto.place: a choice made there carries over, and back.
   try {
     const t = localStorage.getItem('rickintoplace-theme');
-    if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+    const theme = t === 'light' || t === 'dark' ? t : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme;
   } catch {}
 </script>
 <style>
@@ -34,6 +36,8 @@
     --ground: #f5f6f3; --surface: #ffffff; --ink: #17191a; --muted: #686d6b; --line: #d9ddd8;
     --wash: #eceee9; --mark: rgba(23, 25, 26, .10);
     --pass: #1d7548; --block: #c0392b;
+    --toggle-bg: rgba(255, 251, 243, .78); --toggle-border: rgba(80, 64, 45, .18); --toggle-shadow: rgba(92, 67, 39, .18);
+    --f-pass: #008300; --f-judge: #eda100; --f-fail: #e34948;
     --c-matcher: #2a78d6; --c-judge: #eb6834; --c-complete: #0e7c61; --c-verbatim: #5cc29e; --warn: #a86b00;
     --sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
     --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -43,7 +47,11 @@
       --ground: #121413; --surface: #1a1d1c; --ink: #eceeea; --muted: #939895; --line: #2e3230;
       --wash: #222624; --mark: rgba(236, 238, 234, .16);
       --pass: #5fcb8e; --block: #f07a68;
-      --c-matcher: #3987e5; --c-judge: #d95926; --c-complete: #3dab85; --c-verbatim: #107a5c; --warn: #e0b35a;
+      --toggle-bg: rgba(10, 10, 10, .72); --toggle-border: rgba(255, 255, 255, .12); --toggle-shadow: rgba(0, 0, 0, .45);
+      --f-pass: #00863a; --f-judge: #b88c00; --f-fail: #e0607e;
+      --toggle-bg: rgba(10, 10, 10, .72); --toggle-border: rgba(255, 255, 255, .12); --toggle-shadow: rgba(0, 0, 0, .45);
+    --f-pass: #00863a; --f-judge: #b88c00; --f-fail: #e0607e;
+    --c-matcher: #3987e5; --c-judge: #d95926; --c-complete: #3dab85; --c-verbatim: #107a5c; --warn: #e0b35a;
     }
   }
   :root[data-theme="dark"] {
@@ -99,7 +107,7 @@
   .stack .hdr span:not(:first-child) { text-align: center; }
 
   /* ---- the citation, wired to its two checks ---- */
-  .wiring { display: grid; grid-template-columns: 1fr 96px 1fr 96px 1.35fr; align-items: stretch; }
+  .wiring { display: grid; grid-template-columns: 1.35fr 96px 1fr 96px 1fr; align-items: stretch; }
   .box { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; min-width: 0; }
   .box .small-caps { margin: 0 0 8px; }
   .box .text { white-space: pre-wrap; word-break: break-word; }
@@ -143,7 +151,28 @@
   .live .run:disabled { opacity: .5; cursor: default; }
   .note { color: var(--muted); font-size: .8rem; margin: 8px 0 0; }
   [hidden] { display: none !important; }
-  footer { margin-top: 56px; color: var(--muted); font-size: .85rem; }
+  .about { margin-top: 56px; color: var(--muted); font-size: .85rem; }
+  .site-footer { margin-top: 64px; padding-top: 40px; border-top: 1px solid var(--line); display: flex; flex-direction: column;
+                 align-items: center; gap: 24px; text-align: center; font: 10px/1 var(--mono); text-transform: uppercase;
+                 letter-spacing: .1em; color: var(--muted); }
+  .site-footer nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+  .site-footer a { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; transition: color .15s; }
+  .site-footer a:hover { color: var(--ink); }
+  .site-footer .ic { width: 13px; height: 13px; stroke-width: 1.75; }
+  .site-footer p { margin: 0; opacity: .8; }
+  /* theme switch: the same control as on rickinto.place */
+  .theme-switch { position: fixed; top: 20px; right: 20px; z-index: 90; width: 4.75rem; height: 2.75rem; padding: 4px;
+                  border-radius: 999px; border: 1px solid var(--toggle-border); background: var(--toggle-bg);
+                  -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); display: inline-flex; align-items: center; }
+  .theme-switch:hover { border-color: var(--muted); }
+  .theme-switch .knob { width: 2.25rem; height: 2.25rem; border-radius: 50%; background: #fff; color: #18181b;
+                        display: grid; place-items: center; box-shadow: 0 1px 3px var(--toggle-shadow);
+                        transition: transform .35s cubic-bezier(.3,1.4,.5,1); transform: translateX(0) rotate(-8deg); }
+  .theme-switch .knob .ic { width: 17px; height: 17px; stroke-width: 1.8; grid-area: 1 / 1; }
+  .theme-switch[data-mode="light"] .knob { transform: translateX(2rem) rotate(8deg); }
+  .theme-switch[data-mode="light"] .knob .ic:last-child, .theme-switch[data-mode="dark"] .knob .ic:first-child { display: none; }
+  @media (max-width: 1024px) { .theme-switch { top: 7px; right: 7px; } }
+  @media (prefers-reduced-motion: reduce) { .theme-switch .knob { transition: none; } }
   a { color: inherit; }
 
 
@@ -225,13 +254,16 @@
 
 <nav class="topbar">
   <a href="https://rickinto.place"><svg class="ic" data-icon="arrow-left"></svg>rickinto.place</a>
-  <a href="https://github.com/rickintoplace/veriquote">GitHub<svg class="ic" data-icon="external-link"></svg></a>
 </nav>
+
+<button type="button" class="theme-switch" id="theme-switch" aria-label="Switch theme">
+  <span class="knob"><svg class="ic" data-icon="sun"></svg><svg class="ic" data-icon="moon"></svg></span>
+</button>
 
 <h1>Is the quote real, and does it say that?</h1>
 <p class="lede">
   The model attaches a verbatim quote to every cited claim. Two checks then look at different pairs:
-  the judge compares the claim with the quote, the matcher compares the quote with the source.
+  first the matcher compares the quote with the source, then the judge compares the quote with the claim.
   A citation passes only if neither blocks it.
 </p>
 
@@ -243,19 +275,9 @@
 
 <div class="wiring">
   <div class="box">
-    <p class="small-caps">Claim in the answer</p>
-    <div class="text" id="claim-view"></div>
-    <textarea id="claim" spellcheck="false" aria-label="Claim" hidden></textarea>
-  </div>
-  <div class="link" id="judge-link">
-    <span class="who"><span class="id judge"></span>Judge</span>
-    <span class="glyph none" id="judge-glyph">·</span>
-    <span class="what" id="judge-what"></span>
-  </div>
-  <div class="box">
-    <p class="small-caps">Quote attached</p>
-    <div class="text mono" id="quote-view"></div>
-    <textarea id="quote" spellcheck="false" aria-label="Quote" hidden></textarea>
+    <p class="small-caps">Source</p>
+    <div class="src" id="source-view"></div>
+    <textarea id="source" spellcheck="false" aria-label="Source" hidden></textarea>
   </div>
   <div class="link" id="matcher-link">
     <span class="who"><span class="id matcher"></span>Matcher</span>
@@ -263,9 +285,19 @@
     <span class="what" id="matcher-what"></span>
   </div>
   <div class="box">
-    <p class="small-caps">Source</p>
-    <div class="src" id="source-view"></div>
-    <textarea id="source" spellcheck="false" aria-label="Source" hidden></textarea>
+    <p class="small-caps">Quote attached</p>
+    <div class="text mono" id="quote-view"></div>
+    <textarea id="quote" spellcheck="false" aria-label="Quote" hidden></textarea>
+  </div>
+  <div class="link" id="judge-link">
+    <span class="who"><span class="id judge"></span>Judge</span>
+    <span class="glyph none" id="judge-glyph">·</span>
+    <span class="what" id="judge-what"></span>
+  </div>
+  <div class="box">
+    <p class="small-caps">Claim in the answer</p>
+    <div class="text" id="claim-view"></div>
+    <textarea id="claim" spellcheck="false" aria-label="Claim" hidden></textarea>
   </div>
 </div>
 
@@ -324,7 +356,10 @@
     <div class="controls">
       <label for="thr">Threshold</label>
       <input type="range" id="thr" min="0" max="1" step="1">
-      <span class="key"><i class="dot" style="background:var(--c-matcher)"></i>median · line: lowest to highest score</span>
+      <span class="key"><i class="dot" style="background:var(--f-pass)"></i>must pass</span>
+      <span class="key"><i class="dot" style="background:var(--f-judge)"></i>the judge’s job</span>
+      <span class="key"><i class="dot" style="background:var(--f-fail)"></i>must fail</span>
+      <span class="key">dot: median · line: lowest to highest</span>
     </div>
     <div class="chart" id="fig-matcher"></div>
     <p class="readout" id="thr-readout" aria-live="polite"></p>
@@ -366,9 +401,18 @@
   </details>
 </section>
 
-<footer>
+<p class="about">
   VeriQuote is a TypeScript library and CLI with no dependencies.
   <a href="https://github.com/rickintoplace/veriquote">Source, benchmarks and CLI on GitHub</a>. Icons: Lucide (ISC).
+</p>
+
+<footer class="site-footer">
+  <nav aria-label="Footer navigation">
+    <a href="https://github.com/rickintoplace" target="_blank" rel="noopener noreferrer"><svg class="ic" data-icon="github"></svg>GitHub</a>
+    <a href="https://rickinto.place/legal#imprint"><svg class="ic" data-icon="file-text"></svg>Imprint</a>
+    <a href="https://rickinto.place/legal#privacy"><svg class="ic" data-icon="shield"></svg>Privacy</a>
+  </nav>
+  <p>© <span id="year">2026</span> rickintoplace</p>
 </footer>
 
 </div>
@@ -378,7 +422,7 @@
 import { verifyAnswer, serializeEvi1Appendix, ChatCompletionsJudge } from './lib/veriquote.js';
 
 /* BENCH-DATA:BEGIN */
-const BENCH = {"source":"bench/results/*.json","matcher":{"items":2061,"threshold":0.4,"gap":{"lowestFaithfulScore":0.66,"highestAbsentScore":0.396,"gap":0.264},"sweep":[{"threshold":0.2,"faithfulKept":1,"absentRejected":0.112},{"threshold":0.25,"faithfulKept":1,"absentRejected":0.503},{"threshold":0.3,"faithfulKept":1,"absentRejected":0.85},{"threshold":0.35,"faithfulKept":1,"absentRejected":0.968},{"threshold":0.4,"faithfulKept":1,"absentRejected":1},{"threshold":0.45,"faithfulKept":1,"absentRejected":1},{"threshold":0.5,"faithfulKept":1,"absentRejected":1},{"threshold":0.55,"faithfulKept":1,"absentRejected":1},{"threshold":0.6,"faithfulKept":1,"absentRejected":1},{"threshold":0.65,"faithfulKept":1,"absentRejected":1},{"threshold":0.7,"faithfulKept":0.951,"absentRejected":1},{"threshold":0.75,"faithfulKept":0.911,"absentRejected":1},{"threshold":0.8,"faithfulKept":0.897,"absentRejected":1},{"threshold":0.85,"faithfulKept":0.895,"absentRejected":1}],"faithful":{"n":1121,"median":1,"accepted":1,"min":0.66,"max":1},"manipulated":{"n":586,"median":0.932,"accepted":1,"min":0.529,"max":0.987},"absent":{"n":187,"median":0.249,"accepted":0,"min":0.143,"max":0.396},"adversarial":{"n":167,"median":0.871,"accepted":1,"min":0.763,"max":0.936}},"tango":{"judgeModel":"glm-5.3-flash","absent":{"n":187,"matcherCaught":1},"unsupported":{"manipulatedN":586,"matcherCaught":0,"judgeN":56,"judgeCaught":0.839}},"judges":[{"model":"deepseek-v4-flash","reasoning":true,"falseGreen":0.182,"falseGreenCi":[0.102,0.303],"unsupported":55,"agreement":0.787,"agreementCi":[0.73,0.834]},{"model":"glm-5.3-flash","reasoning":false,"falseGreen":0.244,"falseGreenCi":[0.142,0.387],"unsupported":45,"agreement":0.74,"agreementCi":[0.676,0.796]},{"model":"glm-5.3-flash","reasoning":true,"falseGreen":0.161,"falseGreenCi":[0.087,0.278],"unsupported":56,"agreement":0.803,"agreementCi":[0.748,0.849]},{"model":"gpt-oss-120b","reasoning":true,"falseGreen":0.25,"falseGreenCi":[0.155,0.377],"unsupported":56,"agreement":0.767,"agreementCi":[0.709,0.817]},{"model":"qwen3.5-397b-a17b","reasoning":false,"falseGreen":0.214,"falseGreenCi":[0.127,0.338],"unsupported":56,"agreement":0.777,"agreementCi":[0.72,0.826]},{"model":"qwen3.5-397b-a17b","reasoning":true,"falseGreen":0.208,"falseGreenCi":[0.12,0.335],"unsupported":53,"agreement":0.797,"agreementCi":[0.74,0.844]},{"model":"qwen3.6-35b-a3b","reasoning":false,"falseGreen":0.214,"falseGreenCi":[0.127,0.338],"unsupported":56,"agreement":0.773,"agreementCi":[0.716,0.822]},{"model":"qwen3.6-35b-a3b","reasoning":true,"falseGreen":0.182,"falseGreenCi":[0.102,0.303],"unsupported":55,"agreement":0.781,"agreementCi":[0.724,0.829]}],"trueNli":0.776,"protocol":{"tasks":18,"runs":2,"models":[{"model":"deepseek-v4-flash","complete":1,"verbatim":0.992,"answers":36},{"model":"gemma-4-31b-it","complete":0.8,"verbatim":0.966,"answers":36},{"model":"mistral-medium-3.5-128b","complete":0.933,"verbatim":0.81,"answers":36},{"model":"llama-3.1-8b-instruct","complete":0.433,"verbatim":0.503,"answers":36},{"model":"gpt-oss-120b","complete":0.333,"verbatim":0.911,"answers":36},{"model":"qwen3.6-35b-a3b","complete":1,"verbatim":1,"answers":36},{"model":"glm-5.3-flash","complete":0.966,"verbatim":0.996,"answers":35},{"model":"qwen3.5-397b-a17b","complete":1,"verbatim":1,"answers":24}]}};
+const BENCH = {"source":"bench/results/*.json","matcher":{"items":2061,"threshold":0.4,"gap":{"lowestFaithfulScore":0.66,"highestAbsentScore":0.396,"gap":0.264},"sweep":[{"threshold":0.2,"faithfulKept":1,"absentRejected":0.112},{"threshold":0.25,"faithfulKept":1,"absentRejected":0.503},{"threshold":0.3,"faithfulKept":1,"absentRejected":0.85},{"threshold":0.35,"faithfulKept":1,"absentRejected":0.968},{"threshold":0.4,"faithfulKept":1,"absentRejected":1},{"threshold":0.45,"faithfulKept":1,"absentRejected":1},{"threshold":0.5,"faithfulKept":1,"absentRejected":1},{"threshold":0.55,"faithfulKept":1,"absentRejected":1},{"threshold":0.6,"faithfulKept":1,"absentRejected":1},{"threshold":0.65,"faithfulKept":1,"absentRejected":1},{"threshold":0.7,"faithfulKept":0.951,"absentRejected":1},{"threshold":0.75,"faithfulKept":0.911,"absentRejected":1},{"threshold":0.8,"faithfulKept":0.897,"absentRejected":1},{"threshold":0.85,"faithfulKept":0.895,"absentRejected":1}],"operators":[{"label":"untouched passage","family":"faithful","realism":"natural","n":167,"min":0.97,"median":1,"max":1},{"label":"line breaks, double spaces","family":"faithful","realism":"natural","n":167,"min":0.97,"median":1,"max":1},{"label":"smart quotes, dashes, NBSP","family":"faithful","realism":"natural","n":167,"min":0.97,"median":1,"max":1},{"label":"lowercased","family":"faithful","realism":"natural","n":167,"min":0.97,"median":1,"max":1},{"label":"OCR-style typos","family":"faithful","realism":"natural","n":167,"min":0.854,"median":0.957,"max":0.983},{"label":"middle elided with …","family":"faithful","realism":"natural","n":119,"min":0.66,"median":0.701,"max":0.853},{"label":"PDF hyphenation","family":"faithful","realism":"natural","n":167,"min":0.851,"median":0.944,"max":1},{"label":"a figure changed","family":"manipulated","realism":"natural","n":52,"min":0.855,"median":0.979,"max":0.987},{"label":"negation flipped","family":"manipulated","realism":"natural","n":166,"min":0.793,"median":0.961,"max":0.979},{"label":"hedge strengthened","family":"manipulated","realism":"natural","n":39,"min":0.832,"median":0.942,"max":0.97},{"label":"a content word swapped","family":"manipulated","realism":"natural","n":167,"min":0.749,"median":0.927,"max":0.971},{"label":"two fragments spliced","family":"manipulated","realism":"natural","n":162,"min":0.529,"median":0.683,"max":0.984},{"label":"real quote, wrong document","family":"absent","realism":"natural","n":167,"min":0.143,"median":0.241,"max":0.361},{"label":"source words, invented prose","family":"absent","realism":"adversarial","n":167,"min":0.763,"median":0.871,"max":0.936},{"label":"honest paraphrase","family":"absent","realism":"natural","n":20,"min":0.251,"median":0.306,"max":0.396}],"faithful":{"n":1121,"median":1,"accepted":1,"min":0.66,"max":1},"manipulated":{"n":586,"median":0.932,"accepted":1,"min":0.529,"max":0.987},"absent":{"n":187,"median":0.249,"accepted":0,"min":0.143,"max":0.396},"adversarial":{"n":167,"median":0.871,"accepted":1,"min":0.763,"max":0.936}},"tango":{"judgeModel":"glm-5.3-flash","absent":{"n":187,"matcherCaught":1},"unsupported":{"manipulatedN":586,"matcherCaught":0,"judgeN":56,"judgeCaught":0.839}},"judges":[{"model":"deepseek-v4-flash","reasoning":true,"falseGreen":0.182,"falseGreenCi":[0.102,0.303],"unsupported":55,"agreement":0.787,"agreementCi":[0.73,0.834]},{"model":"glm-5.3-flash","reasoning":false,"falseGreen":0.244,"falseGreenCi":[0.142,0.387],"unsupported":45,"agreement":0.74,"agreementCi":[0.676,0.796]},{"model":"glm-5.3-flash","reasoning":true,"falseGreen":0.161,"falseGreenCi":[0.087,0.278],"unsupported":56,"agreement":0.803,"agreementCi":[0.748,0.849]},{"model":"gpt-oss-120b","reasoning":true,"falseGreen":0.25,"falseGreenCi":[0.155,0.377],"unsupported":56,"agreement":0.767,"agreementCi":[0.709,0.817]},{"model":"qwen3.5-397b-a17b","reasoning":false,"falseGreen":0.214,"falseGreenCi":[0.127,0.338],"unsupported":56,"agreement":0.777,"agreementCi":[0.72,0.826]},{"model":"qwen3.5-397b-a17b","reasoning":true,"falseGreen":0.208,"falseGreenCi":[0.12,0.335],"unsupported":53,"agreement":0.797,"agreementCi":[0.74,0.844]},{"model":"qwen3.6-35b-a3b","reasoning":false,"falseGreen":0.214,"falseGreenCi":[0.127,0.338],"unsupported":56,"agreement":0.773,"agreementCi":[0.716,0.822]},{"model":"qwen3.6-35b-a3b","reasoning":true,"falseGreen":0.182,"falseGreenCi":[0.102,0.303],"unsupported":55,"agreement":0.781,"agreementCi":[0.724,0.829]}],"trueNli":0.776,"protocol":{"tasks":18,"runs":2,"models":[{"model":"deepseek-v4-flash","complete":1,"verbatim":0.992,"answers":36},{"model":"gemma-4-31b-it","complete":0.8,"verbatim":0.966,"answers":36},{"model":"mistral-medium-3.5-128b","complete":0.933,"verbatim":0.81,"answers":36},{"model":"llama-3.1-8b-instruct","complete":0.433,"verbatim":0.503,"answers":36},{"model":"gpt-oss-120b","complete":0.333,"verbatim":0.911,"answers":36},{"model":"qwen3.6-35b-a3b","complete":1,"verbatim":1,"answers":36},{"model":"glm-5.3-flash","complete":0.966,"verbatim":0.996,"answers":35},{"model":"qwen3.5-397b-a17b","complete":1,"verbatim":1,"answers":24}]}};
 /* BENCH-DATA:END */
 
 
@@ -432,10 +476,38 @@ const ICONS = {
   'arrow-left': '<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
   'message-square-text': '<path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/><path d="M7 11h10"/><path d="M7 15h6"/><path d="M7 7h8"/>',
   'external-link': '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+  github: '<path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/>',
+  'file-text': '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+  shield: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
+  moon: '<path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/>',
 };
 const ICON_ATTRS = 'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"';
 const icon = (name, cls = 'ic') => `<svg class="${cls}" ${ICON_ATTRS}>${ICONS[name]}</svg>`;
 for (const el of document.querySelectorAll('svg[data-icon]')) el.outerHTML = icon(el.dataset.icon, el.getAttribute('class'));
+
+// ------------------------------------------------------------ theme switch
+
+const THEME_KEY = 'rickintoplace-theme';
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  document.documentElement.style.colorScheme = theme;
+  const sw = $('theme-switch');
+  sw.dataset.mode = theme;
+  sw.setAttribute('aria-pressed', String(theme === 'light'));
+  sw.setAttribute('aria-label', theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+  sw.title = sw.getAttribute('aria-label');
+}
+applyTheme(document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
+$('theme-switch').addEventListener('click', () => {
+  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  try { localStorage.setItem(THEME_KEY, next); } catch {}
+});
+addEventListener('storage', (ev) => {
+  if (ev.key === THEME_KEY && (ev.newValue === 'light' || ev.newValue === 'dark')) applyTheme(ev.newValue);
+});
+$('year').textContent = String(new Date().getFullYear());
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const keyOf = (source, claim, quote) => JSON.stringify([source, claim.trim(), quote.trim()]);
 
@@ -473,8 +545,8 @@ async function buildMatrix() {
   const cells = [
     `<div class="group" style="grid-column: 2 / span ${good}"><span class="small-caps">Should pass</span></div>`,
     `<div class="group" style="grid-column: ${2 + good} / span ${EXAMPLES.length - good}"><span class="small-caps">Should be blocked</span></div>`,
-    '<div class="rowlabel" style="grid-row: 3; grid-column: 1"><b><span class="id judge"></span>Judge</b>claim ↔ quote</div>',
-    '<div class="rowlabel" style="grid-row: 4; grid-column: 1"><b><span class="id matcher"></span>Matcher</b>quote ↔ source</div>',
+    '<div class="rowlabel" style="grid-row: 3; grid-column: 1"><b><span class="id matcher"></span>Matcher</b>quote ↔ source</div>',
+    '<div class="rowlabel" style="grid-row: 4; grid-column: 1"><b><span class="id judge"></span>Judge</b>quote ↔ claim</div>',
   ];
   EXAMPLES.forEach((ex, i) => {
     const col = i + 2;
@@ -484,21 +556,21 @@ async function buildMatrix() {
     const tip = (who, blocks) => `${who} ${blocks ? 'blocks' : 'lets through'}: ${ex.label}`;
     cells.push(
       `<button class="head hit" style="grid-row:2;grid-column:${col}" data-id="${ex.id}" aria-pressed="false">${esc(ex.label)}</button>`,
-      `<div class="cell hit" style="grid-row:3;grid-column:${col}" data-id="${ex.id}"><span class="glyph ${jc}" title="${esc(tip('Judge', d.judgeBlocks))}">${jg}</span></div>`,
-      `<div class="cell hit last" style="grid-row:4;grid-column:${col}" data-id="${ex.id}"><span class="glyph ${mc}" title="${esc(tip('Matcher', d.matcherBlocks))}">${mg}</span></div>`,
+      `<div class="cell hit" style="grid-row:3;grid-column:${col}" data-id="${ex.id}"><span class="glyph ${mc}" title="${esc(tip('Matcher', d.matcherBlocks))}">${mg}</span></div>`,
+      `<div class="cell hit last" style="grid-row:4;grid-column:${col}" data-id="${ex.id}"><span class="glyph ${jc}" title="${esc(tip('Judge', d.judgeBlocks))}">${jg}</span></div>`,
     );
   });
   $('matrix').innerHTML = cells.join('');
 
   const rows = [];
   for (const [title, want] of [['Should pass', true], ['Should be blocked', false]]) {
-    rows.push(`<div class="hdr small-caps"><span>${title}</span><span><span class="id judge"></span>Judge</span><span><span class="id matcher"></span>Match</span></div>`);
+    rows.push(`<div class="hdr small-caps"><span>${title}</span><span><span class="id matcher"></span>Match</span><span><span class="id judge"></span>Judge</span></div>`);
     EXAMPLES.forEach((ex, i) => {
       if (Boolean(ex.good) !== want) return;
       const [jc, jg] = glyph(decided[i].judgeBlocks);
       const [mc, mg] = glyph(decided[i].matcherBlocks);
       rows.push(`<button class="row hit" type="button" data-id="${ex.id}"><span>${esc(ex.label)}</span>` +
-        `<span class="glyph ${jc}">${jg}</span><span class="glyph ${mc}">${mg}</span></button>`);
+        `<span class="glyph ${mc}">${mg}</span><span class="glyph ${jc}">${jg}</span></button>`);
     });
   }
   $('stack').innerHTML = rows.join('');
@@ -703,33 +775,45 @@ function tangoChart(W) {
 // --- 2. matcher score ranges, with a live threshold
 
 let thrIndex = 0;
+const FAMILY = {
+  faithful: { name: 'Faithful, reformatted', note: 'must pass', color: 'var(--f-pass)' },
+  manipulated: { name: 'Meaning changed', note: 'near-verbatim: the judge’s job', color: 'var(--f-judge)' },
+  absent: { name: 'Not in the source', note: 'must fail', color: 'var(--f-fail)' },
+};
 function matcherChart(W) {
   const m = BENCH.matcher;
   const narrow = W < 560;
-  const labelW = narrow ? 112 : 220;
+  const labelW = narrow ? 150 : 250;
   const x0 = labelW + 12, x1 = W - 10;
-  const rows = [
-    { name: 'Faithful, reformatted', short: 'Faithful', note: 'must pass', d: m.faithful },
-    { name: 'Meaning changed', short: 'Meaning changed', note: 'near-verbatim: the judge’s job', shortNote: 'the judge’s job', d: m.manipulated },
-    { name: 'Not in the source', short: 'Not in source', note: 'must fail', d: m.absent },
-    { name: 'Invented from source words', short: 'Word salad', note: 'adversarial', d: m.adversarial, open: true },
-  ];
-  const top = 26, rowH = 44, y1 = top + rows.length * rowH;
   const sx = scale(0, 1, x0, x1);
-  const b = [
-    `<rect class="gap" x="${sx(m.gap.highestAbsentScore)}" y="${top}" width="${sx(m.gap.lowestFaithfulScore) - sx(m.gap.highestAbsentScore)}" height="${y1 - top}" ${tipAttr(`The gap: faithful quotes never score below ${m.gap.lowestFaithfulScore}, missing ones never above ${m.gap.highestAbsentScore}.`)}/>`,
-    ...axis(sx, [0, 0.2, 0.4, 0.6, 0.8, 1], top, y1, (v) => v.toFixed(1)),
-  ];
-  rows.forEach((r, i) => {
-    const cy = top + i * rowH + rowH / 2;
-    const tip = `${r.name}: median ${r.d.median}, from ${r.d.min} to ${r.d.max} (n = ${r.d.n.toLocaleString('en')})`;
-    b.push(`<g class="row" ${tipAttr(tip)}><rect class="hit" x="0" y="${cy - 20}" width="${W}" height="40"/>`);
-    b.push(T(0, cy - 2, narrow ? r.short : r.name, narrow ? 's' : ''), T(0, cy + 13, narrow ? (r.shortNote ?? r.note) : r.note, 'm s'));
-    b.push(`<line x1="${sx(r.d.min)}" x2="${Math.max(sx(r.d.max), sx(r.d.min) + 1)}" y1="${cy}" y2="${cy}" stroke="var(--c-matcher)" stroke-width="2.5" stroke-linecap="round"/>`);
-    b.push(`<circle cx="${sx(r.d.median)}" cy="${cy}" r="6" fill="${r.open ? 'var(--ground)' : 'var(--c-matcher)'}" stroke="${r.open ? 'var(--c-matcher)' : 'var(--ground)'}" stroke-width="2"/>`);
+  const rowH = 22, headH = 30, top = 26;
+  const b = [];
+  let y = top;
+  const rows = [];
+  for (const key of ['faithful', 'manipulated', 'absent']) {
+    rows.push({ head: FAMILY[key], y });
+    y += headH;
+    for (const op of m.operators.filter((o) => o.family === key)) { rows.push({ op, f: FAMILY[key], y }); y += rowH; }
+    y += 6;
+  }
+  const y1 = y - 4;
+  b.push(`<rect class="gap" x="${sx(m.gap.highestAbsentScore)}" y="${top}" width="${sx(m.gap.lowestFaithfulScore) - sx(m.gap.highestAbsentScore)}" height="${y1 - top}" ${tipAttr(`The gap: faithful quotes never score below ${m.gap.lowestFaithfulScore}, missing ones never above ${m.gap.highestAbsentScore} (natural cases).`)}/>`);
+  b.push(...axis(sx, [0, 0.2, 0.4, 0.6, 0.8, 1], top, y1, (v) => v.toFixed(1)));
+  for (const r of rows) {
+    if (r.head) {
+      b.push(`<circle cx="5" cy="${r.y + 15}" r="5" fill="${r.head.color}"/>`,
+        T(16, r.y + 19, r.head.name, 'b'), narrow ? '' : T(16 + r.head.name.length * 7.6 + 10, r.y + 19, r.head.note, 'm s'));
+      continue;
+    }
+    const cy = r.y + rowH / 2;
+    const adversarial = r.op.realism === 'adversarial';
+    const tip = `${r.op.label}${adversarial ? ' (adversarial)' : ''}: median ${r.op.median}, from ${r.op.min} to ${r.op.max} (n = ${r.op.n})`;
+    b.push(`<g class="row" ${tipAttr(tip)}><rect class="hit" x="0" y="${cy - 11}" width="${W}" height="22"/>`);
+    b.push(T(labelW, cy + 4, r.op.label + (adversarial && !narrow ? ' · adversarial' : ''), `s${adversarial ? ' m' : ''}`, 'end'));
+    b.push(`<line x1="${sx(r.op.min)}" x2="${Math.max(sx(r.op.max), sx(r.op.min) + 1)}" y1="${cy}" y2="${cy}" stroke="${r.f.color}" stroke-width="2.5" stroke-linecap="round"/>`);
+    b.push(`<circle cx="${sx(r.op.median)}" cy="${cy}" r="5" fill="${adversarial ? 'var(--ground)' : r.f.color}" stroke="${adversarial ? r.f.color : 'var(--ground)'}" stroke-width="2"/>`);
     b.push('</g>');
-  });
-  // threshold: a group moved by transform, so the slider animates it
+  }
   b.push(`<g class="mv" id="thr-line" data-x0="${x0}" data-x1="${x1}"><line class="ref" x1="0" x2="0" y1="${top - 6}" y2="${y1}"/>` +
     `<text x="-6" y="${top - 10}" class="s" text-anchor="end" id="thr-label"></text></g>`);
   return svgOf(W, y1 + 24, 'Matcher score ranges per kind of quote, with the acceptance threshold', b);
