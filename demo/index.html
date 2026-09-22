@@ -9,6 +9,13 @@
 <meta property="og:description" content="Two checks on every LLM citation: is the quote really in the source, and does it support the claim? Interactive demo with measured results.">
 <meta property="og:type" content="website">
 <script>
+  // Served as /veriquote (no trailing slash), relative paths would resolve
+  // from the site root. Anchor them to this page's folder instead.
+  if (!/\/$|\.html?$/.test(location.pathname)) {
+    const base = document.createElement('base');
+    base.href = `${location.pathname}/`;
+    document.head.prepend(base);
+  }
   // Follow the theme chosen on rickinto.place, if there is one.
   try {
     const t = localStorage.getItem('rickintoplace-theme');
