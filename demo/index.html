@@ -5,202 +5,199 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VeriQuote Demo</title>
 <meta name="description" content="Two checks on every LLM citation: is the quote really in the source, and does it support the claim? Runs in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
   :root {
-    --bg: #f7f7f5; --panel: #ffffff; --ink: #1c1c1a; --ink2: #52514e; --muted: #7a7973;
-    --line: #e4e3de; --soft: #f1f0ec;
-    --matcher: #2a78d6; --judge: #eb6834;
-    --ok: #1f7a45; --bad: #b3372b; --ok-bg: #e6f3eb; --bad-bg: #fbe9e6; --miss-bg: #fdf3e1; --miss: #8a5a00;
-    --mark: #cfe2f8;
-    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --ground: #f5f6f3; --surface: #ffffff; --ink: #17191a; --muted: #686d6b; --line: #d9ddd8;
+    --wash: #eceee9; --mark: rgba(23, 25, 26, .10);
+    --pass: #1d7548; --block: #c0392b;
+    --sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg: #141518; --panel: #1c1e22; --ink: #ecece8; --ink2: #c3c2b7; --muted: #92918a;
-      --line: #2e3036; --soft: #24262b;
-      --matcher: #3987e5; --judge: #d95926;
-      --ok: #6fcf97; --bad: #ef7d6d; --ok-bg: #1b2e24; --bad-bg: #3a2320; --miss-bg: #352a14; --miss: #e0b35a;
-      --mark: #1f3a5c;
+      --ground: #121413; --surface: #1a1d1c; --ink: #eceeea; --muted: #939895; --line: #2e3230;
+      --wash: #222624; --mark: rgba(236, 238, 234, .16);
+      --pass: #5fcb8e; --block: #f07a68;
     }
   }
   :root[data-theme="dark"] {
-    --bg: #141518; --panel: #1c1e22; --ink: #ecece8; --ink2: #c3c2b7; --muted: #92918a;
-    --line: #2e3036; --soft: #24262b;
-    --matcher: #3987e5; --judge: #d95926;
-    --ok: #6fcf97; --bad: #ef7d6d; --ok-bg: #1b2e24; --bad-bg: #3a2320; --miss-bg: #352a14; --miss: #e0b35a;
-    --mark: #1f3a5c;
+    --ground: #121413; --surface: #1a1d1c; --ink: #eceeea; --muted: #939895; --line: #2e3230;
+    --wash: #222624; --mark: rgba(236, 238, 234, .16);
+    --pass: #5fcb8e; --block: #f07a68;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--ink);
-         font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-  .wrap { max-width: 1060px; margin: 0 auto; padding: 36px 16px 64px; }
-  h1 { font-size: 1.55rem; margin: 0 0 .25em; letter-spacing: -.01em; }
-  .lede { color: var(--ink2); margin: 0 0 1.2em; max-width: 70ch; }
-  button { font: inherit; color: inherit; cursor: pointer; }
+  body { margin: 0; background: var(--ground); color: var(--ink); font: 16px/1.55 var(--sans); }
+  .page { max-width: 1080px; margin: 0 auto; padding: 40px 16px 72px; }
+  h1 { font-size: 1.75rem; font-weight: 600; letter-spacing: -.015em; margin: 0 0 .3em; text-wrap: balance; }
+  .lede { color: var(--muted); max-width: 62ch; margin: 0 0 32px; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .small-caps { font-size: .72rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 
-  /* the two checks, introduced once */
-  .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 26px; }
-  .legend > div { background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
-                  padding: 12px 14px; border-top: 4px solid var(--c); }
-  .legend strong { display: block; font-size: 1rem; }
-  .legend .cmp { font-family: var(--mono); font-size: .82rem; color: var(--ink2); margin: 2px 0; }
-  .legend .blind { font-size: .84rem; color: var(--muted); }
+  /* ---- matrix: pick an example, see who blocks it ---- */
+  .matrix-wrap { overflow-x: auto; margin-bottom: 36px; }
+  .matrix { display: grid; grid-template-columns: 150px repeat(8, minmax(74px, 1fr)); min-width: 760px; }
+  .matrix .group { grid-row: 1; padding: 0 8px 6px; border-bottom: 1px solid var(--line); }
+  .matrix .rowlabel { padding: 10px 12px 10px 0; font-size: .82rem; color: var(--muted); line-height: 1.3; }
+  .matrix .rowlabel b { display: block; color: var(--ink); font-weight: 500; font-size: .9rem; }
+  .col { display: contents; }
+  .matrix .cell, .matrix .head {
+    display: flex; align-items: center; justify-content: center; text-align: center; padding: 8px 6px;
+  }
+  .matrix .head { font-size: .82rem; line-height: 1.25; min-height: 52px; font-weight: 500; }
+  .matrix .picked { background: var(--wash); }
+  .matrix .head.picked { border-radius: 8px 8px 0 0; }
+  .matrix .cell.last.picked { border-radius: 0 0 8px 8px; }
+  .matrix .hit { cursor: pointer; }
+  .glyph { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: .9rem; font-weight: 600; }
+  .glyph.pass { color: var(--pass); border: 1.5px solid currentColor; }
+  .glyph.block { background: var(--block); color: var(--surface); }
+  .glyph.none { color: var(--muted); border: 1.5px solid var(--line); }
 
-  .layout { display: grid; grid-template-columns: 290px 1fr; gap: 22px; align-items: start; }
+  /* phones get the same matrix turned on its side */
+  .stack { display: none; margin-bottom: 28px; }
+  .stack .row { display: grid; grid-template-columns: 1fr 64px 64px; align-items: center; width: 100%;
+                padding: 6px 8px; border-radius: 8px; text-align: left; }
+  .stack .row.picked { background: var(--wash); }
+  .stack .row .glyph { justify-self: center; }
+  .stack .hdr { display: grid; grid-template-columns: 1fr 64px 64px; padding: 10px 8px 4px; }
+  .stack .hdr span:not(:first-child) { text-align: center; }
 
-  /* example list = picker + scoreboard */
-  .list { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 6px; }
-  .group { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted);
-           padding: 10px 10px 4px; }
-  .item { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; width: 100%;
-          text-align: left; border: 0; background: transparent; border-radius: 7px; padding: 8px 10px; }
-  .item:hover { background: var(--soft); }
-  .item[aria-pressed="true"] { background: var(--soft); box-shadow: inset 3px 0 0 var(--ink); }
-  .item .name { font-size: .9rem; }
-  .chips { display: flex; gap: 4px; }
-  .chip { font-size: .72rem; font-weight: 600; border-radius: 5px; padding: 1px 6px; min-width: 32px;
-          text-align: center; border-left: 3px solid var(--c); }
-  .chip.pass { background: var(--ok-bg); color: var(--ok); }
-  .chip.block { background: var(--bad-bg); color: var(--bad); }
-  .chip.miss { background: var(--miss-bg); color: var(--miss); }
-  .list-foot { font-size: .76rem; color: var(--muted); padding: 8px 10px 6px; border-top: 1px solid var(--line); margin-top: 6px; }
-  .own { margin: 6px 4px 4px; width: calc(100% - 8px); border: 1px dashed var(--line); background: transparent;
-         border-radius: 7px; padding: 8px; font-size: .88rem; color: var(--ink2); }
-  .own:hover, .own[aria-pressed="true"] { border-color: var(--ink2); color: var(--ink); }
+  /* ---- the citation, wired to its two checks ---- */
+  .wiring { display: grid; grid-template-columns: 1fr 96px 1fr 96px 1.35fr; align-items: stretch; }
+  .box { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; min-width: 0; }
+  .box .small-caps { margin: 0 0 8px; }
+  .box .text { white-space: pre-wrap; word-break: break-word; }
+  .box .text.mono { font-family: var(--mono); font-size: .86rem; line-height: 1.6; }
+  .box .src { font-family: var(--mono); font-size: .8rem; line-height: 1.6; max-height: 200px; overflow: auto;
+              white-space: pre-wrap; word-break: break-word; }
+  .box .src.faded { color: var(--muted); }
+  .box mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 1px 0; }
+  .box textarea { width: 100%; min-height: 96px; resize: vertical; border: 1px solid var(--line); border-radius: 6px;
+                  background: var(--ground); color: var(--ink); padding: 8px 10px; font: .86rem/1.55 var(--mono); }
 
-  /* detail */
-  .verdict { border-radius: 10px; padding: 12px 16px; margin-bottom: 14px; }
-  .verdict b { font-size: 1.05rem; }
-  .verdict span { display: block; font-size: .9rem; color: var(--ink2); margin-top: 2px; }
-  .verdict.pass { background: var(--ok-bg); } .verdict.pass b { color: var(--ok); }
-  .verdict.fail { background: var(--bad-bg); } .verdict.fail b { color: var(--bad); }
-  .verdict.open { background: var(--panel); border: 1px solid var(--line); }
+  .link { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+  .link::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1.5px solid var(--line); }
+  .link.block::before { border-top-color: var(--block);
+    -webkit-mask: linear-gradient(90deg, #000 0 28%, transparent 28% 72%, #000 72%);
+            mask: linear-gradient(90deg, #000 0 28%, transparent 28% 72%, #000 72%); }
+  .link > * { position: relative; }
+  .link .who { font-size: .78rem; font-weight: 600; background: var(--ground); padding: 0 4px; }
+  .link .glyph { width: 40px; height: 40px; font-size: 1.1rem; background: var(--ground); }
+  .link .glyph.block { background: var(--block); }
+  .link .what { font-size: .74rem; color: var(--muted); text-align: center; line-height: 1.3; background: var(--ground);
+                padding: 0 4px; max-width: 92px; }
 
-  .checks { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .check { background: var(--panel); border: 1px solid var(--line); border-top: 4px solid var(--c);
-           border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; }
-  .check h2 { font-size: 1rem; margin: 0; }
-  .check .role { font-size: .8rem; color: var(--muted); margin: 0 0 10px; }
-  .slot-label { font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 3px; }
-  .slot { background: var(--soft); border-radius: 7px; padding: 8px 10px; font-size: .86rem;
-          white-space: pre-wrap; word-break: break-word; }
-  .slot.mono { font-family: var(--mono); font-size: .8rem; }
-  .slot.src { max-height: 170px; overflow: auto; }
-  .slot.faded { color: var(--muted); }
-  .slot mark { background: var(--mark); color: inherit; border-radius: 2px; }
-  .vs { text-align: center; color: var(--muted); font-size: .9rem; margin: 4px 0; line-height: 1; }
-  .result { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); }
-  .result .head { font-weight: 700; font-size: 1rem; }
-  .result .head.pass { color: var(--ok); } .result .head.block { color: var(--bad); } .result .head.none { color: var(--muted); }
-  .result .num { font-family: var(--mono); font-size: .8rem; color: var(--ink2); margin-left: 6px; font-weight: 400; }
-  .result ul { margin: 6px 0 0; padding-left: 1.1em; font-size: .85rem; color: var(--ink2); }
-  .result .blind { font-size: .8rem; color: var(--muted); margin: 8px 0 0; }
-  .result .blind.hit { color: var(--miss); background: var(--miss-bg); border-radius: 6px; padding: 6px 8px; }
-  .result .blind.hit::before { content: "Missed · "; font-weight: 700; }
+  /* ---- verdict ---- */
+  .verdict { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin: 28px 0 0; }
+  .verdict .big { font-size: 1.3rem; font-weight: 600; }
+  .verdict .big.pass { color: var(--pass); } .verdict .big.block { color: var(--block); } .verdict .big.none { color: var(--muted); }
+  .verdict .why { color: var(--muted); }
+  .tools { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 24px; margin-top: 14px; font-size: .9rem; }
+  .tools button, details summary { color: var(--ink); text-decoration: underline; text-underline-offset: 3px;
+                                   text-decoration-color: var(--line); cursor: pointer; }
+  details ul { margin: 8px 0 0; padding-left: 1.2em; color: var(--muted); font-size: .9rem; }
+  details p { color: var(--muted); font-size: .82rem; margin: 6px 0 0; }
 
-  /* editor */
-  .editor { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; }
-  .editor label { display: block; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 8px 0 4px; }
-  .editor label:first-child { margin-top: 0; }
-  textarea, input { width: 100%; background: transparent; color: var(--ink); border: 1px solid var(--line);
-                    border-radius: 7px; padding: 8px 10px; font-family: var(--mono); font-size: .82rem; line-height: 1.5; resize: vertical; }
-  textarea:focus, input:focus { outline: 2px solid var(--ink2); outline-offset: -1px; }
-  .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-  .run { margin-top: 10px; background: var(--judge); color: #fff; border: 0; border-radius: 7px; padding: 7px 14px; font-weight: 600; }
-  .run:disabled { opacity: .5; cursor: default; }
+  .live { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+  .live-row { display: grid; grid-template-columns: 1.2fr 1fr 1fr auto; gap: 8px; align-items: end; }
+  .live label { display: block; margin-bottom: 4px; }
+  .live input { width: 100%; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink);
+                padding: 7px 9px; font: .84rem var(--mono); }
+  .live .run { background: var(--ink); color: var(--ground); border-radius: 6px; padding: 8px 16px; font-weight: 500; }
+  .live .run:disabled { opacity: .5; cursor: default; }
   .note { color: var(--muted); font-size: .8rem; margin: 8px 0 0; }
   [hidden] { display: none !important; }
-  footer { margin-top: 36px; color: var(--muted); font-size: .84rem; }
+  footer { margin-top: 56px; color: var(--muted); font-size: .85rem; }
   a { color: inherit; }
 
-  @media (max-width: 820px) {
-    .layout { grid-template-columns: 1fr; }
-    .checks, .legend { grid-template-columns: 1fr; }
+  @media (max-width: 860px) {
+    .matrix-wrap { display: none; }
+    .stack { display: block; }
+    .wiring { grid-template-columns: 1fr; }
+    .link { flex-direction: row; min-height: 64px; gap: 10px; }
+    .link::before { left: 50%; right: auto; top: 0; bottom: 0; border-top: 0; border-left: 1.5px solid var(--line); }
+    .link.block::before { border-left-color: var(--block);
+      -webkit-mask: linear-gradient(180deg, #000 0 22%, transparent 22% 78%, #000 78%);
+              mask: linear-gradient(180deg, #000 0 22%, transparent 22% 78%, #000 78%); }
+    .link .what { max-width: none; }
+    .live-row { grid-template-columns: 1fr; }
   }
-  @media (max-width: 520px) { .row3 { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: no-preference) {
+    .glyph, .matrix .hit { transition: background-color .15s, color .15s, border-color .15s; }
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="page">
 
 <h1>Is the quote real, and does it say that?</h1>
 <p class="lede">
-  VeriQuote makes a model attach a verbatim quote to every cited claim and then checks each citation
-  twice. The two checks look at different things, so each one is blind exactly where the other one sees.
-  A citation passes only if both let it through.
+  The model attaches a verbatim quote to every cited claim. Two checks then look at different pairs:
+  the judge compares the claim with the quote, the matcher compares the quote with the source.
+  A citation passes only if neither blocks it.
 </p>
 
-<div class="legend">
-  <div style="--c: var(--matcher)">
-    <strong>1 · Matcher</strong>
-    <div class="cmp">quote ⟷ source</div>
-    <div class="blind">Deterministic, runs in this page. Never reads the claim.</div>
+<div class="matrix-wrap">
+  <div class="matrix" id="matrix" aria-label="Examples and which check blocks each"></div>
+</div>
+
+<div class="stack" id="stack"></div>
+
+<div class="wiring">
+  <div class="box">
+    <p class="small-caps">Claim in the answer</p>
+    <div class="text" id="claim-view"></div>
+    <textarea id="claim" spellcheck="false" aria-label="Claim" hidden></textarea>
   </div>
-  <div style="--c: var(--judge)">
-    <strong>2 · Judge</strong>
-    <div class="cmp">claim ⟷ quote</div>
-    <div class="blind">An LLM at temperature 0. Never checks that the quote exists.</div>
+  <div class="link" id="judge-link">
+    <span class="who">Judge</span>
+    <span class="glyph none" id="judge-glyph">·</span>
+    <span class="what" id="judge-what"></span>
+  </div>
+  <div class="box">
+    <p class="small-caps">Quote attached</p>
+    <div class="text mono" id="quote-view"></div>
+    <textarea id="quote" spellcheck="false" aria-label="Quote" hidden></textarea>
+  </div>
+  <div class="link" id="matcher-link">
+    <span class="who">Matcher</span>
+    <span class="glyph none" id="matcher-glyph">·</span>
+    <span class="what" id="matcher-what"></span>
+  </div>
+  <div class="box">
+    <p class="small-caps">Source</p>
+    <div class="src" id="source-view"></div>
+    <textarea id="source" spellcheck="false" aria-label="Source" hidden></textarea>
   </div>
 </div>
 
-<div class="layout">
-  <nav class="list" id="list" aria-label="Examples"></nav>
+<div class="verdict" aria-live="polite">
+  <span class="big" id="verdict"></span>
+  <span class="why" id="verdict-why"></span>
+</div>
 
-  <main>
-    <div class="editor" id="editor" hidden>
-      <label for="claim">Claim in the answer</label>
-      <textarea id="claim" rows="2" spellcheck="false"></textarea>
-      <label for="quote">Quote the model attached</label>
-      <textarea id="quote" rows="2" spellcheck="false"></textarea>
-      <label for="source">Source</label>
-      <textarea id="source" rows="5" spellcheck="false"></textarea>
-      <details id="live">
-        <summary class="note" style="cursor:pointer">Run the judge on your text with your own API key</summary>
-        <div class="row3" style="margin-top:8px">
-          <div><label for="base">Endpoint</label><input id="base" value="https://openrouter.ai/api/v1"></div>
-          <div><label for="model">Model</label><input id="model" placeholder="an OpenRouter model id"></div>
-          <div><label for="key">API key</label><input id="key" type="password" autocomplete="off"></div>
-        </div>
-        <button class="run" id="run" type="button">Run judge</button>
-        <span class="note" id="live-status"></span>
-        <p class="note">Any OpenAI-compatible endpoint that accepts browser requests (OpenRouter does). The key
-          stays in this tab's memory and goes only to that endpoint.</p>
-      </details>
-    </div>
+<div class="tools">
+  <details id="reasons-box">
+    <summary>What the judge said</summary>
+    <ul id="reasons"></ul>
+    <p id="provenance"></p>
+  </details>
+  <button type="button" id="edit">Edit the text</button>
+</div>
 
-    <div class="verdict open" id="verdict" aria-live="polite"><b>—</b></div>
-
-    <div class="checks">
-      <section class="check" style="--c: var(--matcher)">
-        <h2>1 · Matcher</h2>
-        <p class="role">Is the quote in the source?</p>
-        <p class="slot-label">Quote</p>
-        <div class="slot mono" id="m-quote"></div>
-        <div class="vs" aria-hidden="true">⟷</div>
-        <p class="slot-label">Source</p>
-        <div class="slot mono src" id="m-source"></div>
-        <div class="result">
-          <div class="head" id="m-head"></div>
-          <p class="blind" id="m-blind">Never reads the claim: a real quote under a false claim passes here.</p>
-        </div>
-      </section>
-      <section class="check" style="--c: var(--judge)">
-        <h2>2 · Judge</h2>
-        <p class="role">Does the quote support the claim?</p>
-        <p class="slot-label">Claim</p>
-        <div class="slot" id="j-claim"></div>
-        <div class="vs" aria-hidden="true">⟷</div>
-        <p class="slot-label">Quote</p>
-        <div class="slot mono" id="j-quote"></div>
-        <div class="result">
-          <div class="head" id="j-head"></div>
-          <ul id="j-reasons"></ul>
-          <p class="blind" id="j-blind">Never checks that the quote exists: an invented quote that fits the claim passes here.</p>
-          <p class="note" id="j-prov"></p>
-        </div>
-      </section>
-    </div>
-  </main>
+<div class="live" id="live" hidden>
+  <div class="live-row">
+    <div><label class="small-caps" for="base">Endpoint</label><input id="base" value="https://openrouter.ai/api/v1"></div>
+    <div><label class="small-caps" for="model">Model</label><input id="model" placeholder="model id"></div>
+    <div><label class="small-caps" for="key">API key</label><input id="key" type="password" autocomplete="off"></div>
+    <button class="run" id="run" type="button">Run judge</button>
+  </div>
+  <p class="note" id="live-status">The matcher reruns as you type. The judge needs a model: any OpenAI-compatible endpoint that
+    accepts browser requests, such as OpenRouter. Your key stays in this tab and goes only to that endpoint.</p>
 </div>
 
 <footer>
@@ -223,13 +220,13 @@ const EXAMPLES = [
   { id: 'messy', label: 'Messy extraction', good: true, claim: FALLS,
     quote: 'daily vitamin  D supplementation reduced the rate of falls by 19%\nover a 24-month follow-up period' },
   { id: 'overstated', label: 'Claim goes further', claim: 'Vitamin D protects older adults from falls and fractures.', quote: FALLS_QUOTE },
-  { id: 'contradicted', label: 'Claim contradicts quote', claim: 'The trial also found fewer fractures with vitamin D.',
+  { id: 'contradicted', label: 'Claim contradicts', claim: 'The trial also found fewer fractures with vitamin D.',
     quote: 'No significant effect on fracture incidence was observed.' },
   { id: 'number', label: 'Number changed', claim: 'Daily vitamin D cut falls by 79% in adults over 65.',
     quote: 'daily vitamin D supplementation reduced the rate of falls by 79% over a 24-month follow-up period' },
-  { id: 'paraphrase', label: 'Paraphrase, not a quote', claim: FALLS,
+  { id: 'paraphrase', label: 'Paraphrase', claim: FALLS,
     quote: 'vitamin D given daily lowered how often older participants fell, by roughly a fifth, across two years' },
-  { id: 'wrong-source', label: 'Quote from another source', source: OTHER_SOURCE, claim: FALLS, quote: FALLS_QUOTE },
+  { id: 'wrong-source', label: 'Other source', source: OTHER_SOURCE, claim: FALLS, quote: FALLS_QUOTE },
   { id: 'fabricated', label: 'Invented quote', claim: 'Magnesium infusions eliminated hospital readmissions in the trial.',
     quote: 'the authors concluded that magnesium infusions eliminated hospital readmissions across all study arms' },
 ];
@@ -266,167 +263,174 @@ async function evaluate(source, claim, quote, judge) {
   return report.citations[0];
 }
 
-/** Same rules as the CLI gate: each check either lets the citation through or blocks it. */
+/** Same rules as the CLI: each check lets the citation through or blocks it. `null` = not judged. */
 function decide(c) {
   const matcherBlocks = c.textMatch.method === 'not_found' || c.textMatch.score < 0.5;
   const e = c.entailment && c.entailment.class !== 'error' ? c.entailment : null;
   const judgeBlocks = e ? ['contradicted', 'overstated'].includes(e.class) || e.confidence < 0.5 : null;
-  return { matcherBlocks, judgeBlocks, judged: Boolean(e) };
+  return { matcherBlocks, judgeBlocks };
 }
 
-// ------------------------------------------------------------------ list
+const glyph = (blocks) => (blocks === null ? ['none', '·'] : blocks ? ['block', '✕'] : ['pass', '✓']);
 
-const list = $('list');
+// ---------------------------------------------------------------- matrix
 
-async function buildList() {
-  const groups = [['Should pass', EXAMPLES.filter((e) => e.good)], ['Should be blocked', EXAMPLES.filter((e) => !e.good)]];
-  const parts = [];
-  for (const [title, items] of groups) {
-    parts.push(`<div class="group">${title}</div>`);
-    for (const ex of items) {
-      const d = decide(await evaluate(ex.source ?? SOURCE, ex.claim, ex.quote, RECORDED.results[ex.id]));
-      parts.push(`<button class="item" type="button" data-id="${ex.id}" aria-pressed="false">
-        <span class="name">${esc(ex.label)}</span>
-        <span class="chips">${chip('M', 'var(--matcher)', d.matcherBlocks, ex.good)}${chip('J', 'var(--judge)', d.judgeBlocks, ex.good)}</span>
-      </button>`);
-    }
+let selected = EXAMPLES[0];
+
+async function buildMatrix() {
+  const decided = await Promise.all(EXAMPLES.map(async (ex) =>
+    decide(await evaluate(ex.source ?? SOURCE, ex.claim, ex.quote, RECORDED.results[ex.id]))));
+  const good = EXAMPLES.filter((e) => e.good).length;
+  const cells = [
+    `<div class="group" style="grid-column: 2 / span ${good}"><span class="small-caps">Should pass</span></div>`,
+    `<div class="group" style="grid-column: ${2 + good} / span ${EXAMPLES.length - good}"><span class="small-caps">Should be blocked</span></div>`,
+    '<div class="rowlabel" style="grid-row: 3; grid-column: 1"><b>Judge</b>claim ↔ quote</div>',
+    '<div class="rowlabel" style="grid-row: 4; grid-column: 1"><b>Matcher</b>quote ↔ source</div>',
+  ];
+  EXAMPLES.forEach((ex, i) => {
+    const col = i + 2;
+    const d = decided[i];
+    const [jc, jg] = glyph(d.judgeBlocks);
+    const [mc, mg] = glyph(d.matcherBlocks);
+    const tip = (who, blocks) => `${who} ${blocks ? 'blocks' : 'lets through'}: ${ex.label}`;
+    cells.push(
+      `<button class="head hit" style="grid-row:2;grid-column:${col}" data-id="${ex.id}" aria-pressed="false">${esc(ex.label)}</button>`,
+      `<div class="cell hit" style="grid-row:3;grid-column:${col}" data-id="${ex.id}"><span class="glyph ${jc}" title="${esc(tip('Judge', d.judgeBlocks))}">${jg}</span></div>`,
+      `<div class="cell hit last" style="grid-row:4;grid-column:${col}" data-id="${ex.id}"><span class="glyph ${mc}" title="${esc(tip('Matcher', d.matcherBlocks))}">${mg}</span></div>`,
+    );
+  });
+  $('matrix').innerHTML = cells.join('');
+
+  const rows = [];
+  for (const [title, want] of [['Should pass', true], ['Should be blocked', false]]) {
+    rows.push(`<div class="hdr small-caps"><span>${title}</span><span>Judge</span><span>Matcher</span></div>`);
+    EXAMPLES.forEach((ex, i) => {
+      if (Boolean(ex.good) !== want) return;
+      const [jc, jg] = glyph(decided[i].judgeBlocks);
+      const [mc, mg] = glyph(decided[i].matcherBlocks);
+      rows.push(`<button class="row hit" type="button" data-id="${ex.id}"><span>${esc(ex.label)}</span>` +
+        `<span class="glyph ${jc}">${jg}</span><span class="glyph ${mc}">${mg}</span></button>`);
+    });
   }
-  parts.push('<button class="own" type="button" data-id="own" aria-pressed="false">✎ Try your own text</button>');
-  parts.push(`<div class="list-foot"><b>M</b> matcher, <b>J</b> judge. <span style="color:var(--ok)">✓</span> lets it through,
-    <span style="color:var(--bad)">✗</span> blocks it. Amber: a bad citation this check missed.</div>`);
-  list.innerHTML = parts.join('');
-  for (const b of list.querySelectorAll('[data-id]')) b.addEventListener('click', () => select(b.dataset.id, { scroll: true }));
+  $('stack').innerHTML = rows.join('');
+
+  for (const el of document.querySelectorAll('#matrix .hit, #stack .hit')) el.addEventListener('click', () => select(el.dataset.id));
 }
 
-function chip(letter, color, blocks, good) {
-  const cls = blocks ? 'block' : good ? 'pass' : 'miss';
-  const title = `${letter === 'M' ? 'Matcher' : 'Judge'}: ${blocks ? 'blocks it' : good ? 'lets it through' : 'lets it through — missed'}`;
-  return `<span class="chip ${cls}" style="--c:${color}" title="${title}">${letter} ${blocks ? '✗' : '✓'}</span>`;
-}
-
-let selected = null;
-
-function select(id, { scroll = false } = {}) {
-  selected = EXAMPLES.find((e) => e.id === id) ?? null;
-  if (id !== 'own') history.replaceState(null, '', `#${id}`);
-  for (const b of list.querySelectorAll('[data-id]')) b.setAttribute('aria-pressed', String(b.dataset.id === id));
-  const editing = id === 'own';
-  $('editor').hidden = !editing;
-  if (!editing) {
-    const ex = EXAMPLES.find((e) => e.id === id);
-    $('source').value = ex.source ?? SOURCE;
-    $('claim').value = ex.claim;
-    $('quote').value = ex.quote;
-  }
+function select(id) {
+  selected = EXAMPLES.find((e) => e.id === id) ?? EXAMPLES[0];
+  history.replaceState(null, '', `#${selected.id}`);
+  for (const el of document.querySelectorAll('#matrix .hit, #stack .hit')) el.classList.toggle('picked', el.dataset.id === selected.id);
+  for (const b of $('matrix').querySelectorAll('button.head')) b.setAttribute('aria-pressed', String(b.dataset.id === selected.id));
+  $('source').value = selected.source ?? SOURCE;
+  $('claim').value = selected.claim;
+  $('quote').value = selected.quote;
   render();
-  // On a phone the list sits above the result; jump to what changed.
-  if (scroll && matchMedia('(max-width: 820px)').matches) $('verdict').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-// ---------------------------------------------------------------- detail
+// ---------------------------------------------------------------- wiring
 
 let ticket = 0;
 async function render() {
   const mine = ++ticket;
   const source = $('source').value, claim = $('claim').value, quote = $('quote').value;
-  const verdict = verdicts.get(keyOf(source, claim, quote));
-  $('m-quote').textContent = quote.trim() || '—';
-  $('j-quote').textContent = quote.trim() || '—';
-  $('j-claim').textContent = claim.trim() || '—';
+  $('claim-view').textContent = claim.trim();
+  $('quote-view').textContent = quote.trim();
   if (!source.trim() || !claim.trim() || !quote.trim()) {
-    setVerdict('open', 'Enter a claim, a quote and a source.');
-    $('m-source').textContent = source; $('m-head').textContent = ''; $('j-head').textContent = '';
-    $('j-reasons').innerHTML = ''; $('j-prov').textContent = '';
+    setLink('judge', null, ''); setLink('matcher', null, '');
+    $('source-view').textContent = source;
+    setVerdict('none', 'Needs a claim, a quote and a source.', '');
     return;
   }
+  const verdict = verdicts.get(keyOf(source, claim, quote));
   const c = await evaluate(source, claim, quote, verdict?.result);
   if (mine !== ticket) return;
   const d = decide(c);
 
-  // matcher
   const m = c.textMatch;
   if (m.method !== 'not_found' && typeof m.start === 'number') {
-    const pad = 180, from = Math.max(0, m.start - pad), to = Math.min(source.length, m.end + pad);
-    $('m-source').className = 'slot mono src';
-    $('m-source').innerHTML = (from ? '…' : '') + esc(source.slice(from, m.start)) +
+    const pad = 200, from = Math.max(0, m.start - pad), to = Math.min(source.length, m.end + pad);
+    $('source-view').className = 'src';
+    $('source-view').innerHTML = (from ? '…' : '') + esc(source.slice(from, m.start)) +
       `<mark>${esc(source.slice(m.start, m.end))}</mark>` + esc(source.slice(m.end, to)) + (to < source.length ? '…' : '');
   } else {
-    $('m-source').className = 'slot mono src faded';
-    $('m-source').textContent = source;
+    $('source-view').className = 'src faded';
+    $('source-view').textContent = source;
   }
-  const how = { exact: 'exact match', normalized: 'match after normalizing', fuzzy: 'close match', not_found: 'best window' }[m.method];
-  $('m-head').className = `head ${d.matcherBlocks ? 'block' : 'pass'}`;
-  $('m-head').innerHTML = (d.matcherBlocks ? '✗ Not in the source' : '✓ In the source') +
-    `<span class="num">${how} ${m.score.toFixed(2)}</span>`;
+  const found = { exact: 'exact match', normalized: 'match', fuzzy: 'close match', not_found: 'not found' }[m.method];
+  setLink('matcher', d.matcherBlocks, `${found} ${m.score.toFixed(2)}`);
 
-  // judge
   const e = c.entailment;
-  if (d.judged) {
-    $('j-head').className = `head ${d.judgeBlocks ? 'block' : 'pass'}`;
-    $('j-head').innerHTML = (d.judgeBlocks ? '✗ ' : '✓ ') + esc(e.class.replace('_', ' ')) +
-      `<span class="num">support ${e.confidence.toFixed(2)}</span>`;
-    $('j-reasons').innerHTML = e.reasons.map((r) => `<li>${esc(r)}</li>`).join('');
-    $('j-prov').textContent = verdict.origin;
-  } else {
-    $('j-head').className = 'head none';
-    $('j-head').textContent = 'Not judged';
-    $('j-reasons').innerHTML = '';
-    $('j-prov').textContent = 'These inputs have no recorded verdict. Run the judge with your own key above.';
-  }
+  const judged = e && e.class !== 'error';
+  setLink('judge', d.judgeBlocks, judged ? `${e.class.replace('_', ' ')} ${e.confidence.toFixed(2)}` : 'not run');
+  $('reasons').innerHTML = judged ? e.reasons.map((r) => `<li>${esc(r)}</li>`).join('') : '';
+  $('provenance').textContent = verdict?.origin ?? '';
+  $('reasons-box').hidden = !judged;
 
-  // a check that lets a known-bad example through is shown missing it
-  const edited = !selected || keyOf(selected.source ?? SOURCE, selected.claim, selected.quote) !== keyOf(source, claim, quote);
-  const bad = !edited && !selected.good;
-  $('m-blind').classList.toggle('hit', bad && !d.matcherBlocks);
-  $('j-blind').classList.toggle('hit', bad && d.judgeBlocks === false);
-
-  // together
   if (d.matcherBlocks || d.judgeBlocks) {
     const who = d.matcherBlocks && d.judgeBlocks ? 'both checks' : d.matcherBlocks ? 'the matcher' : 'the judge';
     const alone = d.matcherBlocks && d.judgeBlocks === false ? 'The judge alone would have let it through.'
       : !d.matcherBlocks && d.judgeBlocks ? 'The matcher alone would have let it through.' : '';
-    setVerdict('fail', `✗ Blocked by ${who}.`, alone);
-  } else if (!d.judged) {
-    setVerdict('open', 'The quote is in the source. Support is not checked yet.', 'A real quote can still sit under a claim it does not support.');
+    setVerdict('block', `Blocked by ${who}`, alone);
+  } else if (d.judgeBlocks === null) {
+    setVerdict('none', 'The quote is in the source', 'Whether it supports the claim needs the judge: add a key below.');
   } else {
-    setVerdict('pass', '✓ Passes both checks.', 'The quote is in the source, and it supports the claim.');
+    setVerdict('pass', 'Passes both checks', 'The quote is in the source and supports the claim.');
   }
 }
 
-function setVerdict(kind, head, detail = '') {
-  $('verdict').className = `verdict ${kind}`;
-  $('verdict').innerHTML = `<b>${esc(head)}</b>${detail ? `<span>${esc(detail)}</span>` : ''}`;
+function setLink(which, blocks, what) {
+  const [cls, g] = glyph(blocks);
+  $(`${which}-link`).className = `link ${cls}`;
+  $(`${which}-glyph`).className = `glyph ${cls}`;
+  $(`${which}-glyph`).textContent = g;
+  $(`${which}-what`).textContent = what;
 }
 
-for (const id of ['source', 'claim', 'quote']) $(id).addEventListener('input', render);
+function setVerdict(kind, head, why) {
+  $('verdict').className = `big ${kind}`;
+  $('verdict').textContent = head;
+  $('verdict-why').textContent = why;
+}
 
-// ------------------------------------------------------------ live judge
+// ------------------------------------------------------------------ edit
+
+let editing = false;
+$('edit').addEventListener('click', () => {
+  editing = !editing;
+  for (const id of ['claim', 'quote', 'source']) {
+    $(id).hidden = !editing;
+    $(`${id}-view`).hidden = editing;
+  }
+  $('live').hidden = !editing;
+  $('edit').textContent = editing ? 'Done editing' : 'Edit the text';
+  render();
+});
+for (const id of ['source', 'claim', 'quote']) $(id).addEventListener('input', render);
 
 $('run').addEventListener('click', async () => {
   const key = $('key').value.trim(), model = $('model').value.trim(), base = $('base').value.trim();
   const status = $('live-status');
-  if (!key || !model || !base) { status.textContent = ' Endpoint, model and key are all needed.'; return; }
+  if (!key || !model || !base) { status.textContent = 'Endpoint, model and key are all needed.'; return; }
   const source = $('source').value, claim = $('claim').value, quote = $('quote').value;
   $('run').disabled = true;
-  status.textContent = ' Judging…';
+  status.textContent = 'Asking the judge…';
   try {
     const judge = new ChatCompletionsJudge({ apiKey: key, model, baseUrl: base, timeoutMs: 120000 });
     const result = (await evaluate(source, claim, quote, judge)).entailment;
-    if (!result || result.class === 'error') throw new Error(result?.reasons.join('; ') || 'no usable verdict');
-    verdicts.set(keyOf(source, claim, quote), { result, origin: `Live, ${model}.` });
-    status.textContent = '';
+    if (!result || result.class === 'error') throw new Error(result?.reasons.join('; ') || 'the judge gave no usable verdict');
+    verdicts.set(keyOf(source, claim, quote), { result, origin: `Judged live with ${model}.` });
+    status.textContent = `Judged live with ${model}.`;
     render();
   } catch (err) {
-    status.textContent = ` ${err.message}. A network error usually means the endpoint does not accept browser requests.`;
+    status.textContent = `${err.message}. A network error usually means the endpoint does not accept browser requests.`;
   } finally {
     $('run').disabled = false;
   }
 });
 
-await buildList();
-// Examples are linkable: index.html#fabricated opens that one.
-const fromHash = location.hash.slice(1);
-select(EXAMPLES.some((e) => e.id === fromHash) ? fromHash : 'supported');
+await buildMatrix();
+select(location.hash.slice(1));
 </script>
 </body>
 </html>
