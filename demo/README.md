@@ -15,6 +15,13 @@ quote support the claim?).
   memory and goes only to that endpoint. Any OpenAI-compatible endpoint that
   accepts browser requests works (OpenRouter does).
 
+- **Measured, not claimed:** below the examples, four charts show the
+  benchmark results — which check catches which failure, the matcher's score
+  gap, the judge models against human labels (with and without reasoning), and
+  how well eight answering models follow the protocol. The numbers sit in one
+  data block that `node bench/figures/render.mjs` rewrites from
+  `bench/results/`, so the page stays in step with the benchmarks.
+
 Open `index.html` in a browser, or serve the directory. The page loads the
 library from `https://esm.sh/veriquote@0.2.0`; to try an unreleased build, run
 `npm run build` and point the import at `../dist/index.js` (served, not opened

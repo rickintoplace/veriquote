@@ -114,6 +114,44 @@
   footer { margin-top: 56px; color: var(--muted); font-size: .85rem; }
   a { color: inherit; }
 
+
+  /* ---- measured numbers ---- */
+  .numbers { margin-top: 72px; padding-top: 36px; border-top: 1px solid var(--line); }
+  .numbers h2 { font-size: 1.35rem; font-weight: 600; letter-spacing: -.01em; margin: 0 0 .3em; }
+  .numbers > p { color: var(--muted); max-width: 64ch; margin: 0 0 8px; }
+  figure { margin: 40px 0 0; }
+  figure h3 { font-size: 1.02rem; font-weight: 600; margin: 0 0 2px; text-wrap: balance; }
+  figure .sub { color: var(--muted); font-size: .88rem; margin: 0 0 14px; max-width: 70ch; }
+  figure .foot { color: var(--muted); font-size: .8rem; margin: 10px 0 0; max-width: 80ch; }
+  .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .chart text { font: 13px var(--sans); fill: var(--ink); }
+  .chart text.m { fill: var(--muted); }
+  .chart text.s { font-size: 12px; }
+  .chart text.b { font-weight: 600; }
+  .chart text.n { font-family: var(--mono); font-size: 12px; fill: var(--muted); }
+  .chart .grid { stroke: var(--line); stroke-width: 1; }
+  .chart .ref { stroke: var(--ink); stroke-width: 1.5; }
+  .chart .ink { fill: var(--ink); }
+  .chart .ink2 { fill: var(--muted); }
+  .chart .track { fill: var(--wash); }
+  .chart .gap { fill: var(--wash); }
+  .chart .range { stroke: var(--ink); stroke-width: 2; stroke-linecap: round; }
+  .chart .ci { stroke: var(--ink); stroke-opacity: .3; stroke-width: 2; stroke-linecap: round; }
+  .chart .dot { fill: var(--ink); stroke: var(--ground); stroke-width: 2; }
+  .chart .dot.open { fill: var(--ground); stroke: var(--ink); stroke-width: 1.75; }
+  .chart .hitbox { fill: transparent; }
+  .legend-line { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .82rem; color: var(--muted); margin: 0 0 10px; }
+  .legend-line i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+  .legend-line i.dot { border-radius: 50%; }
+  .legend-line i.open { background: var(--ground); border: 1.5px solid var(--ink); border-radius: 50%; }
+  .numbers details { margin-top: 36px; font-size: .9rem; }
+  .numbers details summary { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line); cursor: pointer; }
+  .tables { overflow-x: auto; }
+  .tables table { border-collapse: collapse; margin-top: 16px; font-size: .84rem; min-width: 420px; }
+  .tables th, .tables td { text-align: left; padding: 5px 14px 5px 0; border-bottom: 1px solid var(--line); }
+  .tables td.v { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--mono); font-size: .8rem; }
+  .tables th { font-weight: 500; color: var(--muted); font-size: .76rem; }
+
   @media (max-width: 860px) {
     .matrix-wrap { display: none; }
     .stack { display: block; }
@@ -200,6 +238,49 @@
     accepts browser requests, such as OpenRouter. Your key stays in this tab and goes only to that endpoint.</p>
 </div>
 
+<section class="numbers" id="numbers">
+  <h2>Measured, not claimed</h2>
+  <p>
+    The examples above are hand-picked. These are the benchmark results behind them: thousands of
+    generated quotes for the matcher, human-labelled citations for the judge, and eight answering
+    models following the citation protocol. Every number is reproducible from the repository.
+  </p>
+
+  <figure>
+    <h3>Each check catches what the other cannot see</h3>
+    <p class="sub">Share of bad citations caught, by kind of failure. A citation is blocked if either check blocks it.</p>
+    <div class="chart" id="fig-tango"></div>
+    <p class="foot" id="fig-tango-foot"></p>
+  </figure>
+
+  <figure>
+    <h3>A clear gap between faithful and missing quotes</h3>
+    <p class="sub" id="fig-matcher-sub"></p>
+    <div class="legend-line"><span><i class="dot" style="background:var(--ink)"></i>median</span><span>line: lowest to highest score</span><span><i style="background:var(--wash)"></i>gap between faithful and missing</span></div>
+    <div class="chart" id="fig-matcher"></div>
+  </figure>
+
+  <figure>
+    <h3>Which model should judge?</h3>
+    <p class="sub">Against human annotators (ALCE), the same 240 claim–source pairs for every model, temperature 0.
+      False green: unsupported citations the judge still called fully supported. Agreement: on “fully supports”, yes or no.</p>
+    <div class="legend-line"><span><i class="dot" style="background:var(--ink)"></i>with reasoning</span><span><i class="open"></i>reasoning switched off</span><span>line: 95% interval</span></div>
+    <div class="chart" id="fig-judges"></div>
+  </figure>
+
+  <figure>
+    <h3>Does the answering model play along?</h3>
+    <p class="sub" id="fig-protocol-sub"></p>
+    <div class="legend-line"><span><i style="background:var(--ink)"></i>complete: every cited claim carries a quote</span><span><i style="background:var(--muted)"></i>verbatim: the quote is really in the source</span></div>
+    <div class="chart" id="fig-protocol"></div>
+  </figure>
+
+  <details>
+    <summary>All numbers as tables</summary>
+    <div class="tables" id="tables"></div>
+  </details>
+</section>
+
 <footer>
   VeriQuote is a TypeScript library and CLI with no dependencies.
   <a href="https://github.com/rickintoplace/veriquote">Source, benchmarks and CLI on GitHub</a>.
@@ -209,6 +290,11 @@
 
 <script type="module">
 import { verifyAnswer, serializeEvi1Appendix, ChatCompletionsJudge } from 'https://esm.sh/veriquote@0.2.0';
+
+/* BENCH-DATA:BEGIN */
+const BENCH = {"source":"bench/results/*.json","matcher":{"items":2061,"threshold":0.4,"gap":{"lowestFaithfulScore":0.66,"highestAbsentScore":0.396,"gap":0.264},"faithful":{"n":1121,"median":1,"accepted":1,"min":0.66,"max":1},"manipulated":{"n":586,"median":0.932,"accepted":1,"min":0.529,"max":0.987},"absent":{"n":187,"median":0.249,"accepted":0,"min":0.143,"max":0.396},"adversarial":{"n":167,"median":0.871,"accepted":1,"min":0.763,"max":0.936}},"tango":{"judgeModel":"glm-5.3-flash","absent":{"n":187,"matcherCaught":1},"unsupported":{"manipulatedN":586,"matcherCaught":0,"judgeN":56,"judgeCaught":0.839}},"judges":[{"model":"deepseek-v4-flash","reasoning":true,"falseGreen":0.182,"falseGreenCi":[0.102,0.303],"unsupported":55,"agreement":0.787,"agreementCi":[0.73,0.834]},{"model":"glm-5.3-flash","reasoning":false,"falseGreen":0.244,"falseGreenCi":[0.142,0.387],"unsupported":45,"agreement":0.74,"agreementCi":[0.676,0.796]},{"model":"glm-5.3-flash","reasoning":true,"falseGreen":0.161,"falseGreenCi":[0.087,0.278],"unsupported":56,"agreement":0.803,"agreementCi":[0.748,0.849]},{"model":"gpt-oss-120b","reasoning":true,"falseGreen":0.25,"falseGreenCi":[0.155,0.377],"unsupported":56,"agreement":0.767,"agreementCi":[0.709,0.817]},{"model":"qwen3.5-397b-a17b","reasoning":false,"falseGreen":0.214,"falseGreenCi":[0.127,0.338],"unsupported":56,"agreement":0.777,"agreementCi":[0.72,0.826]},{"model":"qwen3.5-397b-a17b","reasoning":true,"falseGreen":0.208,"falseGreenCi":[0.12,0.335],"unsupported":53,"agreement":0.797,"agreementCi":[0.74,0.844]},{"model":"qwen3.6-35b-a3b","reasoning":false,"falseGreen":0.214,"falseGreenCi":[0.127,0.338],"unsupported":56,"agreement":0.773,"agreementCi":[0.716,0.822]},{"model":"qwen3.6-35b-a3b","reasoning":true,"falseGreen":0.182,"falseGreenCi":[0.102,0.303],"unsupported":55,"agreement":0.781,"agreementCi":[0.724,0.829]}],"trueNli":0.776,"protocol":{"tasks":18,"runs":2,"models":[{"model":"deepseek-v4-flash","complete":1,"verbatim":0.992,"answers":36},{"model":"gemma-4-31b-it","complete":0.8,"verbatim":0.966,"answers":36},{"model":"mistral-medium-3.5-128b","complete":0.933,"verbatim":0.81,"answers":36},{"model":"llama-3.1-8b-instruct","complete":0.433,"verbatim":0.503,"answers":36},{"model":"gpt-oss-120b","complete":0.333,"verbatim":0.911,"answers":36},{"model":"qwen3.6-35b-a3b","complete":1,"verbatim":1,"answers":36},{"model":"glm-5.3-flash","complete":0.966,"verbatim":0.996,"answers":35},{"model":"qwen3.5-397b-a17b","complete":1,"verbatim":1,"answers":24}]}};
+/* BENCH-DATA:END */
+
 
 const SOURCE = `In this randomised controlled trial of 2,300 adults aged 65 and over, daily vitamin D supplementation reduced the rate of falls by 19% over a 24-month follow-up period, and the effect was most pronounced among participants with baseline deficiency. No significant effect on fracture incidence was observed. Adherence exceeded 90% in both arms, and serious adverse events were evenly distributed between the supplementation and placebo groups.`;
 const OTHER_SOURCE = `Stratospheric ozone concentrations have recovered measurably since the Montreal Protocol entered into force, although the Antarctic ozone hole is not expected to close fully before the second half of this century.`;
@@ -428,6 +514,193 @@ $('run').addEventListener('click', async () => {
     $('run').disabled = false;
   }
 });
+
+
+// ------------------------------------------------------------ the numbers
+
+const pc = (x, d = 0) => `${(x * 100).toFixed(d)}%`;
+const T = (x, y, str, cls = '', anchor = 'start') =>
+  `<text x="${x}" y="${y}" class="${cls}" text-anchor="${anchor}">${esc(str)}</text>`;
+const svgOf = (w, h, label, body) =>
+  `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="${esc(label)}">${body.join('')}</svg>`;
+const scale = (d0, d1, x0, x1) => (v) => x0 + ((v - d0) / (d1 - d0)) * (x1 - x0);
+
+function axis(sx, ticks, y0, y1, fmt) {
+  return ticks.flatMap((t) => [
+    `<line class="grid" x1="${sx(t)}" x2="${sx(t)}" y1="${y0}" y2="${y1}"/>`,
+    T(sx(t), y1 + 16, fmt(t), 'n', 'middle'),
+  ]);
+}
+
+function tangoChart(W) {
+  const t = BENCH.tango;
+  const narrow = W < 560;
+  const x0 = 92, capW = narrow ? 0 : 190, x1 = W - capW - 8;
+  const rows = [
+    { head: 'The quote is not in the source', sub: 'invented, paraphrased, or taken from another document' },
+    { who: 'Matcher', v: t.absent.matcherCaught, cap: `${Math.round(t.absent.matcherCaught * t.absent.n)} of ${t.absent.n} blocked` },
+    { who: 'Judge', v: null, cap: 'never sees the source' },
+    { who: 'Together', v: t.absent.matcherCaught, cap: 'the matcher catches it', bold: true },
+    { head: 'The quote is real, the claim is not', sub: 'the source does not support what is claimed' },
+    { who: 'Matcher', v: t.unsupported.matcherCaught, cap: `0 of ${t.unsupported.manipulatedN} blocked` },
+    { who: 'Judge', v: t.unsupported.judgeCaught, cap: `${Math.round(t.unsupported.judgeCaught * t.unsupported.judgeN)} of ${t.unsupported.judgeN} blocked` },
+    { who: 'Together', v: t.unsupported.judgeCaught, cap: 'the judge catches it', bold: true },
+  ];
+  const b = [];
+  const sx = scale(0, 1, x0, x1);
+  let y = 0;
+  for (const r of rows) {
+    if (r.head) {
+      y += y ? 26 : 16;
+      b.push(T(0, y, r.head, 'b'), T(0, y + 16, r.sub, 'm s'));
+      y += 30;
+      continue;
+    }
+    const cy = y + 12;
+    b.push(T(0, cy + 4, r.who, r.bold ? 'b' : 'm'));
+    if (r.v === null) {
+      b.push(T(x0, cy + 4, '—  never sees the source', 'm'));
+    } else {
+      b.push(`<rect class="track" x="${x0}" y="${cy - 5}" width="${x1 - x0}" height="10" rx="5"/>`);
+      if (r.v > 0) b.push(`<rect class="ink" x="${x0}" y="${cy - 5}" width="${Math.max(10, sx(r.v) - x0)}" height="10" rx="5"><title>${esc(`${r.who}: ${pc(r.v)}`)}</title></rect>`);
+      b.push(T(narrow ? x1 : x1 + 12, narrow ? cy - 9 : cy + 4, narrow ? pc(r.v) : `${pc(r.v)}  ${r.cap}`, narrow ? 'n' : 'n', narrow ? 'end' : 'start'));
+    }
+    y += 26;
+  }
+  $('fig-tango-foot').textContent = `Matcher: generated quotes (n = ${t.absent.n} and ${t.unsupported.manipulatedN}). Judge: ${t.judgeModel} on human-labelled citations that annotators marked as unsupported (n = ${t.unsupported.judgeN}).`;
+  return svgOf(W, y + 4, 'Which check catches which failure', b);
+}
+
+function matcherChart(W) {
+  const m = BENCH.matcher;
+  const narrow = W < 560;
+  const labelW = narrow ? 112 : 220;
+  const x0 = labelW + 12, x1 = W - 10;
+  const rows = [
+    { name: 'Faithful, reformatted', short: 'Faithful', note: 'must pass', d: m.faithful },
+    { name: 'Meaning changed', short: 'Meaning changed', note: 'near-verbatim: the judge’s job', shortNote: 'the judge’s job', d: m.manipulated },
+    { name: 'Not in the source', short: 'Not in source', note: 'must fail', d: m.absent },
+    { name: 'Invented from source words', short: 'Word salad', note: 'adversarial', d: m.adversarial, open: true },
+  ];
+  const top = 24, rowH = 44, y1 = top + rows.length * rowH;
+  const sx = scale(0, 1, x0, x1);
+  const b = [
+    `<rect class="gap" x="${sx(m.gap.highestAbsentScore)}" y="${top}" width="${sx(m.gap.lowestFaithfulScore) - sx(m.gap.highestAbsentScore)}" height="${y1 - top}"/>`,
+    ...axis(sx, [0, 0.2, 0.4, 0.6, 0.8, 1], top, y1, (v) => v.toFixed(1)),
+    `<line class="ref" x1="${sx(m.threshold)}" x2="${sx(m.threshold)}" y1="${top - 4}" y2="${y1}"/>`,
+    T(sx(m.threshold) - 6, top - 8, `threshold ${m.threshold}`, 's', 'end'),
+  ];
+  rows.forEach((r, i) => {
+    const cy = top + i * rowH + rowH / 2;
+    b.push(T(0, cy - 2, narrow ? r.short : r.name, narrow ? 's' : ''), T(0, cy + 13, narrow ? (r.shortNote ?? r.note) : r.note, 'm s'));
+    b.push(`<line class="range" x1="${sx(r.d.min)}" x2="${Math.max(sx(r.d.max), sx(r.d.min) + 1)}" y1="${cy}" y2="${cy}"/>`);
+    b.push(`<circle class="dot${r.open ? ' open' : ''}" cx="${sx(r.d.median)}" cy="${cy}" r="5.5"><title>${esc(`${r.name}: median ${r.d.median}, range ${r.d.min}–${r.d.max}, n = ${r.d.n}`)}</title></circle>`);
+  });
+  return svgOf(W, y1 + 24, 'Matcher score ranges per kind of quote', b);
+}
+
+function judgesChart(W) {
+  const withR = BENCH.judges.filter((j) => j.reasoning).sort((a, b) => a.falseGreen - b.falseGreen);
+  const without = Object.fromEntries(BENCH.judges.filter((j) => !j.reasoning).map((j) => [j.model, j]));
+  const wide = W >= 640;
+  const labelW = wide ? 150 : 122;
+  const rowH = 30, top = 26;
+  const body = [];
+  const panel = (x0, x1, y0, title, domain, ticks, key, ref) => {
+    const sx = scale(domain[0], domain[1], x0, x1);
+    const y1 = y0 + withR.length * rowH;
+    body.push(T(x0, y0 - 10, title, 'b s'));
+    body.push(...axis(sx, ticks, y0, y1, (v) => pc(v)));
+    if (ref) body.push(`<line class="ref" x1="${sx(ref.v)}" x2="${sx(ref.v)}" y1="${y0}" y2="${y1}"/>`, T(sx(ref.v), y1 + 32, ref.label, 's', 'middle'));
+    withR.forEach((j, i) => {
+      const cy = y0 + i * rowH + rowH / 2;
+      const ci = j[`${key}Ci`];
+      body.push(`<line class="ci" x1="${sx(ci[0])}" x2="${sx(ci[1])}" y1="${cy}" y2="${cy}"/>`);
+      const off = without[j.model];
+      if (off) body.push(`<circle class="dot open" cx="${sx(off[key])}" cy="${cy}" r="4.5"><title>${esc(`${j.model}, reasoning off: ${pc(off[key], 1)}`)}</title></circle>`);
+      body.push(`<circle class="dot" cx="${sx(j[key])}" cy="${cy}" r="5"><title>${esc(`${j.model}: ${pc(j[key], 1)} (95% interval ${pc(ci[0])}–${pc(ci[1])})`)}</title></circle>`);
+      body.push(T(Math.min(x1 + 4, sx(ci[1]) + 6), cy + 4, pc(j[key], 1), 'n'));
+    });
+    return y1;
+  };
+  const labels = (y0) => withR.forEach((j, i) => body.push(T(labelW - 10, y0 + i * rowH + rowH / 2 + 4, wide ? j.model : shortName(j.model), wide ? '' : 's', 'end')));
+  let h;
+  if (wide) {
+    const pw = (W - labelW - 60) / 2;
+    labels(top);
+    panel(labelW, labelW + pw, top, 'False green ↓', [0, 0.4], [0, 0.1, 0.2, 0.3, 0.4], 'falseGreen');
+    const y1 = panel(labelW + pw + 50, W - 10, top, 'Agreement with annotators ↑', [0.65, 0.9], [0.7, 0.8, 0.9], 'agreement',
+      { v: BENCH.trueNli, label: `specialised NLI model ${pc(BENCH.trueNli, 1)}` });
+    h = y1 + 40;
+  } else {
+    labels(top);
+    const y1 = panel(labelW, W - 44, top, 'False green ↓', [0, 0.4], [0, 0.2, 0.4], 'falseGreen');
+    const top2 = y1 + 60;
+    labels(top2);
+    const y2 = panel(labelW, W - 44, top2, 'Agreement with annotators ↑', [0.65, 0.9], [0.7, 0.8, 0.9], 'agreement',
+      { v: BENCH.trueNli, label: `specialised NLI ${pc(BENCH.trueNli, 1)}` });
+    h = y2 + 40;
+  }
+  return svgOf(W, h, 'Judge models compared against human annotators', body);
+}
+
+/** Drop size and tuning suffixes where a phone has no room for them. */
+const shortName = (name) => name.replace(/-(instruct|it)$/, '').replace(/-\d+(\.\d+)?b(-a\d+b)?$/, '');
+
+function protocolChart(W) {
+  const rows = [...BENCH.protocol.models].sort((a, b) => b.complete + b.verbatim - (a.complete + a.verbatim));
+  const narrow = W < 560;
+  const labelW = narrow ? 118 : 170;
+  const x0 = labelW, x1 = W - 52;
+  const barH = 10, groupH = 2 * barH + 2 + 14;
+  const top = 4, y1 = top + rows.length * groupH;
+  const sx = scale(0, 1, x0, x1);
+  const b = [...axis(sx, [0, 0.5, 1], top, y1, (v) => pc(v))];
+  rows.forEach((r, i) => {
+    const gy = top + i * groupH + 7;
+    b.push(T(labelW - 10, gy + barH + 5, narrow ? shortName(r.model) : r.model, narrow ? 's' : '', 'end'));
+    [['complete', 'ink'], ['verbatim', 'ink2']].forEach(([key, cls], k) => {
+      const y = gy + k * (barH + 2);
+      const w = Math.max(3, sx(r[key]) - x0);
+      b.push(`<path class="${cls}" d="M${x0},${y} h${w - 3} a3,3 0 0 1 3,3 v${barH - 6} a3,3 0 0 1 -3,3 h${-(w - 3)} z"><title>${esc(`${r.model}, ${key}: ${pc(r[key], 1)} of ${r.answers} answers`)}</title></path>`);
+      b.push(T(x0 + w + 5, y + barH - 1, pc(r[key]), 'n'));
+    });
+  });
+  return svgOf(W, y1 + 24, 'Citation protocol compliance per answering model', b);
+}
+
+function renderTables() {
+  const row = (cells) => `<tr>${cells.map((c, i) => (i ? `<td class="v">${c}</td>` : `<td>${esc(c)}</td>`)).join('')}</tr>`;
+  const judges = [...BENCH.judges].sort((a, b) => a.falseGreen - b.falseGreen);
+  $('tables').innerHTML =
+    `<table><tr><th>Judge</th><th>False green</th><th>Agreement</th></tr>${judges.map((j) =>
+      row([`${j.model}${j.reasoning ? '' : ', no reasoning'}`, pc(j.falseGreen, 1), pc(j.agreement, 1)])).join('')}
+      ${row(['Specialised NLI model (TRUE, T5-11B)', '—', pc(BENCH.trueNli, 1)])}</table>` +
+    `<table><tr><th>Answering model</th><th>Complete</th><th>Verbatim</th><th>Answers</th></tr>${BENCH.protocol.models.map((r) =>
+      row([r.model, pc(r.complete, 1), pc(r.verbatim, 1), r.answers])).join('')}</table>`;
+}
+
+function renderNumbers() {
+  if (!BENCH) { $('numbers').hidden = true; return; }
+  const m = BENCH.matcher;
+  $('fig-matcher-sub').textContent = `Matcher score for ${m.items.toLocaleString('en')} generated quotes from five Wikipedia articles. A quote counts as found at ${m.threshold} or above.`;
+  $('fig-protocol-sub').textContent = `Eight models got the citation instructions; ${BENCH.protocol.tasks} questions, ${BENCH.protocol.runs} runs each, checked mechanically.`;
+  const draw = () => {
+    const w = Math.max(300, Math.floor($('fig-tango').clientWidth));
+    $('fig-tango').innerHTML = tangoChart(w);
+    $('fig-matcher').innerHTML = matcherChart(w);
+    $('fig-judges').innerHTML = judgesChart(w);
+    $('fig-protocol').innerHTML = protocolChart(w);
+  };
+  let last = 0;
+  new ResizeObserver(() => {
+    const w = $('fig-tango').clientWidth;
+    if (Math.abs(w - last) > 4) { last = w; requestAnimationFrame(draw); }
+  }).observe($('numbers'));
+  renderTables();
+}
+
+renderNumbers();
 
 await buildMatrix();
 select(location.hash.slice(1));
