@@ -40,11 +40,11 @@ of the page. For sources without a URL (RAG chunks, tool output, local docs),
 save each to a file and pass the path; `.html` files are converted to text. PDFs
 are not supported: extract the text first (e.g. `pdftotext`).
 
-- **exit 0**, `"verdict": "pass"` — present the answer.
-- **exit 2**, `"verdict": "revise"` — `problems[]` lists failing citations,
+- **exit 0**, `"verdict": "pass"`: present the answer.
+- **exit 2**, `"verdict": "revise"`: `problems[]` lists failing citations,
   `uncited[]` lists factual sentences without a citation, and
   `instructionsForModel` says how to fix them.
-- **exit 1** — bad input or a source could not be loaded (see stderr). Do not
+- **exit 1**: bad input or a source could not be loaded (see stderr). Do not
   claim the answer was verified.
 
 ## 3. Fix and re-check
@@ -61,14 +61,14 @@ Without configuration, veriquote only checks that every quote really occurs in
 its source. To also check that the quote **supports** the claim (catches
 verbatim quotes attached to a claim they contradict), set:
 
-- `VERIQUOTE_JUDGE_API_KEY` — any OpenAI-compatible endpoint
-- `VERIQUOTE_JUDGE_MODEL` — e.g. an open model such as GLM, Qwen or DeepSeek
-- `VERIQUOTE_JUDGE_BASE_URL` — default `https://openrouter.ai/api/v1`
+- `VERIQUOTE_JUDGE_API_KEY`: a key for any OpenAI-compatible endpoint
+- `VERIQUOTE_JUDGE_MODEL`: for example an open model such as GLM, Qwen or DeepSeek
+- `VERIQUOTE_JUDGE_BASE_URL`: defaults to `https://openrouter.ai/api/v1`
 
 The JSON field `judge` is `null` when only quotes were checked; say so when you
 report the result.
 
-## What a pass means — tell the user honestly
+## What a pass means, and how to tell the user
 
 A pass means the cited claims are **faithful to the cited sources**: the quotes
 are real and they support the claims. It does not mean the answer is **true**; a

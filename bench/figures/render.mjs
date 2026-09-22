@@ -19,13 +19,13 @@ const THEMES = {
     surface: '#ffffff', ink: '#0b0b0b', ink2: '#52514e', muted: '#898781',
     grid: '#e1e0d9', axis: '#c3c2b7', wash: 'rgba(11,11,11,0.05)',
     s1: '#2a78d6', s2: '#eb6834', s3: '#1baf7a', track: 0.16,
-    fPass: '#008300', fJudge: '#eda100', fFail: '#e34948',
+    fPass: '#008300', fJudge: '#eda100', fFail: '#e34948', cComplete: '#0e7c61', cVerbatim: '#5cc29e',
   },
   dark: {
     surface: '#0d1117', ink: '#ffffff', ink2: '#c3c2b7', muted: '#898781',
     grid: '#2c2c2a', axis: '#383835', wash: 'rgba(255,255,255,0.06)',
     s1: '#3987e5', s2: '#d95926', s3: '#199e70', track: 0.28,
-    fPass: '#00863a', fJudge: '#b88c00', fFail: '#e0607e',
+    fPass: '#00863a', fJudge: '#b88c00', fFail: '#e0607e', cComplete: '#3dab85', cVerbatim: '#107a5c',
   },
 };
 
@@ -139,7 +139,7 @@ function matcherFigure(t) {
   let lx = 24;
   for (const f of FAMILIES) {
     body.push(`<circle cx="${lx + 5}" cy="74" r="5" fill="${f.color}"/>`);
-    const label = `${f.name} — ${f.note}`;
+    const label = `${f.name}: ${f.note}`;
     body.push(text(lx + 16, 78, label, { size: 12, fill: t.ink2 }));
     lx += 16 + label.length * 6.6 + 22;
   }
@@ -246,15 +246,16 @@ function judgeFigure(t) {
     const n = d.binary.tp + d.binary.fp + d.binary.fn + d.binary.tn;
     return {
       model: d.model.replace(/^openai-/, '').replace(/-0731$/, '') + (d.thinking === false ? ', no reasoning' : ''),
-      fg: none.full / noneN,
-      fgCi: wilson(none.full, noneN),
+      // "caught" = not called fully supported, so higher is better in both panels
+      caught: 1 - none.full / noneN,
+      caughtCi: wilson(none.partial + none.none, noneN),
       agree: d.binary.accuracy,
       agreeCi: wilson(d.binary.tp + d.binary.tn, n),
       noneN,
       n,
       requested: d.itemsRequested,
     };
-  }).sort((a, b) => a.fg - b.fg);
+  }).sort((a, b) => b.caught - a.caught);
 
   const W = 760;
   const labelRight = 236;
@@ -264,13 +265,13 @@ function judgeFigure(t) {
   const rowH = 30;
   const bottom = top + rows.length * rowH;
   const H = bottom + 76;
-  const a1 = xAxis(t, { x0: p1[0], x1: p1[1], y0: top - 6, y1: bottom, domain: [0, 0.4], ticks: [0, 0.1, 0.2, 0.3, 0.4], fmt: (v) => `${Math.round(v * 100)}%` });
+  const a1 = xAxis(t, { x0: p1[0], x1: p1[1], y0: top - 6, y1: bottom, domain: [0.6, 1], ticks: [0.6, 0.7, 0.8, 0.9, 1], fmt: (v) => `${Math.round(v * 100)}%` });
   const a2 = xAxis(t, { x0: p2[0], x1: p2[1], y0: top - 6, y1: bottom, domain: [0.65, 0.9], ticks: [0.65, 0.7, 0.75, 0.8, 0.85, 0.9], fmt: (v) => `${Math.round(v * 100)}%` });
   const body = [
     text(24, 32, 'Which model should judge? Measured against human annotators', { size: 16, weight: 600, fill: t.ink }),
     text(24, 52, `ALCE human labels, the same ${rows[0].requested} claim–source pairs for every model, temperature 0. Dot: measured · line: 95% interval.`, { size: 12, fill: t.ink2 }),
-    text(p1[0], 84, 'False green ↓', { size: 13, weight: 600, fill: t.ink }),
-    text(p1[0], 99, 'unsupported, yet judged fully supported', { size: 11, fill: t.muted }),
+    text(p1[0], 84, 'Unsupported citations caught ↑', { size: 13, weight: 600, fill: t.ink }),
+    text(p1[0], 99, 'not called fully supported by the judge', { size: 11, fill: t.muted }),
     text(p2[0], 84, 'Agreement with annotators ↑', { size: 13, weight: 600, fill: t.ink }),
     text(p2[0], 99, '“fully supports”: yes or no', { size: 11, fill: t.muted }),
     ...a1.marks,
@@ -278,18 +279,18 @@ function judgeFigure(t) {
   ];
   const trueNli = 0.776;
   body.push(`<line x1="${a2.sx(trueNli)}" y1="${top - 6}" x2="${a2.sx(trueNli)}" y2="${bottom}" stroke="${t.ink2}" stroke-width="1.5"/>`);
-  body.push(text(a2.sx(trueNli), bottom + 32, 'TRUE-NLI 77.6%', { size: 11, fill: t.ink2, anchor: 'middle' }));
+  body.push(text(a2.sx(trueNli), bottom + 32, 'TRUE (NLI model) 77.6%', { size: 11, fill: t.ink2, anchor: 'middle' }));
 
   rows.forEach((r, i) => {
     const cy = top + i * rowH + rowH / 2;
     body.push(text(labelRight, cy + 4, r.model, { size: 12, fill: t.ink, anchor: 'end' }));
-    for (const [ax, v, ci, color] of [[a1, r.fg, r.fgCi, t.s1], [a2, r.agree, r.agreeCi, t.s1]]) {
+    for (const [ax, v, ci, color] of [[a1, r.caught, r.caughtCi, t.s2], [a2, r.agree, r.agreeCi, t.s2]]) {
       body.push(`<line x1="${ax.sx(ci[0])}" y1="${cy}" x2="${ax.sx(ci[1])}" y2="${cy}" stroke="${color}" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>`);
       body.push(`<circle cx="${ax.sx(v)}" cy="${cy}" r="4.5" fill="${color}" stroke="${t.surface}" stroke-width="2"/>`);
       body.push(text(ax.sx(ci[1]) + 7, cy + 4, pct(v), { size: 11, fill: t.ink2, mono: true }));
     }
   });
-  body.push(text(24, H - 18, `False green over the pairs annotators marked “does not support” (${Math.min(...rows.map((r) => r.noneN))}–${Math.max(...rows.map((r) => r.noneN))} per model). Source: bench/results/judge-*.json`, { size: 11, fill: t.muted }));
+  body.push(text(24, H - 18, `Caught: share of the pairs annotators marked “does not support” (${Math.min(...rows.map((r) => r.noneN))}–${Math.max(...rows.map((r) => r.noneN))} per model). TRUE: Honovich et al. (2022), as reported by Gao et al. (2023).`, { size: 11, fill: t.muted }));
   return svg(W, H, t, body, 'Judge models compared against human annotators');
 }
 
@@ -304,8 +305,8 @@ function protocolFigure(t) {
     n: s.n,
   })).sort((a, b) => b.complete + b.verbatim - (a.complete + a.verbatim));
   const SERIES = [
-    { key: 'complete', name: 'Complete — every cited claim carries a quote', color: t.s1 },
-    { key: 'verbatim', name: 'Verbatim — the quote is really in the source', color: t.s2 },
+    { key: 'complete', name: 'Complete: every cited claim carries a quote', color: t.cComplete },
+    { key: 'verbatim', name: 'Verbatim: the quote is really in the source', color: t.cVerbatim },
   ];
   const W = 760;
   const labelRight = 206;
