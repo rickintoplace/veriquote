@@ -284,11 +284,11 @@ function judgeFigure(t) {
 function protocolFigure(t) {
   const p = load('protocol.json');
   const rows = p.summary.map((s) => ({
-    model: s.model.replace(/^openai-|^meta-/, ''),
+    model: s.model.replace(/^openai-|^meta-/, '').replace(/-0731$/, ''),
     complete: s.completeRate,
     verbatim: s.verbatimRate,
     n: s.n,
-  }));
+  })).sort((a, b) => b.complete + b.verbatim - (a.complete + a.verbatim));
   const SERIES = [
     { key: 'complete', name: 'Complete — every cited claim carries a quote', color: t.s1 },
     { key: 'verbatim', name: 'Verbatim — the quote is really in the source', color: t.s2 },
@@ -305,7 +305,7 @@ function protocolFigure(t) {
   const { sx, marks } = xAxis(t, { x0, x1, y0: top - 6, y1: bottom, domain: [0, 1], ticks: [0, 0.25, 0.5, 0.75, 1], fmt: (v) => `${v * 100}%` });
   const body = [
     text(24, 32, 'Two ways to fail that a reader never sees', { size: 16, weight: 600, fill: t.ink }),
-    text(24, 52, 'Answering models given the citation protocol, 18 tasks each, one run. Parsed and matched mechanically, no labels.', { size: 12, fill: t.ink2 }),
+    text(24, 52, `Answering models given the citation protocol: 18 tasks, ${p.repeats} runs each. Parsed and matched mechanically, no labels.`, { size: 12, fill: t.ink2 }),
     ...marks,
   ];
   let lx = 24;
