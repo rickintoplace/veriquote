@@ -13,6 +13,7 @@
     --ground: #f5f6f3; --surface: #ffffff; --ink: #17191a; --muted: #686d6b; --line: #d9ddd8;
     --wash: #eceee9; --mark: rgba(23, 25, 26, .10);
     --pass: #1d7548; --block: #c0392b;
+    --c-matcher: #2a78d6; --c-judge: #eb6834; --c-complete: #1baf7a; --c-verbatim: #4a3aa7;
     --sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
     --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   }
@@ -21,12 +22,14 @@
       --ground: #121413; --surface: #1a1d1c; --ink: #eceeea; --muted: #939895; --line: #2e3230;
       --wash: #222624; --mark: rgba(236, 238, 234, .16);
       --pass: #5fcb8e; --block: #f07a68;
+      --c-matcher: #3987e5; --c-judge: #d95926; --c-complete: #199e70; --c-verbatim: #9085e9;
     }
   }
   :root[data-theme="dark"] {
     --ground: #121413; --surface: #1a1d1c; --ink: #eceeea; --muted: #939895; --line: #2e3230;
     --wash: #222624; --mark: rgba(236, 238, 234, .16);
     --pass: #5fcb8e; --block: #f07a68;
+    --c-matcher: #3987e5; --c-judge: #d95926; --c-complete: #199e70; --c-verbatim: #9085e9;
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--ground); color: var(--ink); font: 16px/1.55 var(--sans); }
@@ -35,6 +38,8 @@
   .lede { color: var(--muted); max-width: 62ch; margin: 0 0 32px; }
   button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
   :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .id { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+  .id.matcher { background: var(--c-matcher); } .id.judge { background: var(--c-judge); }
   .small-caps { font-size: .72rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 
   /* ---- matrix: pick an example, see who blocks it ---- */
@@ -119,10 +124,20 @@
   .numbers { margin-top: 72px; padding-top: 36px; border-top: 1px solid var(--line); }
   .numbers h2 { font-size: 1.35rem; font-weight: 600; letter-spacing: -.01em; margin: 0 0 .3em; }
   .numbers > p { color: var(--muted); max-width: 64ch; margin: 0 0 8px; }
-  figure { margin: 40px 0 0; }
+  figure { margin: 44px 0 0; }
   figure h3 { font-size: 1.02rem; font-weight: 600; margin: 0 0 2px; text-wrap: balance; }
-  figure .sub { color: var(--muted); font-size: .88rem; margin: 0 0 14px; max-width: 70ch; }
+  figure .sub { color: var(--muted); font-size: .88rem; margin: 0 0 12px; max-width: 70ch; }
   figure .foot { color: var(--muted); font-size: .8rem; margin: 10px 0 0; max-width: 80ch; }
+  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin: 0 0 12px; font-size: .84rem; color: var(--muted); }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
+  .seg button { padding: 4px 11px; font-size: .82rem; color: var(--muted); }
+  .seg button + button { border-left: 1px solid var(--line); }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--ground); }
+  .key { display: inline-flex; align-items: center; gap: 6px; }
+  .key i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  .key i.dot { border-radius: 50%; }
+  .key i.ring { border-radius: 50%; background: var(--ground); border: 1.5px solid var(--c-judge); }
+  .chart { position: relative; }
   .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
   .chart text { font: 13px var(--sans); fill: var(--ink); }
   .chart text.m { fill: var(--muted); }
@@ -131,19 +146,21 @@
   .chart text.n { font-family: var(--mono); font-size: 12px; fill: var(--muted); }
   .chart .grid { stroke: var(--line); stroke-width: 1; }
   .chart .ref { stroke: var(--ink); stroke-width: 1.5; }
-  .chart .ink { fill: var(--ink); }
-  .chart .ink2 { fill: var(--muted); }
   .chart .track { fill: var(--wash); }
   .chart .gap { fill: var(--wash); }
-  .chart .range { stroke: var(--ink); stroke-width: 2; stroke-linecap: round; }
-  .chart .ci { stroke: var(--ink); stroke-opacity: .3; stroke-width: 2; stroke-linecap: round; }
-  .chart .dot { fill: var(--ink); stroke: var(--ground); stroke-width: 2; }
-  .chart .dot.open { fill: var(--ground); stroke: var(--ink); stroke-width: 1.75; }
-  .chart .hitbox { fill: transparent; }
-  .legend-line { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .82rem; color: var(--muted); margin: 0 0 10px; }
-  .legend-line i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
-  .legend-line i.dot { border-radius: 50%; }
-  .legend-line i.open { background: var(--ground); border: 1.5px solid var(--ink); border-radius: 50%; }
+  .chart .row { transition: opacity .15s, transform .45s cubic-bezier(.2,.7,.2,1); }
+  .chart svg:hover .row:not(:hover) { opacity: .35; }
+  .chart .mv { transition: transform .45s cubic-bezier(.2,.7,.2,1); }
+  .chart .hit { fill: transparent; }
+  .tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--ground); font-size: .8rem;
+         line-height: 1.35; padding: 6px 9px; border-radius: 6px; max-width: 260px; white-space: normal;
+         transform: translate(-50%, calc(-100% - 10px)); opacity: 0; transition: opacity .1s; z-index: 2; }
+  .tip.on { opacity: 1; }
+  .readout { font-size: .9rem; margin: 10px 0 0; }
+  .readout b { font-weight: 600; }
+  input[type="range"] { accent-color: var(--c-matcher); width: min(260px, 60vw); vertical-align: middle; }
+  .try { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; font-size: .84rem; color: var(--muted); }
+  .try button { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line); }
   .numbers details { margin-top: 36px; font-size: .9rem; }
   .numbers details summary { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line); cursor: pointer; }
   .tables { overflow-x: auto; }
@@ -151,6 +168,8 @@
   .tables th, .tables td { text-align: left; padding: 5px 14px 5px 0; border-bottom: 1px solid var(--line); }
   .tables td.v { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--mono); font-size: .8rem; }
   .tables th { font-weight: 500; color: var(--muted); font-size: .76rem; }
+  .chart.still .row, .chart.still .mv { transition: none; }
+  @media (prefers-reduced-motion: reduce) { .chart .row, .chart .mv { transition: none; } }
 
   @media (max-width: 860px) {
     .matrix-wrap { display: none; }
@@ -192,7 +211,7 @@
     <textarea id="claim" spellcheck="false" aria-label="Claim" hidden></textarea>
   </div>
   <div class="link" id="judge-link">
-    <span class="who">Judge</span>
+    <span class="who"><span class="id judge"></span>Judge</span>
     <span class="glyph none" id="judge-glyph">·</span>
     <span class="what" id="judge-what"></span>
   </div>
@@ -202,7 +221,7 @@
     <textarea id="quote" spellcheck="false" aria-label="Quote" hidden></textarea>
   </div>
   <div class="link" id="matcher-link">
-    <span class="who">Matcher</span>
+    <span class="who"><span class="id matcher"></span>Matcher</span>
     <span class="glyph none" id="matcher-glyph">·</span>
     <span class="what" id="matcher-what"></span>
   </div>
@@ -243,35 +262,63 @@
   <p>
     The examples above are hand-picked. These are the benchmark results behind them: thousands of
     generated quotes for the matcher, human-labelled citations for the judge, and eight answering
-    models following the citation protocol. Every number is reproducible from the repository.
+    models following the citation protocol. Hover a mark for its numbers.
   </p>
 
   <figure>
     <h3>Each check catches what the other cannot see</h3>
-    <p class="sub">Share of bad citations caught, by kind of failure. A citation is blocked if either check blocks it.</p>
+    <p class="sub">Share of bad citations blocked, by kind of failure. A citation is blocked if either check blocks it.</p>
+    <div class="controls">
+      <span class="key"><i style="background:var(--c-matcher)"></i>Matcher</span>
+      <span class="key"><i style="background:var(--c-judge)"></i>Judge</span>
+      <span class="key"><i style="background:var(--ink)"></i>Both together</span>
+    </div>
     <div class="chart" id="fig-tango"></div>
+    <div class="try">See it above:
+      <button type="button" data-go="fabricated">an invented quote</button>
+      <button type="button" data-go="contradicted">a real quote under a false claim</button>
+    </div>
     <p class="foot" id="fig-tango-foot"></p>
   </figure>
 
   <figure>
     <h3>A clear gap between faithful and missing quotes</h3>
     <p class="sub" id="fig-matcher-sub"></p>
-    <div class="legend-line"><span><i class="dot" style="background:var(--ink)"></i>median</span><span>line: lowest to highest score</span><span><i style="background:var(--wash)"></i>gap between faithful and missing</span></div>
+    <div class="controls">
+      <label for="thr">Threshold</label>
+      <input type="range" id="thr" min="0" max="1" step="1">
+      <span class="key"><i class="dot" style="background:var(--c-matcher)"></i>median · line: lowest to highest score</span>
+    </div>
     <div class="chart" id="fig-matcher"></div>
+    <p class="readout" id="thr-readout"></p>
   </figure>
 
   <figure>
     <h3>Which model should judge?</h3>
     <p class="sub">Against human annotators (ALCE), the same 240 claim–source pairs for every model, temperature 0.
-      False green: unsupported citations the judge still called fully supported. Agreement: on “fully supports”, yes or no.</p>
-    <div class="legend-line"><span><i class="dot" style="background:var(--ink)"></i>with reasoning</span><span><i class="open"></i>reasoning switched off</span><span>line: 95% interval</span></div>
+      False green: unsupported citations the judge still called fully supported.</p>
+    <div class="controls">
+      <span>Reasoning</span>
+      <span class="seg" id="reasoning-seg">
+        <button type="button" data-v="on" aria-pressed="true">on</button><button type="button" data-v="off" aria-pressed="false">off</button>
+      </span>
+      <span class="key"><i class="dot" style="background:var(--c-judge)"></i>measured · line: 95% interval</span>
+    </div>
     <div class="chart" id="fig-judges"></div>
+    <p class="foot" id="judges-foot"></p>
   </figure>
 
   <figure>
     <h3>Does the answering model play along?</h3>
     <p class="sub" id="fig-protocol-sub"></p>
-    <div class="legend-line"><span><i style="background:var(--ink)"></i>complete: every cited claim carries a quote</span><span><i style="background:var(--muted)"></i>verbatim: the quote is really in the source</span></div>
+    <div class="controls">
+      <span>Sort by</span>
+      <span class="seg" id="sort-seg">
+        <button type="button" data-v="complete" aria-pressed="true">complete</button><button type="button" data-v="verbatim" aria-pressed="false">verbatim</button>
+      </span>
+      <span class="key"><i style="background:var(--c-complete)"></i>complete: every cited claim carries a quote</span>
+      <span class="key"><i style="background:var(--c-verbatim)"></i>verbatim: the quote is really in the source</span>
+    </div>
     <div class="chart" id="fig-protocol"></div>
   </figure>
 
@@ -292,7 +339,7 @@
 import { verifyAnswer, serializeEvi1Appendix, ChatCompletionsJudge } from 'https://esm.sh/veriquote@0.2.0';
 
 /* BENCH-DATA:BEGIN */
-const BENCH = {"source":"bench/results/*.json","matcher":{"items":2061,"threshold":0.4,"gap":{"lowestFaithfulScore":0.66,"highestAbsentScore":0.396,"gap":0.264},"faithful":{"n":1121,"median":1,"accepted":1,"min":0.66,"max":1},"manipulated":{"n":586,"median":0.932,"accepted":1,"min":0.529,"max":0.987},"absent":{"n":187,"median":0.249,"accepted":0,"min":0.143,"max":0.396},"adversarial":{"n":167,"median":0.871,"accepted":1,"min":0.763,"max":0.936}},"tango":{"judgeModel":"glm-5.3-flash","absent":{"n":187,"matcherCaught":1},"unsupported":{"manipulatedN":586,"matcherCaught":0,"judgeN":56,"judgeCaught":0.839}},"judges":[{"model":"deepseek-v4-flash","reasoning":true,"falseGreen":0.182,"falseGreenCi":[0.102,0.303],"unsupported":55,"agreement":0.787,"agreementCi":[0.73,0.834]},{"model":"glm-5.3-flash","reasoning":false,"falseGreen":0.244,"falseGreenCi":[0.142,0.387],"unsupported":45,"agreement":0.74,"agreementCi":[0.676,0.796]},{"model":"glm-5.3-flash","reasoning":true,"falseGreen":0.161,"falseGreenCi":[0.087,0.278],"unsupported":56,"agreement":0.803,"agreementCi":[0.748,0.849]},{"model":"gpt-oss-120b","reasoning":true,"falseGreen":0.25,"falseGreenCi":[0.155,0.377],"unsupported":56,"agreement":0.767,"agreementCi":[0.709,0.817]},{"model":"qwen3.5-397b-a17b","reasoning":false,"falseGreen":0.214,"falseGreenCi":[0.127,0.338],"unsupported":56,"agreement":0.777,"agreementCi":[0.72,0.826]},{"model":"qwen3.5-397b-a17b","reasoning":true,"falseGreen":0.208,"falseGreenCi":[0.12,0.335],"unsupported":53,"agreement":0.797,"agreementCi":[0.74,0.844]},{"model":"qwen3.6-35b-a3b","reasoning":false,"falseGreen":0.214,"falseGreenCi":[0.127,0.338],"unsupported":56,"agreement":0.773,"agreementCi":[0.716,0.822]},{"model":"qwen3.6-35b-a3b","reasoning":true,"falseGreen":0.182,"falseGreenCi":[0.102,0.303],"unsupported":55,"agreement":0.781,"agreementCi":[0.724,0.829]}],"trueNli":0.776,"protocol":{"tasks":18,"runs":2,"models":[{"model":"deepseek-v4-flash","complete":1,"verbatim":0.992,"answers":36},{"model":"gemma-4-31b-it","complete":0.8,"verbatim":0.966,"answers":36},{"model":"mistral-medium-3.5-128b","complete":0.933,"verbatim":0.81,"answers":36},{"model":"llama-3.1-8b-instruct","complete":0.433,"verbatim":0.503,"answers":36},{"model":"gpt-oss-120b","complete":0.333,"verbatim":0.911,"answers":36},{"model":"qwen3.6-35b-a3b","complete":1,"verbatim":1,"answers":36},{"model":"glm-5.3-flash","complete":0.966,"verbatim":0.996,"answers":35},{"model":"qwen3.5-397b-a17b","complete":1,"verbatim":1,"answers":24}]}};
+const BENCH = {"source":"bench/results/*.json","matcher":{"items":2061,"threshold":0.4,"gap":{"lowestFaithfulScore":0.66,"highestAbsentScore":0.396,"gap":0.264},"sweep":[{"threshold":0.2,"faithfulKept":1,"absentRejected":0.112},{"threshold":0.25,"faithfulKept":1,"absentRejected":0.503},{"threshold":0.3,"faithfulKept":1,"absentRejected":0.85},{"threshold":0.35,"faithfulKept":1,"absentRejected":0.968},{"threshold":0.4,"faithfulKept":1,"absentRejected":1},{"threshold":0.45,"faithfulKept":1,"absentRejected":1},{"threshold":0.5,"faithfulKept":1,"absentRejected":1},{"threshold":0.55,"faithfulKept":1,"absentRejected":1},{"threshold":0.6,"faithfulKept":1,"absentRejected":1},{"threshold":0.65,"faithfulKept":1,"absentRejected":1},{"threshold":0.7,"faithfulKept":0.951,"absentRejected":1},{"threshold":0.75,"faithfulKept":0.911,"absentRejected":1},{"threshold":0.8,"faithfulKept":0.897,"absentRejected":1},{"threshold":0.85,"faithfulKept":0.895,"absentRejected":1}],"faithful":{"n":1121,"median":1,"accepted":1,"min":0.66,"max":1},"manipulated":{"n":586,"median":0.932,"accepted":1,"min":0.529,"max":0.987},"absent":{"n":187,"median":0.249,"accepted":0,"min":0.143,"max":0.396},"adversarial":{"n":167,"median":0.871,"accepted":1,"min":0.763,"max":0.936}},"tango":{"judgeModel":"glm-5.3-flash","absent":{"n":187,"matcherCaught":1},"unsupported":{"manipulatedN":586,"matcherCaught":0,"judgeN":56,"judgeCaught":0.839}},"judges":[{"model":"deepseek-v4-flash","reasoning":true,"falseGreen":0.182,"falseGreenCi":[0.102,0.303],"unsupported":55,"agreement":0.787,"agreementCi":[0.73,0.834]},{"model":"glm-5.3-flash","reasoning":false,"falseGreen":0.244,"falseGreenCi":[0.142,0.387],"unsupported":45,"agreement":0.74,"agreementCi":[0.676,0.796]},{"model":"glm-5.3-flash","reasoning":true,"falseGreen":0.161,"falseGreenCi":[0.087,0.278],"unsupported":56,"agreement":0.803,"agreementCi":[0.748,0.849]},{"model":"gpt-oss-120b","reasoning":true,"falseGreen":0.25,"falseGreenCi":[0.155,0.377],"unsupported":56,"agreement":0.767,"agreementCi":[0.709,0.817]},{"model":"qwen3.5-397b-a17b","reasoning":false,"falseGreen":0.214,"falseGreenCi":[0.127,0.338],"unsupported":56,"agreement":0.777,"agreementCi":[0.72,0.826]},{"model":"qwen3.5-397b-a17b","reasoning":true,"falseGreen":0.208,"falseGreenCi":[0.12,0.335],"unsupported":53,"agreement":0.797,"agreementCi":[0.74,0.844]},{"model":"qwen3.6-35b-a3b","reasoning":false,"falseGreen":0.214,"falseGreenCi":[0.127,0.338],"unsupported":56,"agreement":0.773,"agreementCi":[0.716,0.822]},{"model":"qwen3.6-35b-a3b","reasoning":true,"falseGreen":0.182,"falseGreenCi":[0.102,0.303],"unsupported":55,"agreement":0.781,"agreementCi":[0.724,0.829]}],"trueNli":0.776,"protocol":{"tasks":18,"runs":2,"models":[{"model":"deepseek-v4-flash","complete":1,"verbatim":0.992,"answers":36},{"model":"gemma-4-31b-it","complete":0.8,"verbatim":0.966,"answers":36},{"model":"mistral-medium-3.5-128b","complete":0.933,"verbatim":0.81,"answers":36},{"model":"llama-3.1-8b-instruct","complete":0.433,"verbatim":0.503,"answers":36},{"model":"gpt-oss-120b","complete":0.333,"verbatim":0.911,"answers":36},{"model":"qwen3.6-35b-a3b","complete":1,"verbatim":1,"answers":36},{"model":"glm-5.3-flash","complete":0.966,"verbatim":0.996,"answers":35},{"model":"qwen3.5-397b-a17b","complete":1,"verbatim":1,"answers":24}]}};
 /* BENCH-DATA:END */
 
 
@@ -370,8 +417,8 @@ async function buildMatrix() {
   const cells = [
     `<div class="group" style="grid-column: 2 / span ${good}"><span class="small-caps">Should pass</span></div>`,
     `<div class="group" style="grid-column: ${2 + good} / span ${EXAMPLES.length - good}"><span class="small-caps">Should be blocked</span></div>`,
-    '<div class="rowlabel" style="grid-row: 3; grid-column: 1"><b>Judge</b>claim ↔ quote</div>',
-    '<div class="rowlabel" style="grid-row: 4; grid-column: 1"><b>Matcher</b>quote ↔ source</div>',
+    '<div class="rowlabel" style="grid-row: 3; grid-column: 1"><b><span class="id judge"></span>Judge</b>claim ↔ quote</div>',
+    '<div class="rowlabel" style="grid-row: 4; grid-column: 1"><b><span class="id matcher"></span>Matcher</b>quote ↔ source</div>',
   ];
   EXAMPLES.forEach((ex, i) => {
     const col = i + 2;
@@ -389,7 +436,7 @@ async function buildMatrix() {
 
   const rows = [];
   for (const [title, want] of [['Should pass', true], ['Should be blocked', false]]) {
-    rows.push(`<div class="hdr small-caps"><span>${title}</span><span>Judge</span><span>Matcher</span></div>`);
+    rows.push(`<div class="hdr small-caps"><span>${title}</span><span><span class="id judge"></span>Judge</span><span><span class="id matcher"></span>Match</span></div>`);
     EXAMPLES.forEach((ex, i) => {
       if (Boolean(ex.good) !== want) return;
       const [jc, jg] = glyph(decided[i].judgeBlocks);
@@ -524,6 +571,9 @@ const T = (x, y, str, cls = '', anchor = 'start') =>
 const svgOf = (w, h, label, body) =>
   `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="${esc(label)}">${body.join('')}</svg>`;
 const scale = (d0, d1, x0, x1) => (v) => x0 + ((v - d0) / (d1 - d0)) * (x1 - x0);
+const tipAttr = (text) => `data-tip="${esc(text)}"`;
+/** Drop size and tuning suffixes where a phone has no room for them. */
+const shortName = (name) => name.replace(/-(instruct|it)$/, '').replace(/-\d+(\.\d+)?b(-a\d+b)?$/, '');
 
 function axis(sx, ticks, y0, y1, fmt) {
   return ticks.flatMap((t) => [
@@ -532,45 +582,71 @@ function axis(sx, ticks, y0, y1, fmt) {
   ]);
 }
 
+/** One tooltip per chart, driven by data-tip on any mark. */
+function withTips(el) {
+  const tip = document.createElement('div');
+  tip.className = 'tip';
+  el.appendChild(tip);
+  el.addEventListener('pointermove', (ev) => {
+    const t = ev.target.closest('[data-tip]');
+    if (!t) { tip.classList.remove('on'); return; }
+    const box = el.getBoundingClientRect();
+    tip.textContent = t.dataset.tip;
+    tip.style.left = `${Math.min(Math.max(ev.clientX - box.left, 130), box.width - 130)}px`;
+    tip.style.top = `${ev.clientY - box.top}px`;
+    tip.classList.add('on');
+  });
+  el.addEventListener('pointerleave', () => tip.classList.remove('on'));
+}
+
+// --- 1. who catches what
+
 function tangoChart(W) {
   const t = BENCH.tango;
   const narrow = W < 560;
-  const x0 = 92, capW = narrow ? 0 : 190, x1 = W - capW - 8;
-  const rows = [
-    { head: 'The quote is not in the source', sub: 'invented, paraphrased, or taken from another document' },
-    { who: 'Matcher', v: t.absent.matcherCaught, cap: `${Math.round(t.absent.matcherCaught * t.absent.n)} of ${t.absent.n} blocked` },
-    { who: 'Judge', v: null, cap: 'never sees the source' },
-    { who: 'Together', v: t.absent.matcherCaught, cap: 'the matcher catches it', bold: true },
-    { head: 'The quote is real, the claim is not', sub: 'the source does not support what is claimed' },
-    { who: 'Matcher', v: t.unsupported.matcherCaught, cap: `0 of ${t.unsupported.manipulatedN} blocked` },
-    { who: 'Judge', v: t.unsupported.judgeCaught, cap: `${Math.round(t.unsupported.judgeCaught * t.unsupported.judgeN)} of ${t.unsupported.judgeN} blocked` },
-    { who: 'Together', v: t.unsupported.judgeCaught, cap: 'the judge catches it', bold: true },
+  const x0 = 96, capW = narrow ? 44 : 190, x1 = W - capW - 8;
+  const sx = scale(0, 1, x0, x1);
+  const groups = [
+    { head: 'The quote is not in the source', sub: 'invented, paraphrased, or taken from another document', bars: [
+      { who: 'Matcher', c: 'var(--c-matcher)', v: t.absent.matcherCaught, cap: `${Math.round(t.absent.matcherCaught * t.absent.n)} of ${t.absent.n} blocked` },
+      { who: 'Judge', c: 'var(--c-judge)', v: null, cap: 'never sees the source' },
+      { who: 'Together', c: 'var(--ink)', v: t.absent.matcherCaught, cap: 'caught by the matcher', bold: true },
+    ] },
+    { head: 'The quote is real, the claim is not', sub: 'the source does not support what is claimed', bars: [
+      { who: 'Matcher', c: 'var(--c-matcher)', v: t.unsupported.matcherCaught, cap: `0 of ${t.unsupported.manipulatedN} blocked` },
+      { who: 'Judge', c: 'var(--c-judge)', v: t.unsupported.judgeCaught, cap: `${Math.round(t.unsupported.judgeCaught * t.unsupported.judgeN)} of ${t.unsupported.judgeN} blocked` },
+      { who: 'Together', c: 'var(--ink)', v: t.unsupported.judgeCaught, cap: 'caught by the judge', bold: true },
+    ] },
   ];
   const b = [];
-  const sx = scale(0, 1, x0, x1);
   let y = 0;
-  for (const r of rows) {
-    if (r.head) {
-      y += y ? 26 : 16;
-      b.push(T(0, y, r.head, 'b'), T(0, y + 16, r.sub, 'm s'));
-      y += 30;
-      continue;
+  for (const g of groups) {
+    y += y ? 28 : 16;
+    b.push(T(0, y, g.head, 'b'), T(0, y + 16, g.sub, 'm s'));
+    y += 30;
+    for (const r of g.bars) {
+      const cy = y + 12;
+      const tip = r.v === null ? `${r.who}: ${r.cap}` : `${r.who}: ${pc(r.v)} — ${r.cap}`;
+      b.push(`<g class="row" ${tipAttr(tip)}><rect class="hit" x="0" y="${cy - 12}" width="${W}" height="24"/>`);
+      b.push(`<circle cx="4" cy="${cy}" r="4" fill="${r.c}"/>`, T(14, cy + 4, r.who, r.bold ? 'b' : ''));
+      if (r.v === null) {
+        b.push(T(x0, cy + 4, 'never sees the source', 'm'));
+      } else {
+        b.push(`<rect class="track" x="${x0}" y="${cy - 6}" width="${x1 - x0}" height="12" rx="3"/>`);
+        if (r.v > 0) b.push(`<rect x="${x0}" y="${cy - 6}" width="${Math.max(6, sx(r.v) - x0)}" height="12" rx="3" fill="${r.c}"/>`);
+        b.push(T(x1 + 10, cy + 4, narrow ? pc(r.v) : `${pc(r.v)}  ${r.cap}`, 'n'));
+      }
+      b.push('</g>');
+      y += 26;
     }
-    const cy = y + 12;
-    b.push(T(0, cy + 4, r.who, r.bold ? 'b' : 'm'));
-    if (r.v === null) {
-      b.push(T(x0, cy + 4, '—  never sees the source', 'm'));
-    } else {
-      b.push(`<rect class="track" x="${x0}" y="${cy - 5}" width="${x1 - x0}" height="10" rx="5"/>`);
-      if (r.v > 0) b.push(`<rect class="ink" x="${x0}" y="${cy - 5}" width="${Math.max(10, sx(r.v) - x0)}" height="10" rx="5"><title>${esc(`${r.who}: ${pc(r.v)}`)}</title></rect>`);
-      b.push(T(narrow ? x1 : x1 + 12, narrow ? cy - 9 : cy + 4, narrow ? pc(r.v) : `${pc(r.v)}  ${r.cap}`, narrow ? 'n' : 'n', narrow ? 'end' : 'start'));
-    }
-    y += 26;
   }
   $('fig-tango-foot').textContent = `Matcher: generated quotes (n = ${t.absent.n} and ${t.unsupported.manipulatedN}). Judge: ${t.judgeModel} on human-labelled citations that annotators marked as unsupported (n = ${t.unsupported.judgeN}).`;
   return svgOf(W, y + 4, 'Which check catches which failure', b);
 }
 
+// --- 2. matcher score ranges, with a live threshold
+
+let thrIndex = 0;
 function matcherChart(W) {
   const m = BENCH.matcher;
   const narrow = W < 560;
@@ -582,92 +658,154 @@ function matcherChart(W) {
     { name: 'Not in the source', short: 'Not in source', note: 'must fail', d: m.absent },
     { name: 'Invented from source words', short: 'Word salad', note: 'adversarial', d: m.adversarial, open: true },
   ];
-  const top = 24, rowH = 44, y1 = top + rows.length * rowH;
+  const top = 26, rowH = 44, y1 = top + rows.length * rowH;
   const sx = scale(0, 1, x0, x1);
   const b = [
-    `<rect class="gap" x="${sx(m.gap.highestAbsentScore)}" y="${top}" width="${sx(m.gap.lowestFaithfulScore) - sx(m.gap.highestAbsentScore)}" height="${y1 - top}"/>`,
+    `<rect class="gap" x="${sx(m.gap.highestAbsentScore)}" y="${top}" width="${sx(m.gap.lowestFaithfulScore) - sx(m.gap.highestAbsentScore)}" height="${y1 - top}" ${tipAttr(`The gap: faithful quotes never score below ${m.gap.lowestFaithfulScore}, missing ones never above ${m.gap.highestAbsentScore}.`)}/>`,
     ...axis(sx, [0, 0.2, 0.4, 0.6, 0.8, 1], top, y1, (v) => v.toFixed(1)),
-    `<line class="ref" x1="${sx(m.threshold)}" x2="${sx(m.threshold)}" y1="${top - 4}" y2="${y1}"/>`,
-    T(sx(m.threshold) - 6, top - 8, `threshold ${m.threshold}`, 's', 'end'),
   ];
   rows.forEach((r, i) => {
     const cy = top + i * rowH + rowH / 2;
+    const tip = `${r.name}: median ${r.d.median}, from ${r.d.min} to ${r.d.max} (n = ${r.d.n.toLocaleString('en')})`;
+    b.push(`<g class="row" ${tipAttr(tip)}><rect class="hit" x="0" y="${cy - 20}" width="${W}" height="40"/>`);
     b.push(T(0, cy - 2, narrow ? r.short : r.name, narrow ? 's' : ''), T(0, cy + 13, narrow ? (r.shortNote ?? r.note) : r.note, 'm s'));
-    b.push(`<line class="range" x1="${sx(r.d.min)}" x2="${Math.max(sx(r.d.max), sx(r.d.min) + 1)}" y1="${cy}" y2="${cy}"/>`);
-    b.push(`<circle class="dot${r.open ? ' open' : ''}" cx="${sx(r.d.median)}" cy="${cy}" r="5.5"><title>${esc(`${r.name}: median ${r.d.median}, range ${r.d.min}–${r.d.max}, n = ${r.d.n}`)}</title></circle>`);
+    b.push(`<line x1="${sx(r.d.min)}" x2="${Math.max(sx(r.d.max), sx(r.d.min) + 1)}" y1="${cy}" y2="${cy}" stroke="var(--c-matcher)" stroke-width="2.5" stroke-linecap="round"/>`);
+    b.push(`<circle cx="${sx(r.d.median)}" cy="${cy}" r="6" fill="${r.open ? 'var(--ground)' : 'var(--c-matcher)'}" stroke="${r.open ? 'var(--c-matcher)' : 'var(--ground)'}" stroke-width="2"/>`);
+    b.push('</g>');
   });
-  return svgOf(W, y1 + 24, 'Matcher score ranges per kind of quote', b);
+  // threshold: a group moved by transform, so the slider animates it
+  b.push(`<g class="mv" id="thr-line" data-x0="${x0}" data-x1="${x1}"><line class="ref" x1="0" x2="0" y1="${top - 6}" y2="${y1}"/>` +
+    `<text x="-6" y="${top - 10}" class="s" text-anchor="end" id="thr-label"></text></g>`);
+  return svgOf(W, y1 + 24, 'Matcher score ranges per kind of quote, with the acceptance threshold', b);
 }
 
+function placeThreshold() {
+  const m = BENCH.matcher;
+  const s = m.sweep[thrIndex];
+  const g = $('thr-line');
+  if (g) {
+    const x = scale(0, 1, Number(g.dataset.x0), Number(g.dataset.x1))(s.threshold);
+    g.style.transform = `translateX(${x}px)`;
+    $('thr-label').textContent = `threshold ${s.threshold.toFixed(2)}`;
+  }
+  const ok = s.faithfulKept === 1 && s.absentRejected === 1;
+  $('thr-readout').innerHTML = `At <b>${s.threshold.toFixed(2)}</b>: <b>${pc(s.faithfulKept, 1)}</b> of faithful quotes kept, ` +
+    `<b>${pc(s.absentRejected, 1)}</b> of missing quotes rejected.` + (ok ? ' Both perfect anywhere in the gap.' : '') +
+    (s.threshold === m.threshold ? ' This is the default.' : '');
+}
+
+// --- 3. judges, reasoning on or off
+
+let reasoning = 'on';
 function judgesChart(W) {
-  const withR = BENCH.judges.filter((j) => j.reasoning).sort((a, b) => a.falseGreen - b.falseGreen);
-  const without = Object.fromEntries(BENCH.judges.filter((j) => !j.reasoning).map((j) => [j.model, j]));
+  const models = BENCH.judges.filter((j) => j.reasoning).sort((a, b) => a.falseGreen - b.falseGreen);
   const wide = W >= 640;
   const labelW = wide ? 150 : 122;
-  const rowH = 30, top = 26;
+  const rowH = 32, top = 26;
   const body = [];
   const panel = (x0, x1, y0, title, domain, ticks, key, ref) => {
     const sx = scale(domain[0], domain[1], x0, x1);
-    const y1 = y0 + withR.length * rowH;
-    body.push(T(x0, y0 - 10, title, 'b s'));
-    body.push(...axis(sx, ticks, y0, y1, (v) => pc(v)));
+    const y1 = y0 + models.length * rowH;
+    body.push(T(x0, y0 - 10, title, 'b s'), ...axis(sx, ticks, y0, y1, (v) => pc(v)));
     if (ref) body.push(`<line class="ref" x1="${sx(ref.v)}" x2="${sx(ref.v)}" y1="${y0}" y2="${y1}"/>`, T(sx(ref.v), y1 + 32, ref.label, 's', 'middle'));
-    withR.forEach((j, i) => {
+    models.forEach((j, i) => {
       const cy = y0 + i * rowH + rowH / 2;
-      const ci = j[`${key}Ci`];
-      body.push(`<line class="ci" x1="${sx(ci[0])}" x2="${sx(ci[1])}" y1="${cy}" y2="${cy}"/>`);
-      const off = without[j.model];
-      if (off) body.push(`<circle class="dot open" cx="${sx(off[key])}" cy="${cy}" r="4.5"><title>${esc(`${j.model}, reasoning off: ${pc(off[key], 1)}`)}</title></circle>`);
-      body.push(`<circle class="dot" cx="${sx(j[key])}" cy="${cy}" r="5"><title>${esc(`${j.model}: ${pc(j[key], 1)} (95% interval ${pc(ci[0])}–${pc(ci[1])})`)}</title></circle>`);
-      body.push(T(Math.min(x1 + 4, sx(ci[1]) + 6), cy + 4, pc(j[key], 1), 'n'));
+      body.push(`<g class="row judge-row" data-model="${esc(j.model)}" data-key="${key}" data-d0="${domain[0]}" data-d1="${domain[1]}" data-x0="${x0}" data-x1="${x1}" data-cy="${cy}">` +
+        `<rect class="hit" x="${x0 - 6}" y="${cy - 14}" width="${x1 - x0 + 60}" height="28"/>` +
+        `<line class="ci mv" x1="0" x2="1" y1="${cy}" y2="${cy}" stroke="var(--c-judge)" stroke-opacity=".35" stroke-width="2.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/>` +
+        `<circle class="mv dot" cx="0" cy="${cy}" r="6" stroke="var(--ground)" stroke-width="2"/>` +
+        `<text class="n mv val" x="0" y="${cy + 4}"></text></g>`);
     });
     return y1;
   };
-  const labels = (y0) => withR.forEach((j, i) => body.push(T(labelW - 10, y0 + i * rowH + rowH / 2 + 4, wide ? j.model : shortName(j.model), wide ? '' : 's', 'end')));
+  const labels = (y0) => models.forEach((j, i) =>
+    body.push(T(labelW - 10, y0 + i * rowH + rowH / 2 + 4, wide ? j.model : shortName(j.model), wide ? '' : 's', 'end')));
   let h;
   if (wide) {
-    const pw = (W - labelW - 60) / 2;
+    const pw = (W - labelW - 70) / 2;
     labels(top);
     panel(labelW, labelW + pw, top, 'False green ↓', [0, 0.4], [0, 0.1, 0.2, 0.3, 0.4], 'falseGreen');
-    const y1 = panel(labelW + pw + 50, W - 10, top, 'Agreement with annotators ↑', [0.65, 0.9], [0.7, 0.8, 0.9], 'agreement',
+    const y1 = panel(labelW + pw + 60, W - 50, top, 'Agreement with annotators ↑', [0.65, 0.9], [0.7, 0.8, 0.9], 'agreement',
       { v: BENCH.trueNli, label: `specialised NLI model ${pc(BENCH.trueNli, 1)}` });
     h = y1 + 40;
   } else {
     labels(top);
-    const y1 = panel(labelW, W - 44, top, 'False green ↓', [0, 0.4], [0, 0.2, 0.4], 'falseGreen');
+    const y1 = panel(labelW, W - 50, top, 'False green ↓', [0, 0.4], [0, 0.2, 0.4], 'falseGreen');
     const top2 = y1 + 60;
     labels(top2);
-    const y2 = panel(labelW, W - 44, top2, 'Agreement with annotators ↑', [0.65, 0.9], [0.7, 0.8, 0.9], 'agreement',
-      { v: BENCH.trueNli, label: `specialised NLI ${pc(BENCH.trueNli, 1)}` });
-    h = y2 + 40;
+    h = panel(labelW, W - 50, top2, 'Agreement with annotators ↑', [0.65, 0.9], [0.7, 0.8, 0.9], 'agreement',
+      { v: BENCH.trueNli, label: `specialised NLI ${pc(BENCH.trueNli, 1)}` }) + 40;
   }
   return svgOf(W, h, 'Judge models compared against human annotators', body);
 }
 
-/** Drop size and tuning suffixes where a phone has no room for them. */
-const shortName = (name) => name.replace(/-(instruct|it)$/, '').replace(/-\d+(\.\d+)?b(-a\d+b)?$/, '');
+function placeJudges() {
+  const byKey = (model, on) => BENCH.judges.find((j) => j.model === model && j.reasoning === on);
+  let missing = [];
+  for (const g of document.querySelectorAll('#fig-judges .judge-row')) {
+    const on = byKey(g.dataset.model, true);
+    const off = byKey(g.dataset.model, false);
+    const j = reasoning === 'on' ? on : off ?? on;
+    const faded = reasoning === 'off' && !off;
+    if (faded && !missing.includes(g.dataset.model)) missing.push(g.dataset.model);
+    const key = g.dataset.key;
+    const sx = scale(Number(g.dataset.d0), Number(g.dataset.d1), Number(g.dataset.x0), Number(g.dataset.x1));
+    const ci = j[`${key}Ci`];
+    const [line, dot, val] = [g.querySelector('.ci'), g.querySelector('.dot'), g.querySelector('.val')];
+    line.style.transform = `translateX(${sx(ci[0])}px) scaleX(${Math.max(1, sx(ci[1]) - sx(ci[0]))})`;
+    dot.style.transform = `translateX(${sx(j[key])}px)`;
+    dot.setAttribute('fill', reasoning === 'off' && off ? 'var(--ground)' : 'var(--c-judge)');
+    dot.setAttribute('stroke', reasoning === 'off' && off ? 'var(--c-judge)' : 'var(--ground)');
+    val.style.transform = `translateX(${Math.min(sx(ci[1]) + 8, Number(g.dataset.x1) + 6)}px)`;
+    val.textContent = pc(j[key], 1);
+    g.style.opacity = faded ? '.3' : '';
+    g.dataset.tip = faded ? `${g.dataset.model}: has no reasoning switch — showing its only run`
+      : `${g.dataset.model}${reasoning === 'off' ? ', reasoning off' : ''}: ${pc(j[key], 1)} (95% interval ${pc(ci[0])}–${pc(ci[1])})`;
+  }
+  $('judges-foot').textContent = reasoning === 'off'
+    ? `Hollow: reasoning switched off (5–10× faster). Faded: ${missing.join(', ')} ha${missing.length > 1 ? 've' : 's'} no switch.`
+    : 'With reasoning, the default. Switch it off to see what the speed costs.';
+}
 
+// --- 4. protocol compliance, sortable
+
+let sortKey = 'complete';
 function protocolChart(W) {
-  const rows = [...BENCH.protocol.models].sort((a, b) => b.complete + b.verbatim - (a.complete + a.verbatim));
+  const rows = BENCH.protocol.models;
   const narrow = W < 560;
   const labelW = narrow ? 118 : 170;
   const x0 = labelW, x1 = W - 52;
-  const barH = 10, groupH = 2 * barH + 2 + 14;
+  const barH = 11, groupH = 2 * barH + 2 + 14;
   const top = 4, y1 = top + rows.length * groupH;
   const sx = scale(0, 1, x0, x1);
-  const b = [...axis(sx, [0, 0.5, 1], top, y1, (v) => pc(v))];
-  rows.forEach((r, i) => {
-    const gy = top + i * groupH + 7;
-    b.push(T(labelW - 10, gy + barH + 5, narrow ? shortName(r.model) : r.model, narrow ? 's' : '', 'end'));
-    [['complete', 'ink'], ['verbatim', 'ink2']].forEach(([key, cls], k) => {
-      const y = gy + k * (barH + 2);
+  const b = [...axis(sx, [0, 0.25, 0.5, 0.75, 1], top, y1, (v) => pc(v))];
+  rows.forEach((r) => {
+    const tip = `${r.model}: ${pc(r.complete, 1)} complete, ${pc(r.verbatim, 1)} verbatim (${r.answers} answers)`;
+    b.push(`<g class="row proto-row" data-model="${esc(r.model)}" ${tipAttr(tip)}><rect class="hit" x="0" y="0" width="${W}" height="${groupH}"/>`);
+    b.push(T(labelW - 10, 7 + barH + 5, narrow ? shortName(r.model) : r.model, narrow ? 's' : '', 'end'));
+    [['complete', 'var(--c-complete)'], ['verbatim', 'var(--c-verbatim)']].forEach(([key, color], k) => {
+      const y = 7 + k * (barH + 2);
       const w = Math.max(3, sx(r[key]) - x0);
-      b.push(`<path class="${cls}" d="M${x0},${y} h${w - 3} a3,3 0 0 1 3,3 v${barH - 6} a3,3 0 0 1 -3,3 h${-(w - 3)} z"><title>${esc(`${r.model}, ${key}: ${pc(r[key], 1)} of ${r.answers} answers`)}</title></path>`);
+      b.push(`<path fill="${color}" d="M${x0},${y} h${w - 3} a3,3 0 0 1 3,3 v${barH - 6} a3,3 0 0 1 -3,3 h${-(w - 3)} z"/>`);
       b.push(T(x0 + w + 5, y + barH - 1, pc(r[key]), 'n'));
     });
+    b.push('</g>');
   });
+  $('fig-protocol').dataset.groupH = groupH;
+  $('fig-protocol').dataset.top = top;
   return svgOf(W, y1 + 24, 'Citation protocol compliance per answering model', b);
 }
+
+function placeProtocol() {
+  const other = sortKey === 'complete' ? 'verbatim' : 'complete';
+  const order = [...BENCH.protocol.models].sort((a, b) => b[sortKey] - a[sortKey] || b[other] - a[other]).map((r) => r.model);
+  const groupH = Number($('fig-protocol').dataset.groupH), top = Number($('fig-protocol').dataset.top);
+  for (const g of document.querySelectorAll('#fig-protocol .proto-row')) {
+    g.style.transform = `translateY(${top + order.indexOf(g.dataset.model) * groupH}px)`;
+  }
+}
+
+// --- wiring
 
 function renderTables() {
   const row = (cells) => `<tr>${cells.map((c, i) => (i ? `<td class="v">${c}</td>` : `<td>${esc(c)}</td>`)).join('')}</tr>`;
@@ -680,17 +818,48 @@ function renderTables() {
       row([r.model, pc(r.complete, 1), pc(r.verbatim, 1), r.answers])).join('')}</table>`;
 }
 
+function segmented(id, onChange) {
+  const seg = $(id);
+  seg.addEventListener('click', (ev) => {
+    const b = ev.target.closest('button');
+    if (!b) return;
+    for (const x of seg.children) x.setAttribute('aria-pressed', String(x === b));
+    onChange(b.dataset.v);
+  });
+}
+
 function renderNumbers() {
   if (!BENCH) { $('numbers').hidden = true; return; }
   const m = BENCH.matcher;
-  $('fig-matcher-sub').textContent = `Matcher score for ${m.items.toLocaleString('en')} generated quotes from five Wikipedia articles. A quote counts as found at ${m.threshold} or above.`;
-  $('fig-protocol-sub').textContent = `Eight models got the citation instructions; ${BENCH.protocol.tasks} questions, ${BENCH.protocol.runs} runs each, checked mechanically.`;
+  $('fig-matcher-sub').textContent = `Matcher score for ${m.items.toLocaleString('en')} generated quotes from five Wikipedia articles. Drag the threshold: anywhere in the shaded gap, every faithful quote is kept and every missing one rejected.`;
+  $('fig-protocol-sub').textContent = `Eight models got the citation instructions: ${BENCH.protocol.tasks} questions, ${BENCH.protocol.runs} runs each, checked mechanically.`;
+  thrIndex = Math.max(0, m.sweep.findIndex((s) => s.threshold === m.threshold));
+  $('thr').max = String(m.sweep.length - 1);
+  $('thr').value = String(thrIndex);
+  $('thr').addEventListener('input', () => { thrIndex = Number($('thr').value); placeThreshold(); });
+  segmented('reasoning-seg', (v) => { reasoning = v; placeJudges(); });
+  segmented('sort-seg', (v) => { sortKey = v; placeProtocol(); });
+  for (const b of document.querySelectorAll('[data-go]')) {
+    b.addEventListener('click', () => { select(b.dataset.go); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  }
+  for (const id of ['fig-tango', 'fig-matcher', 'fig-judges', 'fig-protocol']) withTips($(id));
+
   const draw = () => {
     const w = Math.max(300, Math.floor($('fig-tango').clientWidth));
-    $('fig-tango').innerHTML = tangoChart(w);
-    $('fig-matcher').innerHTML = matcherChart(w);
-    $('fig-judges').innerHTML = judgesChart(w);
-    $('fig-protocol').innerHTML = protocolChart(w);
+    const put = (id, html) => {
+      const el = $(id);
+      el.querySelector('svg')?.remove();
+      el.insertAdjacentHTML('afterbegin', html);
+    };
+    put('fig-tango', tangoChart(w));
+    put('fig-matcher', matcherChart(w));
+    put('fig-judges', judgesChart(w));
+    put('fig-protocol', protocolChart(w));
+    // place without animating, then let later changes animate
+    const charts = ['fig-tango', 'fig-matcher', 'fig-judges', 'fig-protocol'].map($);
+    for (const c of charts) c.classList.add('still');
+    placeThreshold(); placeJudges(); placeProtocol();
+    requestAnimationFrame(() => requestAnimationFrame(() => { for (const c of charts) c.classList.remove('still'); }));
   };
   let last = 0;
   new ResizeObserver(() => {
