@@ -232,9 +232,10 @@ function summarise() {
       meanCoverage: mean(answerable.map((r) => r.coverage).filter((x) => x !== null)),
       verbatimRate: mean(answerable.map((r) => r.verbatimRate).filter((x) => x !== null)),
       warningFreeRate: mean(answerable.map((r) => (r.warnings.length === 0 ? 1 : 0))),
-      // On a question the sources cannot answer, the right behaviour is to cite
-      // nothing rather than to manufacture evidence.
-      restraintOnUnanswerable: mean(unanswerable.map((r) => (r.citedPairs === 0 ? 1 : 0))),
+      // On a question the sources cannot answer, declining while quoting related
+      // context is fine; a citation without a real quote behind it is not.
+      badCitationsOnUnanswerable: mean(unanswerable.map((r) =>
+        (r.citedPairs > 0 && (!r.complete || (r.verbatimRate ?? 1) < 1) ? 1 : 0))),
       cutOffRate: mean(mine.map((r) => (r.finishReason === 'length' ? 1 : 0))),
     };
   });
@@ -246,13 +247,13 @@ const md = [];
 md.push(`Tasks: ${tasks.length} (${tasks.filter((t) => t.note).length} deliberately unanswerable) x ${REPEATS} repeat(s)`);
 md.push(`Sources: ${corpus.length} pinned Wikipedia documents, first ${SOURCE_CHARS} chars each`);
 md.push('');
-md.push('| model | n | api fails | cut off | appendix | complete | coverage | verbatim | warning-free | restraint |');
+md.push('| model | n | api fails | cut off | appendix | complete | coverage | verbatim | warning-free | bad cites, unanswerable |');
 md.push('| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |');
 for (const r of rows) {
   md.push(
     `| ${r.model} | ${r.n} | ${r.apiFailures} | ${pct(r.cutOffRate)} | ${pct(r.appendixRate)} | ${pct(r.completeRate)} | ` +
       `${pct(r.meanCoverage)} | ${pct(r.verbatimRate)} | ${pct(r.warningFreeRate)} | ` +
-      `${pct(r.restraintOnUnanswerable)} |`,
+      `${pct(r.badCitationsOnUnanswerable)} |`,
   );
 }
 md.push('');
@@ -262,7 +263,7 @@ md.push('appendix = emitted a parseable EVI1 block at all');
 md.push('complete = every (claim, source) pair it cited also has an evidence line');
 md.push('coverage = share of cited pairs that carry a quote, averaged over tasks');
 md.push('verbatim = share of supplied quotes that are literally present in the source');
-md.push('restraint = share of unanswerable tasks where the model cited nothing');
+md.push('bad cites, unanswerable = share of unanswerable tasks with a citation that has no real quote behind it');
 
 console.log(md.join('\n'));
 

@@ -47,63 +47,60 @@ Current results: [`results/matcher.json`](results/matcher.json).
 
 ```bash
 node --env-file=.env bench/protocol/run.mjs \
-  --models qwen3.8-27b,glm-5.3-flash,mistral-medium-3.5-128b \
+  --models glm-5.3-flash,qwen3.6-35b-a3b,deepseek-v4-flash-0731 --repeats 2 \
   --json bench/results/protocol.json
 ```
 
 Eighteen tasks over the same pinned corpus, three of them deliberately not
 answerable from the sources. Each model gets `buildCitationInstructions()` in
 its system prompt; `parseAnswer()` then decides mechanically whether it
-complied. Nothing is labelled by hand.
+complied. Nothing is labelled by hand, and every raw answer is kept in
+[`results/protocol-answers.jsonl`](results/protocol-answers.jsonl) with the
+provider's finish reason, so each number can be checked against the text.
 
 Reported per model:
 
-- **appendix** — emitted a parseable `EVI1` block at all.
-- **complete** — every `(claim, source)` pair it cited also carries an evidence
-  line. This is the number that matters: a model that prints `[n]` markers and
-  skips the appendix produces an answer that *looks* well-cited and carries no
-  verifiable evidence whatsoever.
-- **coverage** — share of cited pairs that carry a quote.
+- **complete** — every `(claim, source)` pair it cited also carries a quote.
+  The number that matters: a model that prints `[n]` markers and skips the
+  appendix produces an answer that *looks* well-cited and carries no
+  verifiable evidence.
 - **verbatim** — share of supplied quotes literally present in the source.
-- **restraint** — on the unanswerable tasks, did it cite nothing rather than
-  manufacture evidence?
+- **appendix**, **coverage**, **warning-free** — finer grades of the same.
+- **cut off** — the provider stopped the answer at its token limit, which would
+  remove the appendix; counted separately so it is not blamed on the model.
+- **bad cites, unanswerable** — on a question the sources cannot answer, a
+  citation without a real quote behind it. Declining while quoting related
+  context is not counted.
 
-Cost is a few cents per model for a full pass.
+### Results (2026-09-22, 2 runs per task)
 
-### Results (2026-09-21)
+| model | n | api fails | cut off | appendix | complete | coverage | verbatim | warning-free | bad cites, unanswerable |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| qwen3.6-35b-a3b | 36 | 0 | 0.0% | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 0.0% |
+| qwen3.5-397b-a17b | 24 | 12 | 0.0% | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 0.0% |
+| deepseek-v4-flash-0731 | 36 | 0 | 0.0% | 100.0% | 100.0% | 100.0% | 99.2% | 93.3% | 0.0% |
+| glm-5.3-flash | 35 | 1 | 0.0% | 96.6% | 96.6% | 96.6% | 99.6% | 96.6% | 0.0% |
+| gemma-4-31b-it | 36 | 0 | 0.0% | 80.0% | 80.0% | 80.0% | 96.6% | 80.0% | 0.0% |
+| mistral-medium-3.5-128b | 36 | 0 | 0.0% | 96.7% | 93.3% | 100.0% | 81.0% | 96.7% | 0.0% |
+| openai-gpt-oss-120b | 36 | 0 | 0.0% | 96.7% | 33.3% | 100.0% | 91.1% | 33.3% | 0.0% |
+| meta-llama-3.1-8b-instruct | 36 | 0 | 0.0% | 66.7% | 43.3% | 76.7% | 50.3% | 20.0% | 0.0% |
 
-| model | n | api fails | appendix | complete | coverage | verbatim | warning-free | restraint |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| openai-gpt-oss-120b | 15 | 3 | 100.0% | 30.8% | 100.0% | 93.3% | 23.1% | 100.0% |
-| mistral-medium-3.5-128b | 16 | 2 | 100.0% | 92.3% | 100.0% | 66.5% | 92.3% | 100.0% |
-| gemma-4-31b-it | 18 | 0 | 86.7% | 86.7% | 86.7% | 100.0% | 86.7% | 100.0% |
-| meta-llama-3.1-8b-instruct | 17 | 1 | 71.4% | 50.0% | 70.0% | 62.8% | 14.3% | 100.0% |
+- **The open models we would recommend comply almost perfectly.**
+  `qwen3.6-35b-a3b` is complete and verbatim on every answer; `deepseek-v4-flash`,
+  `glm-5.3-flash` and `qwen3.5-397b` miss at most one quote or one appendix.
+- **`gpt-oss-120b` almost always prints an appendix and is rarely complete**:
+  only a third of its answers give every cited pair a quote.
+- **`mistral-medium` is nearly always complete, but a fifth of its "quotes" are
+  not in the source** — paraphrase in the quote slot, exactly what the matcher
+  exists to catch.
+- **`llama-3.1-8b` is not usable with this protocol.**
+- No answer was cut off, and no model put an unsupported citation on an
+  unanswerable question. Four such answers from `qwen3.5-397b` and two each
+  from `deepseek-v4-flash` and `glm-5.3-flash` say the sources do not answer
+  the question and quote related context — correctly, as the raw answers show.
 
-Full output: [`results/protocol.json`](results/protocol.json).
-
-The two large models fail in opposite directions, and both failures are
-invisible to a reader:
-
-- **`gpt-oss-120b` always emits an appendix and is almost never complete.**
-  Only 30.8% of its answers give every cited pair an evidence line, and 23.1%
-  parse without a warning. Its quotes are good when it supplies them (93.3%
-  verbatim) — it just does not supply them for most of what it cites.
-- **`mistral-medium` is nearly always complete and its quotes are often not
-  quotes.** 92.3% complete, but only 66.5% of the strings it puts in the quote
-  slot are literally in the source: it paraphrased where the protocol demands
-  verbatim text. This is the failure the matcher exists to catch, occurring at
-  a third of all citations from a capable model.
-- **`gemma-4-31b` is the most honest of the four**: it skips the appendix more
-  often (86.7%), but everything it does quote is verbatim.
-- **`llama-3.1-8b` is not usable with this protocol** — 71.4% appendix rate,
-  14.3% warning-free.
-
-All four cited nothing on all three unanswerable tasks, which is the one thing
-that went uniformly right.
-
-Caveats: `n` varies because the endpoint dropped requests (`api fails`), and
-this is one pass of 18 tasks per model — enough to separate "usable" from "not
-usable", not enough to rank two close models. Raise `--repeats` for that.
+Caveats: 36 answers per model (fewer where the endpoint dropped requests, see
+`api fails`) separate usable from unusable models, not close neighbours.
 
 ## 3. Judge
 

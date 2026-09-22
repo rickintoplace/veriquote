@@ -7,8 +7,8 @@
 the source, and does it support the claim?**
 
 A `[1]` after a sentence looks like evidence and usually is not checked by
-anyone. In our tests a third of one capable model's "verbatim" quotes were not
-in the source verbatim, another left 69% of its cited answers with at least one
+anyone. In our tests a fifth of one capable model's "verbatim" quotes were not
+in the source, another left two thirds of its cited answers with at least one
 citation that had nothing behind it, and a judge model happily confirmed quotes
 that were invented. VeriQuote makes the answering model commit to a verbatim
 quote per citation and then verifies each one — deterministically where
@@ -136,16 +136,18 @@ decides it — a 3B-active MoE lands ahead of a 120B model.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/protocol-dark.svg">
-  <img alt="Protocol compliance: gpt-oss-120b complete in 30.8% of answers, mistral-medium quotes verbatim in 66.5% of citations; gemma-4-31b and llama-3.1-8b shown for comparison." src="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/protocol-light.svg">
+  <img alt="Protocol compliance for eight models: qwen3.6, qwen3.5, deepseek-v4-flash and glm-5.3-flash near 100% complete and verbatim; gpt-oss-120b complete in 33.3% of answers; mistral-medium verbatim in 81.0% of quotes; llama-3.1-8b about half." src="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/protocol-light.svg">
 </picture>
 
-Decided mechanically by `parseAnswer()` over 18 tasks, three of which the
-sources deliberately cannot answer. Two ways to fail, neither visible to a
-reader: `gpt-oss-120b` always prints an appendix, but only 30.8% of its answers
-give every citation a quote — the rest are footnotes with nothing behind them.
-`mistral-medium` is almost always complete, yet a third of its "quotes" are not
-in the source: it paraphrased into the quote slot. Both answers look impeccably
-cited. All four models cited nothing on the three unanswerable questions.
+Decided mechanically by `parseAnswer()` over 18 tasks, run twice per model;
+every raw answer is in
+[`bench/results/protocol-answers.jsonl`](bench/results/protocol-answers.jsonl).
+The open models we recommend comply almost perfectly. The failures elsewhere
+are invisible to a reader: `gpt-oss-120b` almost always prints an appendix, yet
+only a third of its answers give every citation a quote; `mistral-medium` is
+nearly always complete, yet a fifth of its "quotes" are paraphrases. Both look
+impeccably cited. On the three questions the sources cannot answer, no model
+attached a citation without a real quote.
 
 <details>
 <summary>The numbers behind the figures</summary>
@@ -167,10 +169,14 @@ cited. All four models cited nothing on the three unanswerable questions.
 
 | answering model | appendix | complete | verbatim | warning-free |
 | --- | ---: | ---: | ---: | ---: |
-| gpt-oss-120b | 100% | 30.8% | 93.3% | 23.1% |
-| mistral-medium-3.5-128b | 100% | 92.3% | 66.5% | 92.3% |
-| gemma-4-31b-it | 86.7% | 86.7% | 100% | 86.7% |
-| llama-3.1-8b-instruct | 71.4% | 50.0% | 62.8% | 14.3% |
+| qwen3.6-35b-a3b | 100.0% | 100.0% | 100.0% | 100.0% |
+| qwen3.5-397b-a17b | 100.0% | 100.0% | 100.0% | 100.0% |
+| deepseek-v4-flash | 100.0% | 100.0% | 99.2% | 93.3% |
+| glm-5.3-flash | 96.6% | 96.6% | 99.6% | 96.6% |
+| gemma-4-31b-it | 80.0% | 80.0% | 96.6% | 80.0% |
+| mistral-medium-3.5-128b | 96.7% | 93.3% | 81.0% | 96.7% |
+| gpt-oss-120b | 96.7% | 33.3% | 91.1% | 33.3% |
+| llama-3.1-8b-instruct | 66.7% | 43.3% | 50.3% | 20.0% |
 
 Figures are rendered from `bench/results/*.json` by
 [`bench/figures/render.mjs`](bench/figures/render.mjs).
