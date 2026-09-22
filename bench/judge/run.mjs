@@ -41,6 +41,8 @@ const CAP_QUOTE = Number(arg('cap-quote', '700'));
 const CAP_CONTEXT = Number(arg('cap-context', '1200'));
 
 const WAIT = process.argv.includes('--wait');
+// Hybrid reasoning models served by vLLM honour this switch; others ignore it.
+const THINKING = !process.argv.includes('--no-thinking');
 
 const apiKey = process.env.VERIQUOTE_JUDGE_API_KEY ?? process.env.OPENROUTER_API_KEY;
 if (!apiKey) {
@@ -96,6 +98,7 @@ const judge = new ChatCompletionsJudge({
   baseUrl: BASE_URL,
   batchSize: BATCH_SIZE,
   seed: SEED,
+  extraBody: THINKING ? undefined : { chat_template_kwargs: { enable_thinking: false } },
   caps: { quote: CAP_QUOTE, context: CAP_CONTEXT },
   // Shared academic endpoints throttle; let the judge's own backoff absorb it.
   maxRetries: Number(arg('max-retries', '5')),
@@ -255,6 +258,7 @@ if (jsonFlag !== -1) {
       {
         generatedBy: 'bench/judge/run.mjs',
         model: MODEL,
+        thinking: THINKING,
         seed: SEED,
         dataset: 'ALCE human_eval citations (MIT, princeton-nlp/ALCE)',
         datasetSha256: createHash('sha256').update(readFileSync(DATA)).digest('hex').slice(0, 16),
