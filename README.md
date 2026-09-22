@@ -7,7 +7,7 @@
 the source, and does it support the claim?**
 
 A `[1]` after a sentence looks like evidence and usually is not checked by
-anyone. In our tests a fifth of one capable model's "verbatim" quotes were not
+anyone. In my tests a fifth of one capable model's "verbatim" quotes were not
 in the source, another left two thirds of its cited answers with at least one
 citation that had nothing behind it, and a judge model happily confirmed quotes
 that were invented. VeriQuote makes the answering model commit to a verbatim
@@ -43,8 +43,10 @@ matcher sees that. Without an API key the CLI checks the quotes only; set
 `VERIQUOTE_JUDGE_API_KEY` and `VERIQUOTE_JUDGE_MODEL` (any OpenAI-compatible
 endpoint) for the judge.
 
-**Try both checks in the browser:** [`demo/index.html`](demo/index.html) — eight
-examples with recorded judge verdicts, or your own text with your own key.
+**Try both checks in the browser:** [rickinto.place/veriquote](https://rickinto.place/veriquote)
+— eight examples with recorded judge verdicts, your own text with your own key,
+and the benchmark results as interactive charts. The page is in
+[`demo/`](demo).
 
 ## How it works
 
@@ -144,7 +146,7 @@ greens, in exchange for answering five to ten times faster.
 Decided mechanically by `parseAnswer()` over 18 tasks, run twice per model;
 every raw answer is in
 [`bench/results/protocol-answers.jsonl`](bench/results/protocol-answers.jsonl).
-The open models we recommend comply almost perfectly. The failures elsewhere
+The open models recommended here comply almost perfectly. The failures elsewhere
 are invisible to a reader: `gpt-oss-120b` almost always prints an appendix, yet
 only a third of its answers give every citation a quote; `mistral-medium` is
 nearly always complete, yet a fifth of its "quotes" are paraphrases. Both look

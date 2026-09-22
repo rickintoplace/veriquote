@@ -19,11 +19,13 @@ const THEMES = {
     surface: '#ffffff', ink: '#0b0b0b', ink2: '#52514e', muted: '#898781',
     grid: '#e1e0d9', axis: '#c3c2b7', wash: 'rgba(11,11,11,0.05)',
     s1: '#2a78d6', s2: '#eb6834', s3: '#1baf7a', track: 0.16,
+    fPass: '#008300', fJudge: '#eda100', fFail: '#e34948',
   },
   dark: {
     surface: '#0d1117', ink: '#ffffff', ink2: '#c3c2b7', muted: '#898781',
     grid: '#2c2c2a', axis: '#383835', wash: 'rgba(255,255,255,0.06)',
     s1: '#3987e5', s2: '#d95926', s3: '#199e70', track: 0.28,
+    fPass: '#00863a', fJudge: '#b88c00', fFail: '#e0607e',
   },
 };
 
@@ -43,6 +45,17 @@ function svg(width, height, t, body, title) {
 ${body.join('\n')}
 </svg>
 `;
+}
+
+/** Greedy word wrap for SVG text, which does not wrap on its own. */
+function wrap(s, width) {
+  const lines = [''];
+  for (const word of s.split(' ')) {
+    const cur = lines[lines.length - 1];
+    if (cur && cur.length + word.length + 1 > width) lines.push(word);
+    else lines[lines.length - 1] = cur ? `${cur} ${word}` : word;
+  }
+  return lines;
 }
 
 /** Wilson 95% interval for k successes out of n. */
@@ -66,31 +79,32 @@ function xAxis(t, { x0, x1, y0, y1, domain, ticks, fmt }) {
   return { sx, marks: out };
 }
 
+const OP_LABELS = {
+  identity: 'untouched passage',
+  whitespace: 'line breaks, double spaces',
+  typography: 'smart quotes, dashes, NBSP',
+  case: 'lowercased',
+  ocr_noise: 'OCR-style typos',
+  elision: 'middle elided with …',
+  hyphenation: 'PDF hyphenation',
+  number_swap: 'a figure changed',
+  negation: 'negation flipped',
+  quantifier_upgrade: 'hedge strengthened',
+  entity_swap: 'a content word swapped',
+  splice: 'two fragments spliced',
+  wrong_source: 'real quote, wrong document',
+  paraphrase: 'honest paraphrase',
+  scramble: 'source words, invented prose (adversarial)',
+};
+
 // --------------------------------------------------------------- figure 1
 
 function matcherFigure(t) {
   const m = load('matcher.json');
-  const LABELS = {
-    identity: 'untouched passage',
-    whitespace: 'line breaks, double spaces',
-    typography: 'smart quotes, dashes, NBSP',
-    case: 'lowercased',
-    ocr_noise: 'OCR-style typos',
-    elision: 'middle elided with …',
-    hyphenation: 'PDF hyphenation',
-    number_swap: 'a figure changed',
-    negation: 'negation flipped',
-    quantifier_upgrade: 'hedge strengthened',
-    entity_swap: 'a content word swapped',
-    splice: 'two fragments spliced',
-    wrong_source: 'real quote, wrong document',
-    paraphrase: 'honest paraphrase',
-    scramble: 'source words, invented prose (adversarial)',
-  };
   const FAMILIES = [
-    { key: 'faithful', name: 'Faithful, reformatted', note: 'must pass', color: t.s1 },
-    { key: 'manipulated', name: 'Meaning changed', note: 'the judge’s job', color: t.s2 },
-    { key: 'absent', name: 'Not in the source', note: 'must fail', color: t.s3 },
+    { key: 'faithful', name: 'Faithful, reformatted', note: 'must pass', color: t.fPass },
+    { key: 'manipulated', name: 'Meaning changed', note: 'the judge’s job', color: t.fJudge },
+    { key: 'absent', name: 'Not in the source', note: 'must fail', color: t.fFail },
   ];
   const W = 760;
   const labelRight = 262;
@@ -142,7 +156,7 @@ function matcherFigure(t) {
       continue;
     }
     const cy = r.y + rowH / 2;
-    body.push(text(labelRight, cy + 4, LABELS[r.op.operator] ?? r.op.operator, { size: 12, fill: t.ink2, anchor: 'end' }));
+    body.push(text(labelRight, cy + 4, OP_LABELS[r.op.operator] ?? r.op.operator, { size: 12, fill: t.ink2, anchor: 'end' }));
     const a = sx(r.op.minScore);
     const b = Math.max(sx(r.op.maxScore), a + 1);
     body.push(`<line x1="${a}" y1="${cy}" x2="${b}" y2="${cy}" stroke="${r.f.color}" stroke-width="2" stroke-linecap="round"/>`);
@@ -166,7 +180,7 @@ function tangoFigure(t) {
   const COLS = [
     { name: 'Matcher', sub: 'deterministic', color: t.s1 },
     { name: 'Judge', sub: g.model, color: t.s2 },
-    { name: 'Together', sub: 'fails if either fails', color: t.s3 },
+    { name: 'Together', sub: 'fails if either fails', color: t.ink },
   ];
   const ROWS = [
     {
@@ -206,7 +220,7 @@ function tangoFigure(t) {
     const y = rowY[ri];
     body.push(`<line x1="24" y1="${y - 12}" x2="${W - 24}" y2="${y - 12}" stroke="${t.grid}" stroke-width="1"/>`);
     body.push(text(24, y + 16, r.name, { size: 13, weight: 600, fill: t.ink }));
-    body.push(text(24, y + 34, r.sub, { size: 11, fill: t.ink2 }));
+    wrap(r.sub, 34).forEach((line, li) => body.push(text(24, y + 34 + li * 14, line, { size: 11, fill: t.ink2 })));
     r.cells.forEach((cell, ci) => {
       const x = colX[ci];
       const c = COLS[ci].color;
@@ -365,6 +379,10 @@ function demoData() {
     source: 'bench/results/*.json',
     matcher: {
       items: m.itemCount, threshold: m.threshold, gap: m.separation, sweep: m.thresholdSweep,
+      operators: m.operators.map((o) => ({
+        label: (OP_LABELS[o.operator] ?? o.operator).replace(/ \(adversarial\)$/, ''), family: o.family, realism: o.realism,
+        n: o.n, min: o.minScore, median: o.medianScore, max: o.maxScore,
+      })),
       faithful: fam('faithful', 'natural'), manipulated: fam('manipulated', 'natural'),
       absent: fam('absent', 'natural'), adversarial: fam('absent', 'adversarial'),
     },
