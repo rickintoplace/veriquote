@@ -61,6 +61,11 @@
     --c-matcher: #3987e5; --c-judge: #d95926; --c-complete: #3dab85; --c-verbatim: #107a5c; --warn: #e0b35a;
   }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  a.cite, .sources li { scroll-margin-top: 90px; }
+  .chart a.svg-cite tspan { fill: var(--muted); text-decoration: underline dotted; }
+  .chart a.svg-cite:hover tspan { fill: var(--ink); }
   body { margin: 0; background: var(--ground); color: var(--ink); font: 16px/1.55 var(--sans); }
   .page { max-width: 1080px; margin: 0 auto; padding: 40px 16px 72px; }
   h1 { font-size: 1.9rem; font-weight: 600; letter-spacing: -.015em; line-height: 1.2; margin: 0 0 .5em; text-wrap: balance; }
@@ -302,7 +307,7 @@
   </div>
 </header>
 
-<h2 class="section-title">Eight examples</h2>
+<h2 class="section-title">Eight example citations</h2>
 <p class="section-note">
   Pick an example. The matcher only compares the quote with the source, the judge only compares the quote
   with the claim, and each misses what the other catches. The source texts were written for this demo;
@@ -369,16 +374,16 @@
 </div>
 
 <section class="numbers" id="numbers">
-  <h2>Measured, not claimed</h2>
+  <h2>Benchmark results</h2>
   <p>
-    The examples above are hand-picked. The results below are not: thousands of generated quotes for the
+    The examples above were picked by hand. The results below were not: thousands of generated quotes for the
     matcher, citations labelled by human annotators for the judge,<a class="cite" data-cite="alce"></a> and
     eight answering models following the citation instructions. All of it can be rerun from the
     repository.<a class="cite" data-cite="veriquote"></a> Hover over a mark to see its numbers.
   </p>
 
   <figure>
-    <h3>Each check catches what the other cannot see</h3>
+    <h3>Which check catches which kind of bad citation</h3>
     <p class="sub">Share of bad citations blocked, by kind of failure. A citation is blocked as soon as one check blocks it.</p>
     <div class="controls">
       <span class="key"><i style="background:var(--c-matcher)"></i>Matcher</span>
@@ -394,7 +399,7 @@
   </figure>
 
   <figure>
-    <h3>A clear gap between faithful and missing quotes</h3>
+    <h3>How the matcher scores faithful, altered and missing quotes</h3>
     <p class="sub" id="fig-matcher-sub"></p>
     <div class="controls">
       <label for="thr">Threshold</label>
@@ -409,7 +414,7 @@
   </figure>
 
   <figure>
-    <h3>Which model should judge?</h3>
+    <h3>Judge models compared with human annotators</h3>
     <p class="sub">Each judge rated the same 240 claim–source pairs from ALCE at temperature 0, and its verdicts
       were compared with those of the human annotators.<a class="cite" data-cite="alce"></a> <em>Caught</em> is the
       share of citations the annotators marked as unsupported that the judge did not call fully supported.
@@ -427,7 +432,7 @@
   </figure>
 
   <figure>
-    <h3>Does the answering model play along?</h3>
+    <h3>How well answering models follow the citation instructions</h3>
     <p class="sub" id="fig-protocol-sub"></p>
     <div class="controls">
       <span>Sort by</span>
@@ -441,7 +446,7 @@
   </figure>
 
   <details>
-    <summary>All numbers as tables</summary>
+    <summary>Show all numbers as tables</summary>
     <div class="tables" id="tables"></div>
   </details>
 </section>
@@ -904,7 +909,11 @@ function judgesChart(W) {
     const sx = scale(domain[0], domain[1], x0, x1);
     const y1 = y0 + models.length * rowH;
     body.push(T(x0, y0 - 10, title, 'b s'), ...axis(sx, ticks, y0, y1, (v) => pc(v)));
-    if (ref) body.push(`<line class="ref" x1="${sx(ref.v)}" x2="${sx(ref.v)}" y1="${y0}" y2="${y1}"/>`, T(sx(ref.v), y1 + 32, ref.label, 's', 'middle'));
+    if (ref) {
+      body.push(`<line class="ref" x1="${sx(ref.v)}" x2="${sx(ref.v)}" y1="${y0}" y2="${y1}"/>`,
+        `<text x="${sx(ref.v)}" y="${y1 + 32}" class="s" text-anchor="middle">${esc(ref.label)} ` +
+        `<a href="#source-${ref.cite}" class="svg-cite" data-cite="${ref.cite}"><tspan dy="-4" font-size="10">[${citeNumber(ref.cite)}]</tspan></a></text>`);
+    }
     models.forEach((j, i) => {
       const cy = y0 + i * rowH + rowH / 2;
       body.push(`<g class="row judge-row" data-model="${esc(j.model)}" data-key="${key}" data-d0="${domain[0]}" data-d1="${domain[1]}" data-x0="${x0}" data-x1="${x1}" data-cy="${cy}">` +
@@ -923,7 +932,7 @@ function judgesChart(W) {
     labels(top);
     panel(labelW, labelW + pw, top, 'Unsupported citations caught ↑', [0.6, 1], [0.6, 0.7, 0.8, 0.9, 1], 'caught');
     const y1 = panel(labelW + pw + 60, W - 50, top, 'Agreement with annotators ↑', [0.65, 0.9], [0.7, 0.8, 0.9], 'agreement',
-      { v: BENCH.trueNli, label: `TRUE ${pc(BENCH.trueNli, 1)}` });
+      { v: BENCH.trueNli, label: `specialised NLI model ${pc(BENCH.trueNli, 1)}`, cite: 'true' });
     h = y1 + 40;
   } else {
     labels(top);
@@ -931,7 +940,7 @@ function judgesChart(W) {
     const top2 = y1 + 60;
     labels(top2);
     h = panel(labelW, W - 50, top2, 'Agreement with annotators ↑', [0.65, 0.9], [0.7, 0.8, 0.9], 'agreement',
-      { v: BENCH.trueNli, label: `TRUE ${pc(BENCH.trueNli, 1)}` }) + 40;
+      { v: BENCH.trueNli, label: `specialised NLI model ${pc(BENCH.trueNli, 1)}`, cite: 'true' }) + 40;
   }
   return svgOf(W, h, 'Judge models compared against human annotators', body);
 }
@@ -1097,8 +1106,11 @@ const SOURCES = {
   },
 };
 
+const citeOrder = [];
+const citeNumber = (id) => citeOrder.indexOf(id) + 1 || '';
+
 function renderSources() {
-  const order = [];
+  const order = citeOrder;
   for (const a of document.querySelectorAll('a.cite')) {
     const id = a.dataset.cite;
     if (!SOURCES[id]) continue;
@@ -1110,7 +1122,6 @@ function renderSources() {
     a.href = `#source-${id}`;
     a.textContent = `[${n}]`;
     a.setAttribute('aria-label', `Source ${n}`);
-    a.addEventListener('click', () => { $('sources').open = true; });
   }
   $('source-count').textContent = String(order.length);
   $('source-list').innerHTML = order.map((id, i) => {
@@ -1121,6 +1132,10 @@ function renderSources() {
   }).join('');
 }
 renderSources();
+// A note opens the collapsed list before the browser scrolls to it.
+document.addEventListener('click', (ev) => {
+  if (ev.target.closest('[data-cite]')) $('sources').open = true;
+});
 
 await buildMatrix();
 select(location.hash.slice(1));
