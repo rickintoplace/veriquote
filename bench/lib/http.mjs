@@ -203,6 +203,7 @@ export class RateLimitedClient {
         const timer = setTimeout(() => controller.abort(), this.timeoutMs);
         const sentAt = Date.now();
         let res;
+        let text;
         try {
           res = await fetch(`${this.baseUrl}${path}`, {
             method: 'POST',
@@ -213,15 +214,18 @@ export class RateLimitedClient {
             body: JSON.stringify(body),
             signal: controller.signal,
           });
+          // The body is read under the same timeout: an endpoint can send
+          // headers and then stall, which would otherwise hang the run forever.
+          text = await res.text();
         } catch (err) {
-          clearTimeout(timer);
           this.stats.errors++;
           if (attempt >= this.maxRetries) throw err;
           this.stats.retries++;
           await sleep(1000 * 2 ** attempt);
           continue;
+        } finally {
+          clearTimeout(timer);
         }
-        clearTimeout(timer);
 
         this.stats.requests++;
         this.#readLimits(res.headers);
@@ -229,7 +233,7 @@ export class RateLimitedClient {
         if (res.status === 429 || res.status >= 500) {
           const retryAfter = Number(res.headers.get('retry-after'));
           if (attempt >= this.maxRetries) {
-            throw new Error(`${res.status} after ${attempt} retries: ${(await res.text().catch(() => '')).slice(0, 200)}`);
+            throw new Error(`${res.status} after ${attempt} retries: ${text.slice(0, 200)}`);
           }
           const waitMs = Number.isFinite(retryAfter) && retryAfter > 0
             ? retryAfter * 1000
@@ -241,9 +245,9 @@ export class RateLimitedClient {
         }
 
         if (!res.ok) {
-          throw new Error(`${res.status}: ${(await res.text().catch(() => '')).slice(0, 300)}`);
+          throw new Error(`${res.status}: ${text.slice(0, 300)}`);
         }
-        return { body: await res.json(), fetchMs: Date.now() - sentAt, attempts: attempt + 1 };
+        return { body: JSON.parse(text), fetchMs: Date.now() - sentAt, attempts: attempt + 1 };
       }
     } finally {
       this.#release();
@@ -253,6 +257,7 @@ export class RateLimitedClient {
   async listModels() {
     const res = await fetch(`${this.baseUrl}/models`, {
       headers: { authorization: `Bearer ${this.apiKey}` },
+      signal: AbortSignal.timeout(this.timeoutMs),
     });
     if (!res.ok) throw new Error(`GET /models: ${res.status}`);
     this.#readLimits(res.headers);
