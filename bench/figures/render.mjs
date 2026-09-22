@@ -333,6 +333,75 @@ function protocolFigure(t) {
 
 // ------------------------------------------------------------------ write
 
+// ------------------------------------------------------- demo data block
+
+/** The same numbers, compact, for the charts in demo/index.html. */
+function demoData() {
+  const m = load('matcher.json');
+  const fam = (family, realism) => {
+    const ops = m.operators.filter((o) => o.family === family && o.realism === realism);
+    const f = m.families.find((x) => x.family === family && x.realism === realism);
+    return {
+      n: f.n, median: f.medianScore, accepted: f.acceptedRate,
+      min: Math.min(...ops.map((o) => o.minScore)), max: Math.max(...ops.map((o) => o.maxScore)),
+    };
+  };
+  const glm = load('judge-glm-5.3-flash.json');
+  const none = glm.confusion.none;
+  const judges = readdirSync(RESULTS).filter((f) => /^judge-.+\.json$/.test(f)).map((f) => {
+    const d = load(f);
+    const nn = d.confusion.none;
+    const noneN = nn.full + nn.partial + nn.none;
+    const n = d.binary.tp + d.binary.fp + d.binary.fn + d.binary.tn;
+    return {
+      model: d.model.replace(/^openai-/, '').replace(/-0731$/, ''),
+      reasoning: d.thinking !== false,
+      falseGreen: nn.full / noneN, falseGreenCi: wilson(nn.full, noneN), unsupported: noneN,
+      agreement: d.binary.accuracy, agreementCi: wilson(d.binary.tp + d.binary.tn, n),
+    };
+  });
+  const p = load('protocol.json');
+  return {
+    source: 'bench/results/*.json',
+    matcher: {
+      items: m.itemCount, threshold: m.threshold, gap: m.separation,
+      faithful: fam('faithful', 'natural'), manipulated: fam('manipulated', 'natural'),
+      absent: fam('absent', 'natural'), adversarial: fam('absent', 'adversarial'),
+    },
+    tango: {
+      judgeModel: glm.model,
+      absent: { n: fam('absent', 'natural').n, matcherCaught: 1 - fam('absent', 'natural').accepted },
+      unsupported: {
+        manipulatedN: fam('manipulated', 'natural').n, matcherCaught: 1 - fam('manipulated', 'natural').accepted,
+        judgeN: none.full + none.partial + none.none, judgeCaught: (none.partial + none.none) / (none.full + none.partial + none.none),
+      },
+    },
+    judges, trueNli: 0.776,
+    protocol: {
+      tasks: 18, runs: p.repeats,
+      models: p.summary.map((r) => ({
+        model: r.model.replace(/^openai-|^meta-/, '').replace(/-0731$/, ''),
+        complete: r.completeRate, verbatim: r.verbatimRate, answers: r.n,
+      })),
+    },
+  };
+}
+
+/** Write the data block between the markers in demo/index.html, if present. */
+function updateDemo() {
+  const file = join(HERE, '..', '..', 'demo', 'index.html');
+  const html = readFileSync(file, 'utf8');
+  const start = '/* BENCH-DATA:BEGIN */';
+  const end = '/* BENCH-DATA:END */';
+  const a = html.indexOf(start);
+  const b = html.indexOf(end);
+  if (a === -1 || b === -1) return;
+  const round = (_k, v) => (typeof v === 'number' ? Math.round(v * 1000) / 1000 : v);
+  const block = `${start}\nconst BENCH = ${JSON.stringify(demoData(), round)};\n`;
+  writeFileSync(file, html.slice(0, a) + block + html.slice(b));
+  console.log(`updated ${file}`);
+}
+
 const FIGURES = { tango: tangoFigure, matcher: matcherFigure, judges: judgeFigure, protocol: protocolFigure };
 for (const [name, render] of Object.entries(FIGURES)) {
   for (const [mode, theme] of Object.entries(THEMES)) {
@@ -341,3 +410,4 @@ for (const [name, render] of Object.entries(FIGURES)) {
     console.log(`wrote ${file}`);
   }
 }
+updateDemo();
