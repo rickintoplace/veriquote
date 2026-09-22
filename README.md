@@ -1,70 +1,56 @@
 # VeriQuote
 
+[![npm](https://img.shields.io/npm/v/veriquote)](https://www.npmjs.com/package/veriquote)
 [![DOI](https://zenodo.org/badge/1311867832.svg)](https://doi.org/10.5281/zenodo.21552379)
 
-**Deterministic + semantic verification of quote-grounded LLM citations.**
+**Make an LLM quote its sources, then check every quote twice: is it really in
+the source, and does it support the claim?**
 
-VeriQuote makes source-grounded assistant answers *auditable*. Instead of
-trusting that a `[1]` citation means anything, the answering model must attach
-a **verbatim quote** for every cited claim, and VeriQuote then checks per
-claim whether:
+A `[1]` after a sentence looks like evidence and usually is not checked by
+anyone. In our tests a third of one capable model's "verbatim" quotes were not
+in the source verbatim, another left 69% of its cited answers with at least one
+citation that had nothing behind it, and a judge model happily confirmed quotes
+that were invented. VeriQuote makes the answering model commit to a verbatim
+quote per citation and then verifies each one — deterministically where
+possible, with an LLM only where it has to. TypeScript, zero dependencies, runs in Node and the
+browser.
 
-1. the quote **actually occurs in the source** (deterministic fuzzy text
-   matching with a percent score), and
-2. the quote **actually supports the claim** (a small, temperature-0 LLM judge
-   classifying entailment strength).
+```console
+$ curl -s https://raw.githubusercontent.com/rickintoplace/veriquote/main/examples/ozone-answer.md \
+    | npx veriquote check - --source https://en.wikipedia.org/wiki/Ozone_layer
 
-The result is a transparent, per-citation report telling users exactly which
-statements are verbatim-backed and supported, which are overstated, and which
-are unsupported or confabulated.
+4 citation(s) · 1 source(s) · judge: glm-5.3-flash
 
-**Try the matcher in your browser** — [`demo/index.html`](demo/index.html) is a
-single self-contained page: open the file, or host it anywhere. No API key, no
-server, no build step, nothing leaves the page.
+✓ c1 [1]  verbatim 1.00 · entailed 1.00
+    The ozone layer absorbs 97 to 99 percent of the Sun's medium-frequency ultraviolet light.
+✗ c2 [1]  verbatim 1.00 · contradicted 0.00
+    It was discovered in 1913 by the British meteorologist G. M. B. Dobson.
+    Quote credits Fabry and Buisson, not Dobson
+✗ c3 [1]  fuzzy 0.48 · contradicted 0.00
+    Under the Montreal Protocol, all CFC production was banned immediately in 1987.
+    Context says production capped at 1986 levels, not banned; Quote absent from context; appears fabricated
+✗ c4 [1]  quote not in source (best 0.31) · entailed 0.90
+    The treaty limited CFC production to the levels of 1986.
+    the quoted text does not occur in the source
+! uncited  Ozone depletion has since been fully reversed in every region of the atmosphere.
 
-- **Zero runtime dependencies.** Runs in Node ≥ 18, browsers, and edge runtimes.
-- **Deterministic by construction.** The text matcher is pure; the judge runs
-  at temperature 0 with a closed class vocabulary and strict output validation.
-- **Model-agnostic.** Works with any answering model and any OpenAI-compatible
-  chat-completions endpoint for the judge (OpenAI, OpenRouter, Azure, local
-  gateways) or bring your own `EntailmentJudge` (e.g. a local NLI model).
+REVISE — 3 failed citation(s), 1 uncited sentence(s)
+```
+
+`c2` quotes the source correctly and still gets the facts wrong — only the judge
+sees that. `c4` invents its quote and the judge calls it supported — only the
+matcher sees that. Without an API key the CLI checks the quotes only; set
+`VERIQUOTE_JUDGE_API_KEY` and `VERIQUOTE_JUDGE_MODEL` (any OpenAI-compatible
+endpoint) for the judge.
+
+**Try both checks in the browser:** [`demo/index.html`](demo/index.html) — eight
+examples with recorded judge verdicts, or your own text with your own key.
 
 ## How it works
 
-```
-                        ┌───────────────────────────┐
-  numbered sources ───► │  Answering LLM            │
-  + citation prompt     │  (any model)              │
-                        └────────────┬──────────────┘
-                                     │  answer body with [n]{cX} markers
-                                     │  + EVI1 quote appendix
-                                     ▼
-                        ┌───────────────────────────┐
-                        │ 1. parseAnswer()          │  claims, quotes, protocol
-                        │    (deterministic)        │  completeness warnings
-                        └────────────┬──────────────┘
-                                     ▼
-                        ┌───────────────────────────┐
-                        │ 2. Quote ↔ source match   │  exact / normalized /
-                        │    (deterministic, fuzzy) │  fuzzy %, offsets
-                        └────────────┬──────────────┘
-                                     ▼
-                        ┌───────────────────────────┐
-                        │ 3. Entailment judge       │  entailed / partially /
-                        │    (LLM, temp 0, optional)│  overstated / insufficient
-                        └────────────┬──────────────┘  / contradicted + conf.
-                                     ▼
-                        ┌───────────────────────────┐
-                        │ 4. VerificationReport     │  per-citation scores +
-                        │    (transparency for user)│  answer-level summary
-                        └───────────────────────────┘
-```
-
-### The EVI1 protocol
-
-The answering model is instructed (via `buildCitationInstructions()`) to end
-every cited sentence with citation markers and a claim marker, and to append a
-machine-readable quote appendix:
+The answering model gets `veriquote prompt` (or `buildCitationInstructions()`)
+in its system prompt. Every cited sentence ends with source and claim markers,
+and the answer ends with a plain-text quote appendix:
 
 ```
 Vitamin D supplementation reduced fall risk in older adults.[1]{c1}
@@ -77,52 +63,27 @@ c2|3|"BMD improved with \"high-dose\" regimens"
 END_EVI1
 ```
 
-The protocol is intentionally plain text (not JSON): it survives streaming,
-markdown renderers, and weak models. And `[n]` citations remain human-readable
-even if a client ignores VeriQuote entirely.
+Plain text rather than JSON, so it survives streaming, markdown renderers and
+weak models, and the `[n]` markers stay readable if nothing checks them. Then,
+per citation:
 
-### Why two checks?
+1. **Parse** — every cited claim must carry a quote; missing ones are reported.
+2. **Match** — is the quote in the source? Deterministic fuzzy matching that
+   tolerates whitespace, typography, OCR noise and elision, with offsets.
+3. **Judge** — does the quote support the claim? An LLM at temperature 0 picks
+   `entailed`, `partially_entailed`, `overstated`, `insufficient` or
+   `contradicted`, with a support score.
 
-The two checks fail independently, and both failure modes occur in practice:
-
-- A quote can be **verbatim yet irrelevant**: the model copied real text that
-  doesn't support its claim (scope drift, outcome switching, overstatement).
-  Text match passes; the entailment judge catches it.
-- A quote can be **paraphrased or fabricated**: the claim may even be true,
-  but the "quote" is not in the source. The entailment judge might wave it
-  through; the deterministic matcher rejects it outright.
-
-The combined per-citation score is conservative:
-`min(textMatchScore, judgeConfidence)`.
-
-**Read the text-match score correctly.** It measures *fidelity of copying*, not
-truth, and the two run in opposite directions. Change one digit in a real quote
-and it still scores 0.968; write an honest paraphrase of the same passage and it
-scores 0.306. A high score means the characters were copied faithfully — it says
-nothing about whether the sentence built on them is true. That is not a defect to
-be tuned away: it is why the entailment judge is not optional, and the numbers
-behind it are in [`bench/`](bench).
-
-### What the prompt does not do
-
-The EVI1 prompt is a **transparency** mechanism, not a hallucination mitigation.
-Asking a model for verbatim quotes does not measurably reduce how often it makes
-things up; it changes what happens afterwards, because now every claim carries
-something that can be mechanically checked. That is the whole design, and it is
-why the verification step is not optional: run the prompt without the verifier
-and you have added ceremony, not safety.
-
-Protocol compliance also varies by answering model and by the prompt you wrap
-around it. Some models print `[n]` markers but omit the evidence appendix
-entirely, which looks perfectly well-cited to anyone reading the answer. Check
-the completeness warnings from `parseAnswer()`, and measure a new answering
-model with [`bench/protocol`](bench) before relying on it.
+The combined score is `min(match, support)`: no judge error can raise a
+citation above what the matcher found, and a judge failure is reported, never
+counted as support. The prompt is a transparency mechanism, not a cure —
+quoting does not make a model hallucinate less, it makes every claim checkable.
 
 ## Does it actually work?
 
-Three benchmarks, kept separate on purpose — a single blended number for a
-two-stage pipeline would hide the failure modes the pipeline exists to
-separate. Everything is in [`bench/`](bench), including how to reproduce it.
+Three benchmarks, kept separate on purpose — one blended number for a two-stage
+pipeline would hide the failures it exists to separate. Everything is in
+[`bench/`](bench), including how to reproduce it.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/tango-dark.svg">
@@ -215,66 +176,38 @@ Figures are rendered from `bench/results/*.json` by
 [`bench/figures/render.mjs`](bench/figures/render.mjs).
 </details>
 
-## How this differs from the alternatives
+## Use from an agent
 
-| | verbatim quote checked | claim↔evidence checked | model-agnostic | runtime |
-| --- | --- | --- | --- | --- |
-| **VeriQuote** | yes, deterministic | yes, pluggable judge | yes | TS, zero deps, browser/edge |
-| [Anthropic Citations API](https://platform.claude.com/docs/en/build-with-claude/citations) | n/a — spans are extracted, so they are real by construction | no | Claude only | hosted |
-| [LettuceDetect](https://github.com/KRLabsOrg/LettuceDetect) | no — no quote protocol | yes, span-level model | yes | Python + model weights |
-| [RAGAS](https://github.com/explodinggradients/ragas) and eval frameworks | no | yes, as an offline metric | yes | Python, offline eval |
+An agent that reads sources and writes conclusions is exactly the case this was
+built for. **[`verify-citations`](integrations/verify-citations)** is an
+[Agent Skill](integrations/verify-citations/SKILL.md) that has the agent write
+its sourced answer in the checkable format and run `veriquote check` on it
+before presenting it. The CLI fetches every cited URL itself, so an agent cannot
+pass with its own (truncated, misremembered) copy of a page, and the exit code
+lets it branch without parsing anything:
 
-**Use the Citations API instead** if you are on Claude and only need to know
-that a span is real: it guarantees that by construction, which is stronger than
-any matcher. It does not tell you whether the span supports the sentence built
-on it — for that, pair it with this library's judge and skip the matcher.
-
-**Use LettuceDetect instead** if you want unsupported spans flagged in an
-answer that has no citation protocol at all, and you are happy running a model
-in Python. It solves the post-hoc problem; VeriQuote changes what the answering
-model commits to in the first place.
-
-VeriQuote's own niche is narrow and worth stating plainly: you want the
-answering model pinned to a quote *before* it generates, you want the
-deterministic half of the check to run anywhere including a browser with no
-dependencies, and you want per-claim numbers to put in front of a reader rather
-than an aggregate score for a dashboard.
-
-## Command line
-
-```bash
-npx veriquote prompt                  # the rules to give the answering model
-npx veriquote check answer.md \
-  --source https://en.wikipedia.org/wiki/Ozone_layer --source notes.txt
+```
+exit 0  verdict "pass"    every cited claim is grounded     -> present the answer
+exit 2  verdict "revise"  problems[] + instructionsForModel -> fix and re-check
+exit 1  bad input or unreachable source -> do NOT claim the answer was verified
 ```
 
-Sources are numbered in the order given. URLs are fetched by VeriQuote itself,
-so the check never depends on the answering model's copy of a page. Without
-configuration only the quotes are checked; set `VERIQUOTE_JUDGE_API_KEY` and
-`VERIQUOTE_JUDGE_MODEL` (any OpenAI-compatible endpoint) to also check that each
-quote supports its claim. `--json` gives machine-readable output; the exit
-status is `0` pass, `2` revise, `1` error. Try it on
-[`examples/ozone-answer.md`](examples/ozone-answer.md), which contains one
-correct citation and three different ways of getting it wrong.
+It works in any host that reads Agent Skills, such as Claude Code, and in
+anything that can run a shell command.
 
-## Installation
+## Use as a library
 
 ```bash
 npm install veriquote
 ```
 
-## Quickstart
-
-### 1. Prompt the answering model
-
 ```ts
 import { buildCitationInstructions } from 'veriquote';
 
 const systemPrompt = `${yourAssistantPrompt}\n\n${buildCitationInstructions()}`;
-// Provide sources as numbered blocks [1], [2], ... in the user/context prompt.
+// Give the sources to the model as numbered blocks [1], [2], …
 ```
 
-### 2. Verify the raw answer
 
 ```ts
 import { ChatCompletionsJudge, verifyAnswer } from 'veriquote';
@@ -307,15 +240,10 @@ for (const c of report.citations) {
 `report.cleanText` is the answer with all `{cX}` markers removed, ready to
 render (the `[n]` markers remain as human-readable citations).
 
-### 3. Show it to the user
-
-Render each citation's `textMatch.score` (percent), `entailment.class`, and
-combined `score` next to the footnote — e.g. colour each footnote by its worst
-score and put both check results in the tooltip. The whole point is that the
-reader can see which sentence is load-bearing and which is not, without
-opening a single source.
-
-## API overview
+`report.cleanText` is the answer without `{cX}` markers, ready to render. Show
+each citation's match score, judge class and combined score next to its
+footnote, so a reader can see which sentence is load-bearing without opening a
+source.
 
 | Export | Purpose |
 | --- | --- |
@@ -326,13 +254,12 @@ opening a single source.
 | `matchQuoteAgainstSource(quote, source, options?)` | Deterministic quote matching on its own. |
 | `ChatCompletionsJudge` | Entailment judge for any OpenAI-compatible API. |
 | `EntailmentJudge` (interface) | Bring your own judge (local NLI model, other provider). |
+| `gateReport(report, answer)` | Pass/revise verdict, problem list, uncited sentences, correction prompt. |
+| `fetchSource(url)` / `htmlToText(html)` | Fetch a source independently of the model and extract its text. |
 
 All inputs and outputs are plain, serializable data — see
-[`src/types.ts`](src/types.ts) for the complete, documented data model and
-[`docs/DESIGN.md`](docs/DESIGN.md) for the method description (scoring,
-thresholds, and design rationale).
-
-### Entailment classes
+[`src/types.ts`](src/types.ts) and, for scoring and thresholds,
+[`docs/DESIGN.md`](docs/DESIGN.md).
 
 | Class | Confidence band | Meaning |
 | --- | --- | --- |
@@ -343,51 +270,54 @@ thresholds, and design rationale).
 | `contradicted` | 0.0 | Evidence says the opposite. |
 | `error` | — | Judge unavailable for this item (never silently dropped). |
 
+## How this differs from the alternatives
+
+| | verbatim quote checked | claim↔evidence checked | model-agnostic | runtime |
+| --- | --- | --- | --- | --- |
+| **VeriQuote** | yes, deterministic | yes, pluggable judge | yes | TS, zero deps, browser/edge |
+| [Anthropic Citations API](https://platform.claude.com/docs/en/build-with-claude/citations) | n/a — spans are extracted, so they are real by construction | no | Claude only | hosted |
+| [LettuceDetect](https://github.com/KRLabsOrg/LettuceDetect) | no — no quote protocol | yes, span-level model | yes | Python + model weights |
+| [RAGAS](https://github.com/explodinggradients/ragas) and eval frameworks | no | yes, as an offline metric | yes | Python, offline eval |
+
+**Use the Citations API instead** if you are on Claude and only need to know
+that a span is real: it guarantees that by construction, which is stronger than
+any matcher. It does not tell you whether the span supports the sentence built
+on it — for that, pair it with this library's judge and skip the matcher.
+
+**Use LettuceDetect instead** if you want unsupported spans flagged in an
+answer that has no citation protocol at all, and you are happy running a model
+in Python. It solves the post-hoc problem; VeriQuote changes what the answering
+model commits to in the first place.
+
+VeriQuote's own niche is narrow and worth stating plainly: you want the
+answering model pinned to a quote *before* it generates, you want the
+deterministic half of the check to run anywhere including a browser with no
+dependencies, and you want per-claim numbers to put in front of a reader rather
+than an aggregate score for a dashboard.
+
+Closest in spirit is the concurrent academic work by Zhang et al.,
+[“Verifiable by Construction”](https://arxiv.org/abs/2609.15964) (Johns Hopkins,
+2026), which evaluates the same design — inline verbatim quotes, tiered
+verbatim matching, an LLM judge — on clinical guidelines. VeriQuote is the
+deployable library, CLI and agent skill, with the judge measured against human
+labels.
+
 ## Security
 
-- **Keep the judge server-side.** `ChatCompletionsJudge` needs an API key;
-  never instantiate it in a browser. Expose a thin authenticated endpoint that
-  calls `verifyAnswer` instead.
-- **Prompt-injection hardening.** Source text is untrusted. Judge inputs are
-  length-capped, stripped of control characters and HTML, and the judge prompt
-  pins them as data ("never instructions"). Output is validated against a
-  closed vocabulary; unknown classes, out-of-range confidences, and
-  hallucinated item IDs are rejected.
-- **No dynamic evaluation.** Tolerant JSON recovery is a string-aware scanner;
-  nothing is ever `eval`ed.
-- **Failure transparency.** Judge failures degrade to `class: "error"` with a
-  `null` score — they are reported, never counted as "supported".
+- **Keep your key on the server.** `ChatCompletionsJudge` needs an API key; in
+  your own app, call `verifyAnswer` from a backend. (The demo runs the judge in
+  the browser only with a key the visitor enters.)
+- **Source text is untrusted.** Judge inputs are length-capped, stripped of
+  control characters and HTML, and pinned as data in the prompt. Output is
+  validated against a closed vocabulary; unknown classes, out-of-range scores
+  and invented item IDs are rejected. Nothing is ever `eval`ed.
 
 ## Reproducibility
 
-For a fixed answer, fixed sources, and a fixed judge model, results are
-reproducible: the matcher is pure, and the judge runs at temperature 0 (pass
-`seed` for providers that support it). Note that hosted LLM APIs are
-best-effort deterministic; for strict reproducibility, pin the model version
-or use a self-hosted judge behind the `EntailmentJudge` interface.
-
-## Use from an agent
-
-An agent that reads sources and writes conclusions is exactly the case this was
-built for: the claims are checkable, so they should be checked before the agent
-hands them over — not after a human notices.
-
-**[`verify-citations`](integrations/verify-citations)** is an
-[Agent Skill](integrations/verify-citations/SKILL.md) that has the agent write
-its sourced answer in the checkable format and run `veriquote check` on it
-before presenting it. The CLI fetches every cited URL itself, so an agent cannot
-pass the check with its own (truncated, misremembered) copy of a page. On failure
-it returns a ready-to-use correction prompt, and the exit code lets the agent
-branch without parsing anything:
-
-```
-exit 0  verdict "pass"    every cited claim is grounded     -> present the answer
-exit 2  verdict "revise"  problems[] + instructionsForModel -> fix and re-check
-exit 1  bad input or unreachable source -> do NOT claim the answer was verified
-```
-
-It works in any host that reads Agent Skills, such as Claude Code,
-and in anything that can run a shell command.
+The matcher is pure: same inputs, same score. The judge runs at temperature 0
+(pass `seed` where the provider supports it), but hosted models are only
+best-effort deterministic; pin the model version, or put a self-hosted model
+behind the `EntailmentJudge` interface.
 
 ## Citing
 

@@ -1,35 +1,22 @@
-# VeriQuote matcher demo
+# VeriQuote demo
 
-A single self-contained HTML file. The deterministic matcher runs in the page;
-nothing is sent anywhere and no API key is involved. The entailment judge is
-deliberately absent — it needs a model and belongs server-side.
+One self-contained HTML file that runs both checks on a single citation: the
+deterministic matcher (is the quote in the source?) and the LLM judge (does the
+quote support the claim?).
 
-## Run it
+- **Eight examples** cover a supported citation, extraction damage, and six
+  ways to fail. The judge verdicts for them were recorded once with
+  `glm-5.3-flash` through the same pipeline and are replayed, so the page needs
+  no key to show the whole picture. The table at the bottom shows which check
+  catches which failure.
+- **Your own text:** the matcher runs live in the page. The judge runs live
+  only if you enter an endpoint, model and key; the key stays in the tab's
+  memory and goes only to that endpoint. Any OpenAI-compatible endpoint that
+  accepts browser requests works (OpenRouter does).
 
-Open `index.html` in a browser, or serve the directory:
+Open `index.html` in a browser, or serve the directory. The page loads the
+library from `https://esm.sh/veriquote@0.2.0`; to try an unreleased build, run
+`npm run build` and point the import at `../dist/index.js` (served, not opened
+as `file://`).
 
-```bash
-npx serve demo        # or: python3 -m http.server -d demo
-```
-
-The page pulls the library from `https://esm.sh/veriquote@0.1.1`. To test an
-unreleased build instead, run `npm run build` and change the import at the
-bottom of `index.html` to `../dist/index.js` (this needs the page to be served
-rather than opened as `file://`).
-
-## Hosting
-
-Any static host works, since it is one file with no build step.
-
-- **GitHub Pages**: Settings → Pages → deploy from branch `main`, folder `/`.
-  The demo then lives at `https://<user>.github.io/veriquote/demo/`.
-- **Anywhere else**: copy `index.html`.
-
-## What it shows
-
-Seven preset examples walk through the cases the matcher is and is not
-responsible for — a verbatim hit, extraction damage, a changed number, a
-negation, an honest paraphrase, a real quote on the wrong document, and an
-invention. The changed-number and negation cases are the point: they score
-nearly as high as the untouched quote, which is why a text match alone is never
-a verdict on truth.
+Any static host works: it is one file with no build step.
