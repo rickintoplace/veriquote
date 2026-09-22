@@ -364,7 +364,7 @@ function demoData() {
   return {
     source: 'bench/results/*.json',
     matcher: {
-      items: m.itemCount, threshold: m.threshold, gap: m.separation,
+      items: m.itemCount, threshold: m.threshold, gap: m.separation, sweep: m.thresholdSweep,
       faithful: fam('faithful', 'natural'), manipulated: fam('manipulated', 'natural'),
       absent: fam('absent', 'natural'), adversarial: fam('absent', 'adversarial'),
     },
