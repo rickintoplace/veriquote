@@ -60,9 +60,11 @@
     "bench:probe": "npm run build && node --env-file=.env bench/probe.mjs",
     "bench:protocol": "npm run build && node --env-file=.env bench/protocol/run.mjs --json bench/results/protocol.json",
     "bench:judge:prepare": "node bench/judge/prepare-alce.mjs",
-    "bench:judge": "npm run build && node --env-file=.env bench/judge/run.mjs"
+    "bench:judge": "npm run build && node --env-file=.env bench/judge/run.mjs",
+    "demo:lib": "esbuild src/index.ts --bundle --format=esm --minify --legal-comments=none --outfile=demo/lib/veriquote.js"
   },
   "devDependencies": {
+    "esbuild": "^0.25.12",
     "typescript": "^5.5.0",
     "vitest": "^3.0.0"
   }

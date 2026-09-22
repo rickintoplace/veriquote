@@ -5,15 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VeriQuote Demo</title>
 <meta name="description" content="Two checks on every LLM citation: is the quote really in the source, and does it support the claim? Runs in your browser.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<script>
+  // Follow the theme chosen on rickinto.place, if there is one.
+  try {
+    const t = localStorage.getItem('rickintoplace-theme');
+    if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+  } catch {}
+</script>
 <style>
+  /* IBM Plex, SIL Open Font License (fonts/OFL.txt). Served with the page: no third-party requests. */
+  @font-face { font-family: "IBM Plex Sans"; font-weight: 400; font-display: swap; src: url("fonts/ibm-plex-sans-latin-400-normal.woff2") format("woff2"); }
+  @font-face { font-family: "IBM Plex Sans"; font-weight: 500; font-display: swap; src: url("fonts/ibm-plex-sans-latin-500-normal.woff2") format("woff2"); }
+  @font-face { font-family: "IBM Plex Sans"; font-weight: 600; font-display: swap; src: url("fonts/ibm-plex-sans-latin-600-normal.woff2") format("woff2"); }
+  @font-face { font-family: "IBM Plex Mono"; font-weight: 400; font-display: swap; src: url("fonts/ibm-plex-mono-latin-400-normal.woff2") format("woff2"); }
+  @font-face { font-family: "IBM Plex Mono"; font-weight: 500; font-display: swap; src: url("fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2"); }
+
   :root {
     --ground: #f5f6f3; --surface: #ffffff; --ink: #17191a; --muted: #686d6b; --line: #d9ddd8;
     --wash: #eceee9; --mark: rgba(23, 25, 26, .10);
     --pass: #1d7548; --block: #c0392b;
-    --c-matcher: #2a78d6; --c-judge: #eb6834; --c-complete: #1baf7a; --c-verbatim: #4a3aa7;
+    --c-matcher: #2a78d6; --c-judge: #eb6834; --c-complete: #0e7c61; --c-verbatim: #5cc29e; --warn: #a86b00;
     --sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
     --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   }
@@ -22,14 +33,14 @@
       --ground: #121413; --surface: #1a1d1c; --ink: #eceeea; --muted: #939895; --line: #2e3230;
       --wash: #222624; --mark: rgba(236, 238, 234, .16);
       --pass: #5fcb8e; --block: #f07a68;
-      --c-matcher: #3987e5; --c-judge: #d95926; --c-complete: #199e70; --c-verbatim: #9085e9;
+      --c-matcher: #3987e5; --c-judge: #d95926; --c-complete: #3dab85; --c-verbatim: #107a5c; --warn: #e0b35a;
     }
   }
   :root[data-theme="dark"] {
     --ground: #121413; --surface: #1a1d1c; --ink: #eceeea; --muted: #939895; --line: #2e3230;
     --wash: #222624; --mark: rgba(236, 238, 234, .16);
     --pass: #5fcb8e; --block: #f07a68;
-    --c-matcher: #3987e5; --c-judge: #d95926; --c-complete: #199e70; --c-verbatim: #9085e9;
+    --c-matcher: #3987e5; --c-judge: #d95926; --c-complete: #3dab85; --c-verbatim: #107a5c; --warn: #e0b35a;
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--ground); color: var(--ink); font: 16px/1.55 var(--sans); }
@@ -40,6 +51,10 @@
   :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
   .id { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
   .id.matcher { background: var(--c-matcher); } .id.judge { background: var(--c-judge); }
+  .ic { width: 1em; height: 1em; flex: none; vertical-align: -0.14em; }
+  .topbar { display: flex; justify-content: space-between; gap: 12px; font-size: .86rem; margin-bottom: 28px; }
+  .topbar a { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); text-decoration: none; }
+  .topbar a:hover { color: var(--ink); }
   .small-caps { font-size: .72rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 
   /* ---- matrix: pick an example, see who blocks it ---- */
@@ -57,7 +72,9 @@
   .matrix .head.picked { border-radius: 8px 8px 0 0; }
   .matrix .cell.last.picked { border-radius: 0 0 8px 8px; }
   .matrix .hit { cursor: pointer; }
-  .glyph { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: .9rem; font-weight: 600; }
+  .glyph { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; }
+  .glyph .ic { width: 15px; height: 15px; stroke-width: 2.6; }
+  .link .glyph .ic { width: 20px; height: 20px; }
   .glyph.pass { color: var(--pass); border: 1.5px solid currentColor; }
   .glyph.block { background: var(--block); color: var(--surface); }
   .glyph.none { color: var(--muted); border: 1.5px solid var(--line); }
@@ -156,7 +173,12 @@
          line-height: 1.35; padding: 6px 9px; border-radius: 6px; max-width: 260px; white-space: normal;
          transform: translate(-50%, calc(-100% - 10px)); opacity: 0; transition: opacity .1s; z-index: 2; }
   .tip.on { opacity: 1; }
-  .readout { font-size: .9rem; margin: 10px 0 0; }
+  .readout { font-size: .9rem; margin: 10px 0 0; display: flex; gap: 8px; align-items: flex-start; }
+  .readout .ic { font-size: 1.15rem; margin-top: .05em; }
+  .readout.good .ic { color: var(--pass); } .readout.warn .ic { color: var(--warn); }
+  .chart .thr-good text { fill: var(--pass); } .chart .thr-warn text { fill: var(--warn); }
+  .chart .thr-good .ref { stroke: var(--pass); }
+  .chart .thr-warn .ref { stroke: var(--warn); }
   .readout b { font-weight: 600; }
   input[type="range"] { accent-color: var(--c-matcher); width: min(260px, 60vw); vertical-align: middle; }
   .try { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; font-size: .84rem; color: var(--muted); }
@@ -190,6 +212,11 @@
 </head>
 <body>
 <div class="page">
+
+<nav class="topbar">
+  <a href="https://rickinto.place"><svg class="ic" data-icon="arrow-left"></svg>rickinto.place</a>
+  <a href="https://github.com/rickintoplace/veriquote">GitHub<svg class="ic" data-icon="external-link"></svg></a>
+</nav>
 
 <h1>Is the quote real, and does it say that?</h1>
 <p class="lede">
@@ -239,11 +266,11 @@
 
 <div class="tools">
   <details id="reasons-box">
-    <summary>What the judge said</summary>
+    <summary><svg class="ic" data-icon="message-square-text"></svg> What the judge said</summary>
     <ul id="reasons"></ul>
     <p id="provenance"></p>
   </details>
-  <button type="button" id="edit">Edit the text</button>
+  <button type="button" id="edit"><svg class="ic" data-icon="pencil"></svg> <span>Edit the text</span></button>
 </div>
 
 <div class="live" id="live" hidden>
@@ -275,8 +302,8 @@
     </div>
     <div class="chart" id="fig-tango"></div>
     <div class="try">See it above:
-      <button type="button" data-go="fabricated">an invented quote</button>
-      <button type="button" data-go="contradicted">a real quote under a false claim</button>
+      <button type="button" data-go="fabricated"><svg class="ic" data-icon="arrow-up"></svg> an invented quote</button>
+      <button type="button" data-go="contradicted"><svg class="ic" data-icon="arrow-up"></svg> a real quote under a false claim</button>
     </div>
     <p class="foot" id="fig-tango-foot"></p>
   </figure>
@@ -290,13 +317,14 @@
       <span class="key"><i class="dot" style="background:var(--c-matcher)"></i>median · line: lowest to highest score</span>
     </div>
     <div class="chart" id="fig-matcher"></div>
-    <p class="readout" id="thr-readout"></p>
+    <p class="readout" id="thr-readout" aria-live="polite"></p>
   </figure>
 
   <figure>
     <h3>Which model should judge?</h3>
     <p class="sub">Against human annotators (ALCE), the same 240 claim–source pairs for every model, temperature 0.
-      False green: unsupported citations the judge still called fully supported.</p>
+      Caught: of the citations annotators marked unsupported, the share the judge did not wave through.
+      Higher is better in both panels.</p>
     <div class="controls">
       <span>Reasoning</span>
       <span class="seg" id="reasoning-seg">
@@ -330,13 +358,14 @@
 
 <footer>
   VeriQuote is a TypeScript library and CLI with no dependencies.
-  <a href="https://github.com/rickintoplace/veriquote">Source, benchmarks and CLI on GitHub</a>.
+  <a href="https://github.com/rickintoplace/veriquote">Source, benchmarks and CLI on GitHub</a>. Icons: Lucide (ISC).
 </footer>
 
 </div>
 
 <script type="module">
-import { verifyAnswer, serializeEvi1Appendix, ChatCompletionsJudge } from 'https://esm.sh/veriquote@0.2.0';
+// The library itself, bundled next to the page by `npm run demo:lib`.
+import { verifyAnswer, serializeEvi1Appendix, ChatCompletionsJudge } from './lib/veriquote.js';
 
 /* BENCH-DATA:BEGIN */
 const BENCH = {"source":"bench/results/*.json","matcher":{"items":2061,"threshold":0.4,"gap":{"lowestFaithfulScore":0.66,"highestAbsentScore":0.396,"gap":0.264},"sweep":[{"threshold":0.2,"faithfulKept":1,"absentRejected":0.112},{"threshold":0.25,"faithfulKept":1,"absentRejected":0.503},{"threshold":0.3,"faithfulKept":1,"absentRejected":0.85},{"threshold":0.35,"faithfulKept":1,"absentRejected":0.968},{"threshold":0.4,"faithfulKept":1,"absentRejected":1},{"threshold":0.45,"faithfulKept":1,"absentRejected":1},{"threshold":0.5,"faithfulKept":1,"absentRejected":1},{"threshold":0.55,"faithfulKept":1,"absentRejected":1},{"threshold":0.6,"faithfulKept":1,"absentRejected":1},{"threshold":0.65,"faithfulKept":1,"absentRejected":1},{"threshold":0.7,"faithfulKept":0.951,"absentRejected":1},{"threshold":0.75,"faithfulKept":0.911,"absentRejected":1},{"threshold":0.8,"faithfulKept":0.897,"absentRejected":1},{"threshold":0.85,"faithfulKept":0.895,"absentRejected":1}],"faithful":{"n":1121,"median":1,"accepted":1,"min":0.66,"max":1},"manipulated":{"n":586,"median":0.932,"accepted":1,"min":0.529,"max":0.987},"absent":{"n":187,"median":0.249,"accepted":0,"min":0.143,"max":0.396},"adversarial":{"n":167,"median":0.871,"accepted":1,"min":0.763,"max":0.936}},"tango":{"judgeModel":"glm-5.3-flash","absent":{"n":187,"matcherCaught":1},"unsupported":{"manipulatedN":586,"matcherCaught":0,"judgeN":56,"judgeCaught":0.839}},"judges":[{"model":"deepseek-v4-flash","reasoning":true,"falseGreen":0.182,"falseGreenCi":[0.102,0.303],"unsupported":55,"agreement":0.787,"agreementCi":[0.73,0.834]},{"model":"glm-5.3-flash","reasoning":false,"falseGreen":0.244,"falseGreenCi":[0.142,0.387],"unsupported":45,"agreement":0.74,"agreementCi":[0.676,0.796]},{"model":"glm-5.3-flash","reasoning":true,"falseGreen":0.161,"falseGreenCi":[0.087,0.278],"unsupported":56,"agreement":0.803,"agreementCi":[0.748,0.849]},{"model":"gpt-oss-120b","reasoning":true,"falseGreen":0.25,"falseGreenCi":[0.155,0.377],"unsupported":56,"agreement":0.767,"agreementCi":[0.709,0.817]},{"model":"qwen3.5-397b-a17b","reasoning":false,"falseGreen":0.214,"falseGreenCi":[0.127,0.338],"unsupported":56,"agreement":0.777,"agreementCi":[0.72,0.826]},{"model":"qwen3.5-397b-a17b","reasoning":true,"falseGreen":0.208,"falseGreenCi":[0.12,0.335],"unsupported":53,"agreement":0.797,"agreementCi":[0.74,0.844]},{"model":"qwen3.6-35b-a3b","reasoning":false,"falseGreen":0.214,"falseGreenCi":[0.127,0.338],"unsupported":56,"agreement":0.773,"agreementCi":[0.716,0.822]},{"model":"qwen3.6-35b-a3b","reasoning":true,"falseGreen":0.182,"falseGreenCi":[0.102,0.303],"unsupported":55,"agreement":0.781,"agreementCi":[0.724,0.829]}],"trueNli":0.776,"protocol":{"tasks":18,"runs":2,"models":[{"model":"deepseek-v4-flash","complete":1,"verbatim":0.992,"answers":36},{"model":"gemma-4-31b-it","complete":0.8,"verbatim":0.966,"answers":36},{"model":"mistral-medium-3.5-128b","complete":0.933,"verbatim":0.81,"answers":36},{"model":"llama-3.1-8b-instruct","complete":0.433,"verbatim":0.503,"answers":36},{"model":"gpt-oss-120b","complete":0.333,"verbatim":0.911,"answers":36},{"model":"qwen3.6-35b-a3b","complete":1,"verbatim":1,"answers":36},{"model":"glm-5.3-flash","complete":0.966,"verbatim":0.996,"answers":35},{"model":"qwen3.5-397b-a17b","complete":1,"verbatim":1,"answers":24}]}};
@@ -380,6 +409,23 @@ const RECORDED = {
 };
 
 const $ = (id) => document.getElementById(id);
+
+// Lucide icons (https://lucide.dev, ISC licence), inlined so the page makes no extra requests.
+const ICONS = {
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  minus: '<path d="M5 12h14"/>',
+  'circle-check': '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
+  'triangle-alert': '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  pencil: '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>',
+  'arrow-up': '<path d="m5 12 7-7 7 7"/><path d="M12 19V5"/>',
+  'arrow-left': '<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
+  'message-square-text': '<path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/><path d="M7 11h10"/><path d="M7 15h6"/><path d="M7 7h8"/>',
+  'external-link': '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+};
+const ICON_ATTRS = 'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"';
+const icon = (name, cls = 'ic') => `<svg class="${cls}" ${ICON_ATTRS}>${ICONS[name]}</svg>`;
+for (const el of document.querySelectorAll('svg[data-icon]')) el.outerHTML = icon(el.dataset.icon, el.getAttribute('class'));
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const keyOf = (source, claim, quote) => JSON.stringify([source, claim.trim(), quote.trim()]);
 
@@ -404,7 +450,7 @@ function decide(c) {
   return { matcherBlocks, judgeBlocks };
 }
 
-const glyph = (blocks) => (blocks === null ? ['none', '·'] : blocks ? ['block', '✕'] : ['pass', '✓']);
+const glyph = (blocks) => (blocks === null ? ['none', icon('minus')] : blocks ? ['block', icon('x')] : ['pass', icon('check')]);
 
 // ---------------------------------------------------------------- matrix
 
@@ -516,7 +562,7 @@ function setLink(which, blocks, what) {
   const [cls, g] = glyph(blocks);
   $(`${which}-link`).className = `link ${cls}`;
   $(`${which}-glyph`).className = `glyph ${cls}`;
-  $(`${which}-glyph`).textContent = g;
+  $(`${which}-glyph`).innerHTML = g;
   $(`${which}-what`).textContent = what;
 }
 
@@ -536,7 +582,7 @@ $('edit').addEventListener('click', () => {
     $(`${id}-view`).hidden = editing;
   }
   $('live').hidden = !editing;
-  $('edit').textContent = editing ? 'Done editing' : 'Edit the text';
+  $('edit').querySelector('span').textContent = editing ? 'Done editing' : 'Edit the text';
   render();
 });
 for (const id of ['source', 'claim', 'quote']) $(id).addEventListener('input', render);
@@ -689,16 +735,21 @@ function placeThreshold() {
     $('thr-label').textContent = `threshold ${s.threshold.toFixed(2)}`;
   }
   const ok = s.faithfulKept === 1 && s.absentRejected === 1;
-  $('thr-readout').innerHTML = `At <b>${s.threshold.toFixed(2)}</b>: <b>${pc(s.faithfulKept, 1)}</b> of faithful quotes kept, ` +
-    `<b>${pc(s.absentRejected, 1)}</b> of missing quotes rejected.` + (ok ? ' Both perfect anywhere in the gap.' : '') +
-    (s.threshold === m.threshold ? ' This is the default.' : '');
+  if (g) g.setAttribute('class', `mv ${ok ? 'thr-good' : 'thr-warn'}`);
+  const cost = s.faithfulKept < 1 ? `${pc(1 - s.faithfulKept, 1)} of faithful quotes would be rejected.`
+    : `${pc(1 - s.absentRejected, 1)} of missing quotes would get through.`;
+  $('thr-readout').className = `readout ${ok ? 'good' : 'warn'}`;
+  $('thr-readout').innerHTML = icon(ok ? 'circle-check' : 'triangle-alert') +
+    `<span>At <b>${s.threshold.toFixed(2)}</b>: <b>${pc(s.faithfulKept, 1)}</b> of faithful quotes kept, ` +
+    `<b>${pc(s.absentRejected, 1)}</b> of missing quotes rejected. ` +
+    (ok ? `Inside the gap, so nothing is lost either way${s.threshold === m.threshold ? ' — this is the default' : ''}.` : cost) + '</span>';
 }
 
 // --- 3. judges, reasoning on or off
 
 let reasoning = 'on';
 function judgesChart(W) {
-  const models = BENCH.judges.filter((j) => j.reasoning).sort((a, b) => a.falseGreen - b.falseGreen);
+  const models = BENCH.judges.filter((j) => j.reasoning).sort((a, b) => b.caught - a.caught);
   const wide = W >= 640;
   const labelW = wide ? 150 : 122;
   const rowH = 32, top = 26;
@@ -724,13 +775,13 @@ function judgesChart(W) {
   if (wide) {
     const pw = (W - labelW - 70) / 2;
     labels(top);
-    panel(labelW, labelW + pw, top, 'False green ↓', [0, 0.4], [0, 0.1, 0.2, 0.3, 0.4], 'falseGreen');
+    panel(labelW, labelW + pw, top, 'Unsupported citations caught ↑', [0.6, 1], [0.6, 0.7, 0.8, 0.9, 1], 'caught');
     const y1 = panel(labelW + pw + 60, W - 50, top, 'Agreement with annotators ↑', [0.65, 0.9], [0.7, 0.8, 0.9], 'agreement',
       { v: BENCH.trueNli, label: `specialised NLI model ${pc(BENCH.trueNli, 1)}` });
     h = y1 + 40;
   } else {
     labels(top);
-    const y1 = panel(labelW, W - 50, top, 'False green ↓', [0, 0.4], [0, 0.2, 0.4], 'falseGreen');
+    const y1 = panel(labelW, W - 50, top, 'Unsupported caught ↑', [0.6, 1], [0.6, 0.8, 1], 'caught');
     const top2 = y1 + 60;
     labels(top2);
     h = panel(labelW, W - 50, top2, 'Agreement with annotators ↑', [0.65, 0.9], [0.7, 0.8, 0.9], 'agreement',
@@ -811,9 +862,9 @@ function renderTables() {
   const row = (cells) => `<tr>${cells.map((c, i) => (i ? `<td class="v">${c}</td>` : `<td>${esc(c)}</td>`)).join('')}</tr>`;
   const judges = [...BENCH.judges].sort((a, b) => a.falseGreen - b.falseGreen);
   $('tables').innerHTML =
-    `<table><tr><th>Judge</th><th>False green</th><th>Agreement</th></tr>${judges.map((j) =>
-      row([`${j.model}${j.reasoning ? '' : ', no reasoning'}`, pc(j.falseGreen, 1), pc(j.agreement, 1)])).join('')}
-      ${row(['Specialised NLI model (TRUE, T5-11B)', '—', pc(BENCH.trueNli, 1)])}</table>` +
+    `<table><tr><th>Judge</th><th>Unsupported caught</th><th>False green</th><th>Agreement</th></tr>${judges.map((j) =>
+      row([`${j.model}${j.reasoning ? '' : ', no reasoning'}`, pc(1 - j.falseGreen, 1), pc(j.falseGreen, 1), pc(j.agreement, 1)])).join('')}
+      ${row(['Specialised NLI model (TRUE, T5-11B)', '—', '—', pc(BENCH.trueNli, 1)])}</table>` +
     `<table><tr><th>Answering model</th><th>Complete</th><th>Verbatim</th><th>Answers</th></tr>${BENCH.protocol.models.map((r) =>
       row([r.model, pc(r.complete, 1), pc(r.verbatim, 1), r.answers])).join('')}</table>`;
 }
@@ -830,6 +881,11 @@ function segmented(id, onChange) {
 
 function renderNumbers() {
   if (!BENCH) { $('numbers').hidden = true; return; }
+  // Show the judge as "caught" (1 − false green) so higher is better everywhere on the page.
+  for (const j of BENCH.judges) {
+    j.caught = 1 - j.falseGreen;
+    j.caughtCi = [1 - j.falseGreenCi[1], 1 - j.falseGreenCi[0]];
+  }
   const m = BENCH.matcher;
   $('fig-matcher-sub').textContent = `Matcher score for ${m.items.toLocaleString('en')} generated quotes from five Wikipedia articles. Drag the threshold: anywhere in the shaded gap, every faithful quote is kept and every missing one rejected.`;
   $('fig-protocol-sub').textContent = `Eight models got the citation instructions: ${BENCH.protocol.tasks} questions, ${BENCH.protocol.runs} runs each, checked mechanically.`;
