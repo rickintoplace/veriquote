@@ -150,6 +150,9 @@ excluded from the scores.
 | `qwen3.6-35b-a3b` | 18.2% | 78.1% | 67.1% | 0.605 | 0.454 | 0.396 | 3 |
 | `deepseek-v4-flash` | 18.2% | 78.7% | 66.5% | 0.570 | 0.435 | 0.282 | 1 |
 | `gpt-oss-120b` | 25.0% | 76.7% | 64.2% | 0.551 | 0.394 | 0.306 | 8 |
+| `qwen3.5-397b-a17b`, no reasoning | 21.4% | 77.7% | 64.7% | 0.554 | 0.410 | 0.286 | 2 |
+| `qwen3.6-35b-a3b`, no reasoning | 21.4% | 77.3% | 64.3% | 0.520 | 0.397 | 0.164 | 2 |
+| `glm-5.3-flash`, no reasoning | 24.4% | 74.0% | 63.2% | 0.549 | 0.373 | 0.304 | 36 |
 | *TRUE-NLI (T5-11B), ALCE's own metric* | | *77.6%* | | | | | |
 
 Full output per model: [`results/judge-*.json`](results/). Plotted with 95% intervals in [`figures/`](figures).
@@ -166,6 +169,11 @@ What this says:
   so neighbouring models are not separated; a larger `--limit` would settle the
   ranking. Size is not the predictor: `qwen3.6-35b-a3b`, with 3B active
   parameters, lands ahead of the 120B `gpt-oss`.
+- **Reasoning pays for itself in quality.** With `--no-thinking` (vLLM's
+  `enable_thinking: false`, passed through the judge's `extraBody`) all three
+  hybrid models lose agreement and gain false greens, while answering five to
+  ten times faster. The `glm-5.3-flash` run without reasoning lost 36 of 240
+  items to endpoint errors, so read its row with care.
 - **`partial` is the weak class for every model** (F1 0.28–0.51). Judges
   mostly collapse "partially supports" into full or none.
 

@@ -130,7 +130,9 @@ Cohen's κ 0.53 — the agreement ALCE reports for its own automatic metric.
 one unsupported citation in six "fully supported", which is why no judge should
 be the only check. The intervals are wide (56 unsupported pairs per run), so
 the ranking between neighbouring models is not settled; size is not what
-decides it — a 3B-active MoE lands ahead of a 120B model.
+decides it — a 3B-active MoE lands ahead of a 120B model. Reasoning helps:
+with it switched off, all three hybrid models lose agreement and gain false
+greens, in exchange for answering five to ten times faster.
 
 ### Does the answering model play along?
 
@@ -159,6 +161,9 @@ attached a citation without a real quote.
 | `qwen3.6-35b-a3b` | 18.2% | 78.1% | 0.454 |
 | `deepseek-v4-flash` | 18.2% | 78.7% | 0.435 |
 | `gpt-oss-120b` | 25.0% | 76.7% | 0.394 |
+| `qwen3.5-397b-a17b`, no reasoning | 21.4% | 77.7% | 0.410 |
+| `qwen3.6-35b-a3b`, no reasoning | 21.4% | 77.3% | 0.397 |
+| `glm-5.3-flash`, no reasoning | 24.4% | 74.0% | 0.373 |
 | ALCE's TRUE-NLI (T5-11B) | | 77.6% | |
 
 | quote family | n | median score | accepted at 0.4 |

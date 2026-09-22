@@ -1,0 +1,78 @@
+{
+  "generatedBy": "bench/judge/run.mjs",
+  "model": "glm-5.3-flash",
+  "thinking": false,
+  "seed": 20260921,
+  "dataset": "ALCE human_eval citations (MIT, princeton-nlp/ALCE)",
+  "datasetSha256": "044f6bc43409ba87",
+  "classMapping": {
+    "entailed": "full",
+    "partially_entailed": "partial",
+    "overstated": "partial",
+    "insufficient": "none",
+    "contradicted": "none"
+  },
+  "caps": {
+    "quote": 700,
+    "context": 1200
+  },
+  "itemsTruncatedByCap": 5,
+  "itemsRequested": 240,
+  "itemsScored": 204,
+  "judgeErrors": 36,
+  "failedBatches": 0,
+  "elapsedMs": 2175712,
+  "accuracy": 0.6323529411764706,
+  "macroF1": 0.5485962701152575,
+  "kappa": 0.37292511988196225,
+  "binary": {
+    "accuracy": 0.7401960784313726,
+    "precision": 0.7478991596638656,
+    "recall": 0.7946428571428571,
+    "tp": 89,
+    "fp": 30,
+    "fn": 23,
+    "tn": 62
+  },
+  "falseGreen": 0.24444444444444444,
+  "confusion": {
+    "full": {
+      "full": 89,
+      "partial": 14,
+      "none": 9
+    },
+    "partial": {
+      "full": 19,
+      "partial": 12,
+      "none": 16
+    },
+    "none": {
+      "full": 11,
+      "partial": 6,
+      "none": 28
+    }
+  },
+  "perClass": [
+    {
+      "level": "full",
+      "support": 112,
+      "precision": 0.7478991596638656,
+      "recall": 0.7946428571428571,
+      "f1": 0.7705627705627704
+    },
+    {
+      "level": "partial",
+      "support": 47,
+      "precision": 0.375,
+      "recall": 0.2553191489361702,
+      "f1": 0.3037974683544304
+    },
+    {
+      "level": "none",
+      "support": 45,
+      "precision": 0.5283018867924528,
+      "recall": 0.6222222222222222,
+      "f1": 0.5714285714285715
+    }
+  ]
+}

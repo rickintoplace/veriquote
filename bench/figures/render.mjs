@@ -231,7 +231,7 @@ function judgeFigure(t) {
     const noneN = none.full + none.partial + none.none;
     const n = d.binary.tp + d.binary.fp + d.binary.fn + d.binary.tn;
     return {
-      model: d.model.replace(/^openai-/, '').replace(/-0731$/, ''),
+      model: d.model.replace(/^openai-/, '').replace(/-0731$/, '') + (d.thinking === false ? ', no reasoning' : ''),
       fg: none.full / noneN,
       fgCi: wilson(none.full, noneN),
       agree: d.binary.accuracy,
@@ -243,9 +243,9 @@ function judgeFigure(t) {
   }).sort((a, b) => a.fg - b.fg);
 
   const W = 760;
-  const labelRight = 176;
-  const p1 = [196, 436];
-  const p2 = [500, 736];
+  const labelRight = 236;
+  const p1 = [256, 470];
+  const p2 = [530, 736];
   const top = 108;
   const rowH = 30;
   const bottom = top + rows.length * rowH;
@@ -275,7 +275,7 @@ function judgeFigure(t) {
       body.push(text(ax.sx(ci[1]) + 7, cy + 4, pct(v), { size: 11, fill: t.ink2, mono: true }));
     }
   });
-  body.push(text(24, H - 18, `False green over the ${rows[0].noneN} pairs annotators marked “does not support”. Source: bench/results/judge-*.json`, { size: 11, fill: t.muted }));
+  body.push(text(24, H - 18, `False green over the pairs annotators marked “does not support” (${Math.min(...rows.map((r) => r.noneN))}–${Math.max(...rows.map((r) => r.noneN))} per model). Source: bench/results/judge-*.json`, { size: 11, fill: t.muted }));
   return svg(W, H, t, body, 'Judge models compared against human annotators');
 }
 
