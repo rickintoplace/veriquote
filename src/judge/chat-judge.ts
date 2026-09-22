@@ -61,11 +61,19 @@ export interface ChatJudgeOptions {
   seed?: number;
   /** Character caps applied to inputs before prompting. */
   caps?: { id?: number; claim?: number; quote?: number; context?: number };
+  /**
+   * Extra fields merged into every request body, for provider-specific switches,
+   * e.g. `{ chat_template_kwargs: { enable_thinking: false } }` to turn off
+   * reasoning on vLLM-served hybrid models. Cannot override model, messages,
+   * temperature or response format.
+   */
+  extraBody?: Record<string, unknown>;
   /** Custom fetch (for testing or non-standard runtimes). Default globalThis.fetch. */
   fetch?: typeof globalThis.fetch;
 }
 
-interface ResolvedOptions extends Required<Omit<ChatJudgeOptions, 'apiKey' | 'seed' | 'headers' | 'caps' | 'fetch'>> {
+interface ResolvedOptions extends Required<Omit<ChatJudgeOptions, 'apiKey' | 'seed' | 'headers' | 'caps' | 'fetch' | 'extraBody'>> {
+  extraBody: Record<string, unknown>;
   apiKey?: string;
   seed?: number;
   headers: Record<string, string>;
@@ -88,6 +96,7 @@ export class ChatCompletionsJudge implements EntailmentJudge {
       maxRetries: options.maxRetries ?? 2,
       seed: options.seed,
       caps: { id: 80, claim: 700, quote: 700, context: 1200, ...options.caps },
+      extraBody: options.extraBody ?? {},
       fetch: options.fetch ?? globalThis.fetch.bind(globalThis),
     };
   }
@@ -165,6 +174,7 @@ export class ChatCompletionsJudge implements EntailmentJudge {
         },
         signal: controller.signal,
         body: JSON.stringify({
+          ...this.opts.extraBody,
           model: this.opts.model,
           temperature: 0,
           ...(this.opts.seed !== undefined ? { seed: this.opts.seed } : {}),

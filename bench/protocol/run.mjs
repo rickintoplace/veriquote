@@ -16,7 +16,7 @@
  * `parseAnswer()`, and quote accuracy by the deterministic matcher.
  */
 
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -86,7 +86,16 @@ async function complete(model, task) {
       { role: 'user', content: `SOURCES:\n\n${renderSources(task)}\n\nQUESTION: ${task.question}` },
     ],
   });
-  return body.choices?.[0]?.message?.content ?? '';
+  const choice = body.choices?.[0] ?? {};
+  const message = choice.message ?? {};
+  return {
+    answer: message.content ?? '',
+    // `length` means the provider cut the answer off, which silently removes
+    // the appendix at the end; it must not be mistaken for non-compliance.
+    finishReason: choice.finish_reason ?? null,
+    completionTokens: body.usage?.completion_tokens ?? null,
+    reasoningChars: (message.reasoning_content ?? message.reasoning ?? '').length,
+  };
 }
 
 /** Mechanical verdict for one answer. No labels involved. */
@@ -138,6 +147,10 @@ try {
 
 const jsonFlag = process.argv.indexOf('--json');
 const jsonOut = jsonFlag === -1 ? null : (process.argv[jsonFlag + 1] ?? join(HERE, '..', 'results', 'protocol.json'));
+// Raw answers, one JSON line per request, written as they arrive so a crashed
+// run keeps what it already paid for. Every number is computed from these.
+const answersOut = jsonOut ? jsonOut.replace(/\.json$/, '-answers.jsonl') : null;
+if (answersOut) writeFileSync(answersOut, '');
 
 /**
  * Flush after every model. A run against a shared, rate-limited endpoint can
@@ -178,8 +191,14 @@ for (const model of MODELS) {
   const settled = await Promise.all(
     jobs.map(async ({ r, task }) => {
       try {
-        const answer = await complete(model, task);
-        return { model, repeat: r, ...assess(answer, task), failed: false, answerChars: answer.length };
+        const { answer, finishReason, completionTokens, reasoningChars } = await complete(model, task);
+        if (answersOut) {
+          appendFileSync(answersOut, `${JSON.stringify({ model, repeat: r, taskId: task.id, finishReason, answer })}\n`);
+        }
+        return {
+          model, repeat: r, ...assess(answer, task), failed: false,
+          answerChars: answer.length, finishReason, completionTokens, reasoningChars,
+        };
       } catch (err) {
         return { model, repeat: r, taskId: task.id, failed: true, error: String(err).slice(0, 200) };
       } finally {
@@ -216,6 +235,7 @@ function summarise() {
       // On a question the sources cannot answer, the right behaviour is to cite
       // nothing rather than to manufacture evidence.
       restraintOnUnanswerable: mean(unanswerable.map((r) => (r.citedPairs === 0 ? 1 : 0))),
+      cutOffRate: mean(mine.map((r) => (r.finishReason === 'length' ? 1 : 0))),
     };
   });
 }
@@ -226,17 +246,18 @@ const md = [];
 md.push(`Tasks: ${tasks.length} (${tasks.filter((t) => t.note).length} deliberately unanswerable) x ${REPEATS} repeat(s)`);
 md.push(`Sources: ${corpus.length} pinned Wikipedia documents, first ${SOURCE_CHARS} chars each`);
 md.push('');
-md.push('| model | n | api fails | appendix | complete | coverage | verbatim | warning-free | restraint |');
-md.push('| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |');
+md.push('| model | n | api fails | cut off | appendix | complete | coverage | verbatim | warning-free | restraint |');
+md.push('| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |');
 for (const r of rows) {
   md.push(
-    `| ${r.model} | ${r.n} | ${r.apiFailures} | ${pct(r.appendixRate)} | ${pct(r.completeRate)} | ` +
+    `| ${r.model} | ${r.n} | ${r.apiFailures} | ${pct(r.cutOffRate)} | ${pct(r.appendixRate)} | ${pct(r.completeRate)} | ` +
       `${pct(r.meanCoverage)} | ${pct(r.verbatimRate)} | ${pct(r.warningFreeRate)} | ` +
       `${pct(r.restraintOnUnanswerable)} |`,
   );
 }
 md.push('');
 md.push('api fails = requests the endpoint never answered; a property of the endpoint, not the model');
+md.push('cut off = the provider stopped the answer at its token limit (finish_reason "length")');
 md.push('appendix = emitted a parseable EVI1 block at all');
 md.push('complete = every (claim, source) pair it cited also has an evidence line');
 md.push('coverage = share of cited pairs that carry a quote, averaged over tasks');
