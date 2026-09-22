@@ -354,4 +354,4 @@ are also in [`CITATION.cff`](CITATION.cff).
 
 [^zhang]: Zhang, J., Chen, Y., Commodore-Mensah, Y., & Oberst, M. (2026). *Verifiable by construction: Claim-level evaluation of verbatim citation in clinical question answering* (Version 2) [Preprint]. arXiv. https://doi.org/10.48550/arXiv.2609.15964
 
-[^veriquote]: Heilmann, E. (2026). *VeriQuote: Deterministic and semantic verification of quote-grounded LLM citations* (Version 0.2.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.21552379
+[^veriquote]: Heilmann, E. (2026). *VeriQuote: Deterministic and semantic verification of quote-grounded LLM citations* (Version 0.2.1) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.21552379
