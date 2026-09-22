@@ -83,7 +83,7 @@ describe('veriquote CLI', () => {
     const r = await run(['check', 'a.md', '-s', 'https://example.org/ozone'], { 'a.md': GOOD }, { judge });
     expect(r.code).toBe(2);
     expect(r.out).toContain('overstated 0.40');
-    expect(r.out).toContain('Claim is broader than the quote.');
+    expect(r.out).toContain('Claim is broader than the quote');
   });
 
   it('refuses to run a key without a model rather than silently skipping the judge', async () => {

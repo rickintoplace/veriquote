@@ -3,242 +3,425 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>VeriQuote Matcher</title>
-<meta name="description" content="Check whether a quote is really in a source. Runs entirely in your browser, no API key.">
+<title>VeriQuote Demo</title>
+<meta name="description" content="Two checks on every LLM citation: is the quote really in the source, and does it support the claim? Runs in your browser.">
 <style>
   :root {
     --bg: #fbfbfa; --panel: #ffffff; --ink: #1c1c1a; --muted: #6b6b64;
     --line: #e4e3de; --accent: #2f5d50; --ok: #2f7a55; --warn: #9a6a12; --bad: #a33a2c;
-    --mark: #d9ead5; --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --ok-bg: #e7f2ea; --bad-bg: #f8e9e6; --mark: #d9ead5;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --bg: #16171a; --panel: #1e2024; --ink: #e8e8e4; --muted: #9a9a92;
       --line: #2e3036; --accent: #7fc0aa; --ok: #6fbd90; --warn: #d6a94a; --bad: #e0705e;
-      --mark: #2b4a3c;
+      --ok-bg: #1d3027; --bad-bg: #3a2320; --mark: #2b4a3c;
     }
   }
   :root[data-theme="dark"] {
     --bg: #16171a; --panel: #1e2024; --ink: #e8e8e4; --muted: #9a9a92;
     --line: #2e3036; --accent: #7fc0aa; --ok: #6fbd90; --warn: #d6a94a; --bad: #e0705e;
-    --mark: #2b4a3c;
+    --ok-bg: #1d3027; --bad-bg: #3a2320; --mark: #2b4a3c;
   }
   * { box-sizing: border-box; }
   body {
     margin: 0; background: var(--bg); color: var(--ink);
     font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   }
-  .wrap { max-width: 880px; margin: 0 auto; padding: 40px 16px 72px; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 40px 16px 72px; }
   header h1 { font-size: 1.6rem; margin: 0 0 .3em; letter-spacing: -.01em; }
-  header p { color: var(--muted); margin: 0 0 1.6em; max-width: 60ch; }
-  header code { font-family: var(--mono); font-size: .85em; }
+  header p { color: var(--muted); margin: 0 0 1.4em; max-width: 66ch; }
+  h2 { font-size: 1.05rem; margin: 2em 0 .2em; }
+  .sub { color: var(--muted); font-size: .9rem; margin: 0 0 .9em; max-width: 70ch; }
   .panel {
     background: var(--panel); border: 1px solid var(--line);
-    border-radius: 10px; padding: 18px; margin-bottom: 18px;
+    border-radius: 10px; padding: 16px 18px; margin-bottom: 14px;
   }
-  label { display: block; font-size: .78rem; text-transform: uppercase;
-          letter-spacing: .06em; color: var(--muted); margin-bottom: .5em; }
+  label, .label { display: block; font-size: .76rem; text-transform: uppercase;
+          letter-spacing: .06em; color: var(--muted); margin-bottom: .45em; }
   textarea, input {
     width: 100%; background: transparent; color: var(--ink);
-    border: 1px solid var(--line); border-radius: 7px; padding: 10px 12px;
-    font-family: var(--mono); font-size: .86rem; line-height: 1.5; resize: vertical;
+    border: 1px solid var(--line); border-radius: 7px; padding: 9px 11px;
+    font-family: var(--mono); font-size: .85rem; line-height: 1.5; resize: vertical;
   }
   textarea:focus, input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
-  #source { min-height: 190px; }
-  #quote { min-height: 74px; }
-  .examples { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
-  .examples button {
-    font: inherit; font-size: .82rem; cursor: pointer; padding: 5px 11px;
-    border: 1px solid var(--line); border-radius: 999px;
-    background: var(--panel); color: var(--ink);
+  #source { min-height: 110px; }
+  #claim, #quote { min-height: 58px; overflow: hidden; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .examples { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 16px; }
+  button {
+    font: inherit; font-size: .84rem; cursor: pointer; padding: 5px 12px;
+    border: 1px solid var(--line); border-radius: 999px; background: var(--panel); color: var(--ink);
   }
-  .examples button:hover { border-color: var(--accent); color: var(--accent); }
-  .examples button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--bg); }
-  .verdict { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 18px; margin-bottom: .8em; }
-  .score { font-family: var(--mono); font-size: 2.1rem; font-weight: 600; line-height: 1; }
-  .method { font-family: var(--mono); font-size: .8rem; padding: 3px 9px;
-            border: 1px solid currentColor; border-radius: 999px; }
-  .ok { color: var(--ok); } .warn { color: var(--warn); } .bad { color: var(--bad); }
-  .reading { color: var(--muted); font-size: .92rem; margin: 0; max-width: 62ch; }
-  .reading strong { color: var(--ink); font-weight: 600; }
+  button:hover { border-color: var(--accent); color: var(--accent); }
+  button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); border-radius: 7px; }
+  button:disabled { opacity: .5; cursor: default; }
+  .banner { border-radius: 10px; padding: 12px 16px; margin-bottom: 14px; font-weight: 600;
+            display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  .banner small { font-weight: 400; color: var(--ink); opacity: .8; }
+  .banner.pass { background: var(--ok-bg); color: var(--ok); }
+  .banner.fail { background: var(--bad-bg); color: var(--bad); }
+  .banner.none { background: var(--panel); border: 1px solid var(--line); color: var(--muted); }
+  .checks { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .check h3 { font-size: .95rem; margin: 0 0 .1em; }
+  .check .q { color: var(--muted); font-size: .85rem; margin: 0 0 .8em; }
+  .big { font-family: var(--mono); font-size: 1.7rem; font-weight: 600; line-height: 1.1; }
+  .tag { font-family: var(--mono); font-size: .78rem; padding: 2px 8px; margin-left: 6px;
+         border: 1px solid currentColor; border-radius: 999px; vertical-align: middle; }
+  .ok { color: var(--ok); } .warn { color: var(--warn); } .bad { color: var(--bad); } .muted { color: var(--muted); }
+  .reasons { margin: .7em 0 0; padding-left: 1.1em; font-size: .88rem; }
+  .prov { font-size: .8rem; color: var(--muted); margin-top: .8em; }
   .excerpt {
-    margin-top: 14px; padding: 12px; border-radius: 7px; border: 1px solid var(--line);
-    font-family: var(--mono); font-size: .82rem; white-space: pre-wrap; word-break: break-word;
-    max-height: 190px; overflow: auto;
+    margin-top: 12px; padding: 10px; border-radius: 7px; border: 1px solid var(--line);
+    font-family: var(--mono); font-size: .8rem; white-space: pre-wrap; word-break: break-word;
+    max-height: 150px; overflow: auto;
   }
-  .excerpt mark { background: var(--mark); color: inherit; border-radius: 2px; padding: 1px 0; }
-  .note { color: var(--muted); font-size: .86rem; }
+  .excerpt mark { background: var(--mark); color: inherit; border-radius: 2px; }
+  details.live summary { cursor: pointer; font-size: .9rem; color: var(--accent); }
+  .live-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .note { color: var(--muted); font-size: .84rem; }
+  table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: .74rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; }
+  tbody tr { cursor: pointer; }
+  tbody tr:hover { background: var(--bg); }
+  td.v { white-space: nowrap; font-family: var(--mono); font-size: .82rem; }
+  .table-wrap { overflow-x: auto; }
   footer { margin-top: 34px; padding-top: 18px; border-top: 1px solid var(--line);
            color: var(--muted); font-size: .86rem; }
   a { color: var(--accent); }
-  @media (max-width: 560px) { .score { font-size: 1.7rem; } }
+  @media (max-width: 680px) {
+    .pair, .checks, .live-grid { grid-template-columns: 1fr; }
+    .big { font-size: 1.4rem; }
+    table { font-size: .8rem; }
+    th, td { padding: 7px 5px; }
+    td.v { white-space: normal; font-size: .74rem; }
+    .table-wrap { padding: 8px; }
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
 
 <header>
-  <h1>Is this quote really in the source?</h1>
+  <h1>Is the quote real, and does it say that?</h1>
   <p>
-    VeriQuote's deterministic matcher, running entirely in this page &mdash; no server, no API key,
-    no network after load. Pick an example or paste your own. This is check&nbsp;1 of&nbsp;2;
-    the entailment judge that decides whether a quote <em>supports</em> a claim needs a model and
-    runs server-side.
+    VeriQuote makes a model attach a verbatim quote to every cited claim, then checks each citation
+    twice: a deterministic <strong>matcher</strong> asks whether the quote is really in the source, and
+    an LLM <strong>judge</strong> asks whether the quote supports the claim. Each check is blind exactly
+    where the other one sees. Pick an example or write your own.
   </p>
 </header>
 
 <div class="examples" id="examples"></div>
 
 <div class="panel">
-  <label for="source">Source text</label>
+  <label for="source">Source</label>
   <textarea id="source" spellcheck="false"></textarea>
 </div>
-
-<div class="panel">
-  <label for="quote">Quote the model claims to have taken from it</label>
-  <textarea id="quote" spellcheck="false"></textarea>
+<div class="pair">
+  <div class="panel">
+    <label for="claim">Claim in the answer</label>
+    <textarea id="claim" spellcheck="false"></textarea>
+  </div>
+  <div class="panel">
+    <label for="quote">Quote the model attached</label>
+    <textarea id="quote" spellcheck="false"></textarea>
+  </div>
 </div>
 
-<div class="panel" id="result" aria-live="polite">
-  <div class="verdict">
-    <span class="score" id="score">&mdash;</span>
-    <span class="method" id="method">waiting</span>
+<div id="banner" class="banner none" aria-live="polite">—</div>
+
+<div class="checks">
+  <div class="panel check">
+    <h3>1 · Matcher</h3>
+    <p class="q">Is the quote in the source? Deterministic, runs in this page.</p>
+    <div><span class="big" id="m-score">—</span><span class="tag" id="m-method" hidden></span></div>
+    <p class="note" id="m-note"></p>
+    <div class="excerpt" id="m-excerpt" hidden></div>
   </div>
-  <p class="reading" id="reading">Enter a source and a quote.</p>
-  <div class="excerpt" id="excerpt" hidden></div>
+  <div class="panel check">
+    <h3>2 · Judge</h3>
+    <p class="q">Does the quote support the claim? An LLM at temperature 0.</p>
+    <div><span class="big" id="j-class">—</span><span class="tag" id="j-conf" hidden></span></div>
+    <ul class="reasons" id="j-reasons"></ul>
+    <p class="prov" id="j-prov"></p>
+  </div>
+</div>
+
+<details class="live panel" id="live">
+  <summary>Run the judge live with your own API key</summary>
+  <div class="live-grid">
+    <div><label for="base">Endpoint</label><input id="base" value="https://openrouter.ai/api/v1"></div>
+    <div><label for="model">Model</label><input id="model" placeholder="e.g. z-ai/glm-…, qwen/…, deepseek/…"></div>
+    <div><label for="key">API key</label><input id="key" type="password" autocomplete="off" placeholder="sk-…"></div>
+  </div>
+  <button class="primary" id="run" type="button">Run judge</button>
+  <span class="note" id="live-status"></span>
+  <p class="note">
+    Any OpenAI-compatible endpoint that accepts requests from a browser. The key stays in this tab's
+    memory and goes only to that endpoint; reload the page and it is gone. For your own app, keep the
+    judge on a server.
+  </p>
+</details>
+
+<h2>All examples at a glance</h2>
+<p class="sub">
+  The matcher misses every failure where the quote is real; the judge misses every failure where the
+  quote is not. Only together do they catch all six. Click a row to load it.
+</p>
+<div class="panel table-wrap">
+  <table>
+    <thead><tr><th>Example</th><th>Matcher</th><th>Judge</th><th>Both</th></tr></thead>
+    <tbody id="board"></tbody>
+  </table>
 </div>
 
 <footer>
-  <p>
+  <p id="foot">
     The matcher is pure and dependency-free: normalization with an offset map, then a sliding
-    character-trigram window. Same inputs, same score, every time.
-    <a href="https://github.com/rickintoplace/veriquote">Source and benchmarks on GitHub</a>.
+    character-trigram window. <a href="https://github.com/rickintoplace/veriquote">Source, benchmarks and CLI on GitHub</a>.
   </p>
 </footer>
 
 </div>
 
 <script type="module">
-import { matchQuoteAgainstSource } from 'https://esm.sh/veriquote@0.1.1';
+import {
+  verifyAnswer, gateReport, serializeEvi1Appendix, ChatCompletionsJudge,
+} from 'https://esm.sh/veriquote@0.2.0';
 
 const SOURCE = `In this randomised controlled trial of 2,300 adults aged 65 and over, daily vitamin D supplementation reduced the rate of falls by 19% over a 24-month follow-up period, and the effect was most pronounced among participants with baseline deficiency. No significant effect on fracture incidence was observed. Adherence exceeded 90% in both arms, and serious adverse events were evenly distributed between the supplementation and placebo groups.`;
 
 const OTHER_SOURCE = `Stratospheric ozone concentrations have recovered measurably since the Montreal Protocol entered into force, although the Antarctic ozone hole is not expected to close fully before the second half of this century.`;
 
+const FALLS = 'In adults over 65, daily vitamin D cut the rate of falls by about a fifth.';
+const FALLS_QUOTE = 'daily vitamin D supplementation reduced the rate of falls by 19% over a 24-month follow-up period';
+
+// Judge verdicts recorded by running this exact pipeline once; see RECORDED below.
 const EXAMPLES = [
-  {
-    label: 'Verbatim',
-    quote: 'daily vitamin D supplementation reduced the rate of falls by 19% over a 24-month follow-up period',
-    reading: 'A literal hit. The quote is character-for-character in the source, so the matcher can point at the exact offsets.',
-  },
-  {
-    label: 'Messy extraction',
-    quote: 'daily vitamin  D supplementation reduced the rate of falls by 19%\nover a 24-month follow-up period',
-    reading: 'Broken whitespace from a PDF or HTML extractor. Normalization absorbs it, and the offsets still point into the raw source.',
-  },
-  {
-    label: 'Number changed',
-    quote: 'daily vitamin D supplementation reduced the rate of falls by 79% over a 24-month follow-up period',
-    reading: 'One digit was altered &mdash; and the score barely moves. Character trigrams cannot see which character mattered. This is the clearest reason the entailment judge is not optional: it gets the surrounding source text and is asked whether the quote actually says this.',
-  },
-  {
-    label: 'Negated',
-    quote: 'daily vitamin D supplementation did not reduce the rate of falls over a 24-month follow-up period',
-    reading: 'The meaning is inverted, the characters are nearly identical. Same lesson: a high text-match score means <em>faithfully copied</em>, never <em>true</em>.',
-  },
-  {
-    label: 'Honest paraphrase',
-    quote: 'vitamin D given daily lowered how often older participants fell, by roughly a fifth, across two years',
-    reading: 'Accurate, but not a quote. The protocol demands verbatim text precisely so that this case is visible rather than invisible &mdash; the model should have quoted instead of paraphrasing.',
-  },
-  {
-    label: 'Wrong source',
-    source: OTHER_SOURCE,
-    quote: 'daily vitamin D supplementation reduced the rate of falls by 19% over a 24-month follow-up period',
-    reading: 'A real quote attributed to the wrong document &mdash; the most common attribution failure in multi-source answers. The matcher rejects it outright.',
-  },
-  {
-    label: 'Fabricated',
-    quote: 'the authors concluded that magnesium infusions eliminated hospital readmissions across all study arms',
-    reading: 'Plausible-sounding, entirely invented. Nothing close to it exists in the source.',
-  },
+  { id: 'supported', label: 'Supported', claim: FALLS, quote: FALLS_QUOTE },
+  { id: 'messy', label: 'Messy extraction', claim: FALLS,
+    quote: 'daily vitamin  D supplementation reduced the rate of falls by 19%\nover a 24-month follow-up period' },
+  { id: 'overstated', label: 'Real quote, claim goes further',
+    claim: 'Vitamin D protects older adults from falls and fractures.', quote: FALLS_QUOTE },
+  { id: 'contradicted', label: 'Real quote, claim contradicts it',
+    claim: 'The trial also found fewer fractures with vitamin D.',
+    quote: 'No significant effect on fracture incidence was observed.' },
+  { id: 'number', label: 'Number changed',
+    claim: 'Daily vitamin D cut falls by 79% in adults over 65.',
+    quote: 'daily vitamin D supplementation reduced the rate of falls by 79% over a 24-month follow-up period' },
+  { id: 'paraphrase', label: 'Paraphrase, not a quote', claim: FALLS,
+    quote: 'vitamin D given daily lowered how often older participants fell, by roughly a fifth, across two years' },
+  { id: 'wrong-source', label: 'Wrong source', source: OTHER_SOURCE, claim: FALLS, quote: FALLS_QUOTE },
+  { id: 'fabricated', label: 'Invented quote',
+    claim: 'Magnesium infusions eliminated hospital readmissions in the trial.',
+    quote: 'the authors concluded that magnesium infusions eliminated hospital readmissions across all study arms' },
 ];
 
+const RECORDED = {
+  model: 'glm-5.3-flash',
+  date: '2026-09-22',
+  results: {
+    supported: { class: 'entailed', confidence: 0.97, reasons: ["Quote states 19% fall reduction, matching 'about a fifth'.", 'Context confirms adults 65+ receiving daily vitamin D.'] },
+    messy: { class: 'entailed', confidence: 0.95, reasons: ["Quote states 19% fall reduction, matching 'about a fifth'.", 'Context confirms adults 65+ receiving daily supplementation.'] },
+    overstated: { class: 'overstated', confidence: 0.45, reasons: ['Quote supports fall reduction only; fractures not addressed in quote.', "Context reports no significant fracture effect, contradicting claim's fracture part."] },
+    contradicted: { class: 'contradicted', confidence: 0, reasons: ['Quote states no significant effect on fractures', 'Claim asserts fewer fractures, opposite of evidence'] },
+    number: { class: 'contradicted', confidence: 0, reasons: ['Context reports 19% fall reduction, not 79%', "Quote's figure conflicts with actual trial result"] },
+    paraphrase: { class: 'entailed', confidence: 0.95, reasons: ['Quote directly states daily vitamin D cut falls by roughly a fifth', 'Older participants matches over-65 adults per context'] },
+    'wrong-source': { class: 'partially_entailed', confidence: 0.7, reasons: ["Quote confirms 19% reduction, matching 'about a fifth'.", "Quote omits population; 'adults over 65' not stated."] },
+    fabricated: { class: 'entailed', confidence: 0.9, reasons: ['Quote directly states magnesium eliminated readmissions across all arms', "Claim presents authors' conclusion as established trial fact"] },
+  },
+};
+
 const $ = (id) => document.getElementById(id);
-const sourceEl = $('source'), quoteEl = $('quote');
-let activeReading = null;
+const sourceEl = $('source'), claimEl = $('claim'), quoteEl = $('quote');
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const inputsKey = (source, claim, quote) => JSON.stringify([source, claim.trim(), quote.trim()]);
+
+// Judge verdicts keyed by the exact inputs they were produced for.
+const verdicts = new Map();
+for (const ex of EXAMPLES) {
+  verdicts.set(inputsKey(ex.source ?? SOURCE, ex.claim, ex.quote), {
+    result: RECORDED.results[ex.id], origin: `recorded with ${RECORDED.model}, ${RECORDED.date}`,
+  });
+}
+
+/**
+ * One citation through the real library pipeline: parse → match → judge → gate.
+ * `judge` is a live judge, or a recorded verdict replayed as one.
+ */
+async function evaluate(source, claim, quote, judge) {
+  const answer = `${claim.trim()}[1]{c1}\n\n${serializeEvi1Appendix([{ claimId: 'c1', sourceIndex: 1, quote: quote.trim() }])}`;
+  const replay = judge && !judge.judge ? { judge: async (items) => items.map(() => judge) } : judge;
+  const report = await verifyAnswer({ answer, sources: [{ text: source }], judge: replay });
+  return { citation: report.citations[0], gate: gateReport(report, answer) };
+}
+
+/** Which check fails this citation, in plain words. */
+function caughtBy(c) {
+  const byMatcher = c.textMatch.method === 'not_found' || c.textMatch.score < 0.5;
+  const cls = c.entailment?.class;
+  const byJudge = Boolean(c.entailment) && (cls === 'contradicted' || cls === 'overstated' || (c.entailment.confidence ?? 1) < 0.5);
+  return { byMatcher, byJudge };
+}
+
+// ------------------------------------------------------------------ render
+
+let pending = 0;
+async function run() {
+  const ticket = ++pending;
+  const source = sourceEl.value, claim = claimEl.value, quote = quoteEl.value;
+  if (!source.trim() || !claim.trim() || !quote.trim()) {
+    setBanner('none', 'Enter a source, a claim and a quote.');
+    return;
+  }
+  const verdict = verdicts.get(inputsKey(source, claim, quote));
+  const { citation: c } = await evaluate(source, claim, quote, verdict?.result);
+  if (ticket !== pending || !c) return;
+
+  // matcher
+  const m = c.textMatch;
+  const mTone = m.method === 'not_found' ? 'bad' : m.method === 'fuzzy' ? 'warn' : 'ok';
+  $('m-score').textContent = `${(m.score * 100).toFixed(1)}%`;
+  $('m-score').className = `big ${mTone}`;
+  $('m-method').hidden = false;
+  $('m-method').textContent = m.method === 'not_found' ? 'not in source' : m.method;
+  $('m-method').className = `tag ${mTone}`;
+  $('m-note').textContent =
+    m.method === 'not_found' ? 'Nothing in the source is close enough. This quote was not copied from it.'
+    : m.method === 'fuzzy' ? 'Close to a passage, but not identical. Faithful copies score like this after OCR noise — and so do quotes with one number changed.'
+    : 'Copied faithfully. That says nothing yet about whether it supports the claim.';
+  if (m.method !== 'not_found' && typeof m.start === 'number') {
+    const pad = 140, from = Math.max(0, m.start - pad), to = Math.min(source.length, (m.end ?? m.start) + pad);
+    $('m-excerpt').innerHTML = (from ? '…' : '') + esc(source.slice(from, m.start)) +
+      `<mark>${esc(source.slice(m.start, m.end))}</mark>` + esc(source.slice(m.end, to)) + (to < source.length ? '…' : '');
+    $('m-excerpt').hidden = false;
+  } else {
+    $('m-excerpt').hidden = true;
+  }
+
+  // judge
+  const e = c.entailment;
+  if (e && e.class !== 'error') {
+    const jTone = e.class === 'entailed' ? 'ok' : e.class === 'partially_entailed' ? 'warn' : 'bad';
+    $('j-class').textContent = e.class.replace('_', ' ');
+    $('j-class').className = `big ${jTone}`;
+    $('j-conf').hidden = false;
+    $('j-conf').textContent = `support ${(e.confidence ?? 0).toFixed(2)}`;
+    $('j-conf').className = `tag ${jTone}`;
+    $('j-reasons').innerHTML = e.reasons.map((r) => `<li>${esc(r)}</li>`).join('');
+    $('j-prov').textContent = verdict.origin;
+  } else {
+    $('j-class').textContent = '—';
+    $('j-class').className = 'big muted';
+    $('j-conf').hidden = true;
+    $('j-reasons').innerHTML = '';
+    $('j-prov').textContent = e?.class === 'error'
+      ? 'The judge call failed; an error never counts as support.'
+      : 'Not judged yet: these inputs differ from the recorded examples. Run the judge live below.';
+  }
+
+  // together
+  const { byMatcher, byJudge } = caughtBy(c);
+  if (byMatcher || byJudge) {
+    const who = byMatcher && byJudge ? 'both checks' : byMatcher ? 'the matcher' : 'the judge';
+    const blind = byMatcher && !byJudge && e ? ' The judge alone would have let it through.' : !byMatcher && byJudge ? ' The matcher alone would have let it through.' : '';
+    setBanner('fail', '✗ Fails', `caught by ${who}.${blind}`);
+  } else if (!e) {
+    setBanner('none', 'Quote found — support not checked', 'without the judge, a real quote can still be attached to a claim it does not support.');
+  } else {
+    setBanner('pass', '✓ Passes', 'the quote is in the source and supports the claim.');
+  }
+}
+
+function setBanner(kind, head, detail = '') {
+  const b = $('banner');
+  b.className = `banner ${kind}`;
+  b.innerHTML = `<span>${esc(head)}</span>${detail ? `<small>${esc(detail)}</small>` : ''}`;
+}
+
+// ------------------------------------------------------------- examples
 
 const bar = $('examples');
-EXAMPLES.forEach((ex, i) => {
+/** Grow a textarea to its content so nothing hides behind a scrollbar. */
+function fit(el) {
+  el.style.height = 'auto';
+  el.style.height = `${el.scrollHeight + 2}px`;
+}
+
+function load(ex) {
+  sourceEl.value = ex.source ?? SOURCE;
+  claimEl.value = ex.claim;
+  quoteEl.value = ex.quote;
+  for (const el of [sourceEl, claimEl, quoteEl]) fit(el);
+  for (const b of bar.children) b.setAttribute('aria-pressed', String(b.dataset.id === ex.id));
+  run();
+}
+for (const ex of EXAMPLES) {
   const b = document.createElement('button');
   b.type = 'button';
   b.textContent = ex.label;
+  b.dataset.id = ex.id;
   b.setAttribute('aria-pressed', 'false');
-  b.addEventListener('click', () => {
-    sourceEl.value = ex.source ?? SOURCE;
-    quoteEl.value = ex.quote;
-    activeReading = ex.reading;
-    for (const other of bar.children) other.setAttribute('aria-pressed', String(other === b));
-    run();
-  });
+  b.addEventListener('click', () => load(ex));
   bar.appendChild(b);
-  if (i === 0) queueMicrotask(() => b.click());
-});
-
-for (const el of [sourceEl, quoteEl]) {
+}
+for (const el of [sourceEl, claimEl, quoteEl]) {
   el.addEventListener('input', () => {
-    activeReading = null;
+    fit(el);
     for (const b of bar.children) b.setAttribute('aria-pressed', 'false');
     run();
   });
 }
 
-const escapeHtml = (s) =>
-  s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
-
-function run() {
-  const source = sourceEl.value;
-  const quote = quoteEl.value.trim();
-  const scoreEl = $('score'), methodEl = $('method'), readingEl = $('reading'), excerptEl = $('excerpt');
-
-  if (!source.trim() || !quote) {
-    scoreEl.textContent = '—';
-    scoreEl.className = 'score';
-    methodEl.textContent = 'waiting';
-    methodEl.className = 'method';
-    readingEl.textContent = 'Enter a source and a quote.';
-    excerptEl.hidden = true;
-    return;
+async function renderBoard() {
+  const cell = (fails, blindNote) =>
+    fails ? '<span class="bad">✗ fails</span>' : `<span class="ok">✓ passes</span>${blindNote ? ` <span class="muted">${blindNote}</span>` : ''}`;
+  const rows = [];
+  for (const ex of EXAMPLES) {
+    const { citation: c } = await evaluate(ex.source ?? SOURCE, ex.claim, ex.quote, RECORDED.results[ex.id]);
+    const { byMatcher, byJudge } = caughtBy(c);
+    const bad = ex.id !== 'supported' && ex.id !== 'messy';
+    const m = `${cell(byMatcher, bad && !byMatcher ? '(missed)' : '')}<br><span class="muted">${c.textMatch.method.replace('_', ' ')} ${c.textMatch.score.toFixed(2)}</span>`;
+    const j = `${cell(byJudge, bad && !byJudge ? '(missed)' : '')}<br><span class="muted">${c.entailment.class.replace('_', ' ')} ${c.entailment.confidence.toFixed(2)}</span>`;
+    const t = byMatcher || byJudge ? '<strong class="bad">✗ fails</strong>' : '<strong class="ok">✓ passes</strong>';
+    rows.push(`<tr data-id="${ex.id}"><td>${esc(ex.label)}</td><td class="v">${m}</td><td class="v">${j}</td><td class="v">${t}</td></tr>`);
   }
-
-  const m = matchQuoteAgainstSource(quote, { title: 'demo', text: source });
-  const tone = m.method === 'not_found' ? 'bad' : m.score >= 0.9 ? 'ok' : 'warn';
-
-  scoreEl.textContent = `${(m.score * 100).toFixed(1)}%`;
-  scoreEl.className = `score ${tone}`;
-  methodEl.textContent = m.method;
-  methodEl.className = `method ${tone}`;
-
-  readingEl.innerHTML =
-    activeReading ??
-    (m.method === 'not_found'
-      ? 'Below the acceptance threshold: this text is not in the source. The citation should be dropped.'
-      : 'Found in the source. That means the characters were copied faithfully &mdash; not that the claim built on them is true.');
-
-  if (m.method !== 'not_found' && typeof m.start === 'number' && typeof m.end === 'number') {
-    const pad = 160;
-    const from = Math.max(0, m.start - pad), to = Math.min(source.length, m.end + pad);
-    excerptEl.innerHTML =
-      (from > 0 ? '…' : '') +
-      escapeHtml(source.slice(from, m.start)) +
-      `<mark>${escapeHtml(source.slice(m.start, m.end))}</mark>` +
-      escapeHtml(source.slice(m.end, to)) +
-      (to < source.length ? '…' : '');
-    excerptEl.hidden = false;
-  } else {
-    excerptEl.hidden = true;
+  $('board').innerHTML = rows.join('');
+  for (const tr of $('board').children) {
+    tr.addEventListener('click', () => { load(EXAMPLES.find((x) => x.id === tr.dataset.id)); window.scrollTo({ top: 0, behavior: 'smooth' }); });
   }
 }
+
+// ------------------------------------------------------------- live judge
+
+$('run').addEventListener('click', async () => {
+  const key = $('key').value.trim(), model = $('model').value.trim(), base = $('base').value.trim();
+  const status = $('live-status');
+  if (!key || !model || !base) { status.textContent = 'Endpoint, model and key are all needed.'; return; }
+  const source = sourceEl.value, claim = claimEl.value, quote = quoteEl.value;
+  $('run').disabled = true;
+  status.textContent = ' Judging…';
+  try {
+    const judge = new ChatCompletionsJudge({ apiKey: key, model, baseUrl: base, timeoutMs: 120000 });
+    const { citation } = await evaluate(source, claim, quote, judge);
+    const result = citation.entailment;
+    if (!result || result.class === 'error') throw new Error(result?.reasons.join('; ') || 'the judge returned no usable verdict');
+    verdicts.set(inputsKey(source, claim, quote), { result, origin: `live, ${model}` });
+    status.textContent = '';
+    run();
+  } catch (err) {
+    status.textContent = ` ${err.message}. If this is a network error, the endpoint may not accept browser requests.`;
+  } finally {
+    $('run').disabled = false;
+  }
+});
+
+load(EXAMPLES[0]);
+renderBoard();
 </script>
 </body>
 </html>

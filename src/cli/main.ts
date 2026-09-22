@@ -277,7 +277,7 @@ function renderHuman(
     out.push(`${mark} ${cit.claimId} [${cit.sourceIndex}]  ${[match, judged].filter(Boolean).join(' · ')}`);
     out.push(`    ${truncate(cit.claimText || '(no claim text)', 160)}`);
     if (bad && cit.textMatch.method === 'not_found') out.push(dim('    the quoted text does not occur in the source'));
-    else if (bad && cit.entailment?.reasons.length) out.push(dim(`    ${cit.entailment.reasons.join('; ')}`));
+    else if (bad && cit.entailment?.reasons.length) out.push(dim(`    ${cit.entailment.reasons.map((r) => r.trim().replace(/[.;]+$/, '')).join('; ')}`));
     else if (bad && cit.score !== null && cit.textMatch.method !== 'not_found') {
       out.push(dim(`    combined score ${cit.score.toFixed(2)} is below the minimum ${minScore.toFixed(2)}`));
     }

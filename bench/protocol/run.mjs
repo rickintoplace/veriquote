@@ -36,6 +36,7 @@ const BASE_URL = arg('base-url', process.env.VERIQUOTE_BASE_URL ?? 'https://open
 const REPEATS = Number(arg('repeats', '1'));
 const SOURCE_CHARS = Number(arg('source-chars', '4000'));
 const CONCURRENCY = Number(arg('concurrency', '3'));
+const TIMEOUT_MS = Number(arg('timeout-ms', '300000'));
 
 const WAIT = process.argv.includes('--wait');
 
@@ -53,6 +54,7 @@ const client = new RateLimitedClient({
   baseUrl: BASE_URL,
   apiKey,
   concurrency: CONCURRENCY,
+  timeoutMs: TIMEOUT_MS,
   log: (m) => process.stderr.write(`\n  [rate] ${m}\n`),
 });
 
