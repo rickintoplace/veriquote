@@ -188,7 +188,7 @@ function tangoFigure(t) {
       sub: 'invented, paraphrased, or from another document',
       cells: [
         { v: 1 - absent.acceptedRate, cap: `${absent.n - Math.round(absent.acceptedRate * absent.n)} of ${absent.n} rejected` },
-        { v: null, cap: 'never sees the source' },
+        { v: null, cap: 'not what it checks' },
         { v: 1 - absent.acceptedRate, cap: 'caught by the matcher' },
       ],
     },
