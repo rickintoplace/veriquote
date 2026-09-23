@@ -214,20 +214,29 @@ The figures are rendered from `bench/results/*.json` by
 
 An agent that reads sources and writes conclusions is exactly the case
 VeriQuote was built for. [`verify-citations`](integrations/verify-citations) is
-an [Agent Skill](integrations/verify-citations/SKILL.md) that has the agent
-write its sourced answer in the checkable format and run `veriquote check` on
-it before showing it to you. The CLI fetches every cited URL itself, so the
-agent cannot pass with its own truncated or misremembered copy of a page. The
-exit code tells the agent what to do next without parsing anything:
+an [Agent Skill](integrations/verify-citations/SKILL.md) for Claude Code and
+other hosts that read Agent Skills. With it, a research answer goes like this:
+
+1. The agent reads each source with `veriquote source <url>`, which prints the
+   exact text the check will use. Web-fetch tools often summarize or reformat
+   pages, so quotes copied from them may not match.
+2. It writes the answer in the checkable format and runs
+   `veriquote check answer.md --source <url> … --json`. The CLI fetches every
+   URL itself, so a truncated or misremembered copy of a page cannot pass.
+3. The exit code says what to do next:
 
 ```
-exit 0  verdict "pass"    every cited claim is grounded     -> present the answer
-exit 2  verdict "revise"  problems[] + instructionsForModel -> fix and re-check
-exit 1  bad input or unreachable source -> do NOT claim the answer was verified
+exit 0  verdict "pass"        present cleanAnswer, the sources and one line on the check
+exit 2  verdict "revise"      follow instructionsForModel, then check again
+exit 1  verdict "unverified"  the judge failed; check again before claiming anything
+exit 1  (no verdict)          bad input or unreachable source
 ```
 
-The skill works in any host that reads Agent Skills, such as Claude Code, and
-the CLI in anything that can run a shell command.
+The user sees only the final answer, with `[n]` markers, the list of sources
+and a line such as "Checked with VeriQuote: all 6 quotes were found in the
+sources and judged to support their claims." The quote appendix, the JSON and
+any revision rounds stay with the agent. The CLI works in anything that can run
+a shell command.
 
 ## Use as a library
 

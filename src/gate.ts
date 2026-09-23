@@ -33,11 +33,17 @@ export interface GateProblem {
 }
 
 export interface GateResult {
-  verdict: 'pass' | 'revise';
+  /**
+   * `unverified`: nothing failed, but the judge could not rate some citations,
+   * so support was not checked for them. Never report that as a pass.
+   */
+  verdict: 'pass' | 'revise' | 'unverified';
   problems: GateProblem[];
   /** Factual-looking sentences without any `[n]` marker. Heuristic. */
   uncited: string[];
-  /** Ready-to-send correction prompt; `null` on pass. */
+  /** Citations the judge failed on (only when a judge ran). */
+  unjudged: { claimId: string; sourceIndex: number; reason: string }[];
+  /** Ready-to-send correction prompt; `null` unless the verdict is `revise`. */
   instructionsForModel: string | null;
 }
 
@@ -69,12 +75,16 @@ export function gateReport(
       score: c.score === null ? null : round(c.score),
     }));
   const uncited = findUncitedSentences(stripEvi1Appendix(answer), t.minUncitedChars);
-  const verdict = problems.length || uncited.length ? 'revise' : 'pass';
+  const unjudged = report.citations
+    .filter((c) => c.entailment?.class === 'error')
+    .map((c) => ({ claimId: c.claimId, sourceIndex: c.sourceIndex, reason: c.entailment?.reasons.join('; ') || 'judge error' }));
+  const verdict = problems.length || uncited.length ? 'revise' : unjudged.length ? 'unverified' : 'pass';
   return {
     verdict,
     problems,
     uncited,
-    instructionsForModel: verdict === 'pass' ? null : correctionInstructions(problems, uncited),
+    unjudged,
+    instructionsForModel: verdict === 'revise' ? correctionInstructions(problems, uncited) : null,
   };
 }
 

@@ -106,4 +106,32 @@ describe('veriquote CLI', () => {
     expect((await run(['prompt'])).out).toContain('EVI1');
     expect((await run(['--version'])).out).toBe('9.9.9\n');
   });
+
+  it('exits 1 and says UNVERIFIED when the judge fails', async () => {
+    const judge: EntailmentJudge = {
+      judge: async (items) => items.map(() => ({ class: 'error', confidence: null, reasons: ['judge_timeout'] })),
+    };
+    const r = await run(['check', 'a.md', '-s', 'https://example.org/ozone'], { 'a.md': GOOD }, { judge });
+    expect(r.code).toBe(1);
+    expect(r.out).toContain('UNVERIFIED');
+    const j = await run(['check', 'a.md', '-s', 'https://example.org/ozone', '--json'], { 'a.md': GOOD }, { judge });
+    const json = JSON.parse(j.out);
+    expect(json.verdict).toBe('unverified');
+    expect(json.unjudged[0]).toMatchObject({ claimId: 'c1', reason: 'judge_timeout' });
+  });
+
+  it('lists every citation in --json, not only the failing ones', async () => {
+    const r = await run(['check', 'a.md', '-s', 'https://example.org/ozone', '--json'], { 'a.md': GOOD });
+    const json = JSON.parse(r.out);
+    expect(json.citations).toEqual([
+      { claimId: 'c1', sourceIndex: 1, match: { method: 'exact', score: 1 }, judge: null, score: 1 },
+    ]);
+  });
+
+  it('prints the text a source is checked against', async () => {
+    const r = await run(['source', 'https://example.org/ozone']);
+    expect(r.code).toBe(0);
+    expect(r.out).toContain('It absorbs 97 to 99 percent');
+    expect(r.out).not.toContain('<p>');
+  });
 });

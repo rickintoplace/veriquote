@@ -31,6 +31,7 @@ const HELP = `veriquote — check that an LLM answer's quotes exist in its sourc
 
 Usage
   veriquote prompt                      print the citation instructions for the answering model
+  veriquote source <url|file>           print the text a source is checked against (quote from this)
   veriquote check <answer> --source <url|file> [--source …]
   veriquote check --job <file|->        JSON job: {"answer": "...", "sources": [{"text": "..."}]}
 
@@ -53,7 +54,7 @@ Judge (semantic support check), from the environment:
   VERIQUOTE_JUDGE_MODEL     required when a key is set
   VERIQUOTE_JUDGE_BASE_URL  default https://openrouter.ai/api/v1
 
-Exit status: 0 pass · 2 revise · 1 error`;
+Exit status: 0 pass · 2 revise · 1 error, or the judge failed (unverified)`;
 
 interface Args {
   command?: string;
@@ -147,6 +148,12 @@ export async function main(io: CliIo): Promise<number> {
         return EXIT.pass;
       case 'check':
         return await check(args, io);
+      case 'source': {
+        if (args.positional.length !== 1) throw new UsageError('source needs exactly one URL or file');
+        const src = await loadSource(args.positional[0], io);
+        io.stdout(`${src.text}\n`);
+        return EXIT.pass;
+      }
       default:
         throw new UsageError(`unknown command "${args.command}"`);
     }
@@ -191,9 +198,21 @@ async function check(args: Args, io: CliIo): Promise<number> {
         {
           verdict: gate.verdict,
           judge: judgeSetup.model ?? null,
+          // The answer as the user should see it: [n] markers kept, {cX} markers and the appendix removed.
+          cleanAnswer: report.cleanText,
           summary: report.summary,
           problems: gate.problems,
           uncited: gate.uncited,
+          unjudged: gate.unjudged,
+          citations: report.citations.map((c) => ({
+            claimId: c.claimId,
+            sourceIndex: c.sourceIndex,
+            match: { method: c.textMatch.method, score: round2(c.textMatch.score) },
+            judge: c.entailment
+              ? { class: c.entailment.class, support: c.entailment.confidence === null ? null : round2(c.entailment.confidence) }
+              : null,
+            score: c.score === null ? null : round2(c.score),
+          })),
           warnings: report.warnings,
           sources: sources.map((s, i) => ({ index: i + 1, url: s.url, title: s.title, chars: s.text.length })),
           instructionsForModel: gate.instructionsForModel,
@@ -205,8 +224,10 @@ async function check(args: Args, io: CliIo): Promise<number> {
   } else {
     io.stdout(renderHuman(report, gate, sources, judgeSetup.model, io.color, args.minScore ?? 0.5));
   }
-  return gate.verdict === 'pass' ? EXIT.pass : EXIT.revise;
+  return gate.verdict === 'pass' ? EXIT.pass : gate.verdict === 'revise' ? EXIT.revise : EXIT.error;
 }
+
+const round2 = (x: number) => Math.round(x * 100) / 100;
 
 async function loadSource(ref: string, io: CliIo): Promise<SourceDocument> {
   if (/^https?:\/\//i.test(ref)) {
@@ -287,13 +308,16 @@ function renderHuman(
 
   out.push('');
   if (gate.verdict === 'pass') {
-    out.push(green(report.citations.length ? 'PASS' : 'PASS — but the answer cites nothing'));
+    out.push(green(report.citations.length ? 'PASS' : 'PASS, but the answer cites nothing'));
+  } else if (gate.verdict === 'unverified') {
+    out.push(yellow(`UNVERIFIED: the judge failed on ${gate.unjudged.length} citation(s), so their support was not checked. Run the check again.`));
   } else {
     const parts = [
       gate.problems.length && `${gate.problems.length} failed citation(s)`,
       gate.uncited.length && `${gate.uncited.length} uncited sentence(s)`,
     ].filter(Boolean);
-    out.push(red(`REVISE — ${parts.join(', ')}`));
+    out.push(red(`REVISE: ${parts.join(', ')}`));
+    if (gate.unjudged.length) out.push(yellow(`The judge also failed on ${gate.unjudged.length} citation(s).`));
   }
   if (!model) out.push(dim('Only checked that quotes exist in their sources. Set VERIQUOTE_JUDGE_API_KEY to check support.'));
   return `${out.join('\n')}\n`;

@@ -58,3 +58,10 @@ describe('fetchSource', () => {
     ).rejects.toThrow('could not fetch https://example.org/missing: HTTP 404');
   });
 });
+
+describe('reference markers', () => {
+  it('drops Wikipedia-style [n] footnote markers, which quoting models leave out', () => {
+    const html = '<p>It was ratified by 198 parties,<sup id="cite_ref-6" class="reference"><a href="#cite_note-6">[6]</a></sup> the first.</p>';
+    expect(htmlToText(html)).toBe('It was ratified by 198 parties, the first.');
+  });
+});
