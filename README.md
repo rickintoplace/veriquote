@@ -6,14 +6,20 @@
 **Make an LLM quote its sources, then check every quote twice: is it really in
 the source, and does it support the claim?**
 
-A `[1]` after a sentence looks like evidence, but almost nobody checks it. In
-my tests, a fifth of one capable model's "verbatim" quotes were not in the
-source, another model left two thirds of its cited answers with at least one
-citation that had nothing behind it, and an LLM judge happily confirmed a quote
-that was invented. VeriQuote makes the answering model commit to a verbatim
-quote for every citation, then verifies each one: deterministically where
-possible, with an LLM only where it has to. It is written in TypeScript, has no
-dependencies and runs in Node and in the browser.
+A `[1]` after a sentence looks like evidence, but checking it means opening the
+source and finding the passage. VeriQuote makes the answering model attach a
+verbatim quote to every citation and then checks each quote twice: a
+deterministic matcher confirms that the quote is in the source, and an LLM
+judge decides whether the quote supports the claim.
+
+Both checks are needed. Strong models copy quotes reliably: the best open
+models in my tests quoted verbatim in over 99% of cases, and a recent study
+measured 98% for a frontier model. But a real quote is not a supported claim;
+in that study, only 37% of the model's claims were fully supported by their
+quotes.[^zhang] Weaker models also leave citations without any quote, and a
+judge asked whether a quote supports a claim is not built to notice that the
+quote was made up. VeriQuote is written in TypeScript, has no dependencies and
+runs in Node and in the browser.
 
 **Try it in the browser:** [rickinto.place/veriquote](https://rickinto.place/veriquote)
 has eight worked examples, a box for your own text, and the benchmark results as
@@ -81,8 +87,8 @@ checks them. Each citation then goes through three steps:
 A citation's combined score is the lower of its match score and its support
 score. A judge error can therefore never lift a citation above what the matcher
 found, and a failed judge call is reported as an error, never counted as
-support. Quoting does not make a model hallucinate less. It makes every claim
-checkable, which is the point.
+support. The quote format is not meant to make a model more accurate; it makes
+every claim checkable.
 
 ## Benchmarks
 
@@ -92,13 +98,14 @@ Everything is in [`bench/`](bench), including how to reproduce it.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/tango-dark.svg">
-  <img alt="The matcher blocks all 187 quotes that are not in the source and none of the 586 real quotes whose meaning was changed; the judge blocks 84% of unsupported citations and never sees the source; together they cover both kinds of failure." src="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/tango-light.svg">
+  <img alt="The matcher blocks all 187 quotes that are not in the source and none of the 586 real quotes whose meaning was changed; the judge blocks 84% of unsupported citations but does not check whether a quote exists; together they cover both kinds of failure." src="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/tango-light.svg">
 </picture>
 
 The two checks are blind in opposite places. The matcher never reads the claim,
-so it cannot tell whether a real quote supports it. The judge never sees the
-source, so an invented quote that fits the claim passes it: in the example
-above, the judge rates the made-up quote in `c4` as "entailed 0.90".
+so it cannot tell whether a real quote supports it. The judge is asked whether
+the quote supports the claim, not whether the quote exists. It sees a little of
+the source as context, but an invented quote that fits the claim can still pass
+it: in the example above, it rates the made-up quote in `c4` as "entailed 0.90".
 
 ### Matcher
 
@@ -141,9 +148,11 @@ annotators on citation precision.
 Before trusting any of this, look at the left panel: even the best judge lets
 one unsupported citation in six through as fully supported. No judge should be
 the only check. With only 56 unsupported pairs per run the intervals are wide,
-so neighbouring models are not really separated. Reasoning helps: with it
-switched off, all three hybrid models catch less and agree less, in exchange
-for answering five to ten times faster.
+so neighbouring models are not really separated. With reasoning switched off,
+all three hybrid models caught less and agreed less while answering five to ten
+times faster; each difference is within the sampling error, but all three point
+the same way. These pairs come from ALCE, where the judge gets a whole passage
+rather than a quote, which makes its task harder than in normal use.
 
 ### Answering models
 
@@ -156,12 +165,14 @@ Each model answered 18 questions twice, with the citation instructions in its
 system prompt, and `parseAnswer()` decided mechanically whether it complied.
 Every raw answer is in
 [`bench/results/protocol-answers.jsonl`](bench/results/protocol-answers.jsonl).
-The open models recommended here comply almost perfectly. The failures of the
-others are invisible to a reader: `gpt-oss-120b` almost always prints an
-appendix, yet only a third of its answers give every citation a quote, and
-`mistral-medium` is nearly always complete, yet a fifth of its "quotes" are
-paraphrases. Both answers look impeccably cited. On the three questions the
-sources cannot answer, no model attached a citation without a real quote.
+The strongest open models tested follow the format almost perfectly. Two
+others show failures a reader would not notice: `gpt-oss-120b` almost always
+prints the appendix, yet only a third of its answers give every citation a
+quote. `mistral-medium` is nearly always complete, but only 81% of its quotes
+are exact copies; the rest mostly join passages with "..." or change a few
+words, and the matcher still finds them at a lower score. On the three
+questions the sources cannot answer, no model attached a citation without a
+real quote.
 
 <details>
 <summary>The numbers behind the figures</summary>

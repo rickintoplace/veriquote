@@ -90,9 +90,9 @@ Reported per model:
   `glm-5.3-flash` and `qwen3.5-397b` miss at most one quote or one appendix.
 - **`gpt-oss-120b` almost always prints an appendix and is rarely complete**:
   only a third of its answers give every cited pair a quote.
-- **`mistral-medium` is nearly always complete, but a fifth of its "quotes" are
-  not in the source**: paraphrase in the quote slot, exactly what the matcher
-  exists to catch.
+- **`mistral-medium` is nearly always complete, but only 81% of its quotes are
+  exact copies.** The rest mostly join passages with "..." or change a few
+  words; the matcher finds all of them, at a lower score.
 - **`llama-3.1-8b` is not usable with this protocol.**
 - No answer was cut off, and no model put an unsupported citation on an
   unanswerable question. Four such answers from `qwen3.5-397b` and two each

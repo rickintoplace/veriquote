@@ -291,9 +291,10 @@
   <p class="eyebrow">VeriQuote · open-source library and CLI</p>
   <h1>Is the quote real, and does it say that?</h1>
   <p class="lede">
-    Language models put citations like [1] behind their claims, and almost nobody checks them. In a recent
-    study, a frontier model quoted its source word for word for 98% of its claims but fully supported only
-    37% of them.<a class="cite" data-cite="zhang"></a>
+    Language models put citations like [1] behind their claims, and checking one means opening the source
+    and finding the passage. A recent study on clinical guideline questions found that a frontier model
+    quoted its sources word for word for 98% of its claims, yet only 37% of the claims were fully supported
+    by those quotes.<a class="cite" data-cite="zhang"></a>
   </p>
   <p class="lede">
     VeriQuote makes the model attach a verbatim quote to every citation and checks each quote twice. A
@@ -309,8 +310,9 @@
 
 <h2 class="section-title">Eight example citations</h2>
 <p class="section-note">
-  Pick an example. The matcher only compares the quote with the source, the judge only compares the quote
-  with the claim, and each misses what the other catches. The source texts were written for this demo;
+  Pick an example. The matcher compares the quote with the source and ignores the claim. The judge compares
+  the quote with the claim; it sees a little of the source as context but does not check that the quote is
+  really there. Each misses what the other catches. The source texts were written for this demo;
   the trial they describe is fictional.
 </p>
 
@@ -795,7 +797,7 @@ function tangoChart(W) {
   const groups = [
     { head: 'The quote is not in the source', sub: 'invented, paraphrased, or taken from another document', bars: [
       { who: 'Matcher', c: 'var(--c-matcher)', v: t.absent.matcherCaught, cap: `${Math.round(t.absent.matcherCaught * t.absent.n)} of ${t.absent.n} blocked` },
-      { who: 'Judge', c: 'var(--c-judge)', v: null, cap: 'never sees the source' },
+      { who: 'Judge', c: 'var(--c-judge)', v: null, cap: 'not what it checks' },
       { who: 'Together', c: 'var(--ink)', v: t.absent.matcherCaught, cap: 'caught by the matcher', bold: true },
     ] },
     { head: 'The quote is real, the claim is not', sub: 'the source does not support what is claimed', bars: [
@@ -816,7 +818,7 @@ function tangoChart(W) {
       b.push(`<g class="row" ${tipAttr(tip)}><rect class="hit" x="0" y="${cy - 12}" width="${W}" height="24"/>`);
       b.push(`<circle cx="4" cy="${cy}" r="4" fill="${r.c}"/>`, T(14, cy + 4, r.who, r.bold ? 'b' : ''));
       if (r.v === null) {
-        b.push(T(x0, cy + 4, 'never sees the source', 'm'));
+        b.push(T(x0, cy + 4, 'not what it checks', 'm'));
       } else {
         b.push(`<rect class="track" x="${x0}" y="${cy - 6}" width="${x1 - x0}" height="12" rx="3"/>`);
         if (r.v > 0) b.push(`<rect x="${x0}" y="${cy - 6}" width="${Math.max(6, sx(r.v) - x0)}" height="12" rx="3" fill="${r.c}"/>`);
