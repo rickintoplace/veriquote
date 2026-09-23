@@ -173,6 +173,5 @@ of which the sources deliberately cannot answer. Compliance varies enough
 between models that it must be measured per model before deployment, not
 assumed. Separately, prompting for verbatim quotes is not itself a
 hallucination mitigation: it is not designed to reduce how often a model
-fabricates, and this project has not measured whether it does; it makes the
-fabrication checkable. The verification step is
+fabricates; it makes the fabrication checkable. The verification step is
 therefore not optional.

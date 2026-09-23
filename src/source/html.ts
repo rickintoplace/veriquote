@@ -7,6 +7,8 @@
 
 const DROP_ELEMENTS = /<(script|style|noscript|template|svg|iframe|head|object|canvas)\b[\s\S]*?<\/\1\s*>/gi;
 const COMMENTS = /<!--[\s\S]*?-->/g;
+/** Reference markers such as Wikipedia's [12]: models quoting the page leave them out. */
+const REF_MARKERS = /<sup\b[^>]*class="[^"]*\breference\b[^"]*"[^>]*>[\s\S]*?<\/sup\s*>/gi;
 const BLOCK_TAGS =
   /<\/?(?:p|div|br|hr|li|ul|ol|dl|dt|dd|h[1-6]|tr|table|thead|tbody|tfoot|section|article|aside|main|header|footer|nav|blockquote|pre|figure|figcaption|details|summary|form|fieldset|address)\b[^>]*>/gi;
 const CELL_TAGS = /<\/?(?:td|th)\b[^>]*>/gi;
@@ -61,6 +63,7 @@ export function htmlMainContent(html: string): string | undefined {
 export function htmlToText(html: string): string {
   const text = html
     .replace(COMMENTS, '')
+    .replace(REF_MARKERS, '')
     .replace(DROP_ELEMENTS, ' ')
     .replace(BLOCK_TAGS, '\n')
     .replace(CELL_TAGS, ' ')

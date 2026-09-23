@@ -55,15 +55,18 @@ describe('gateReport', () => {
     expect(result.problems.map((p) => p.type)).toEqual(['contradicted_by_source']);
   });
 
-  it('does not fail a citation because the judge errored', async () => {
+  it('reports a judge error as unverified, neither pass nor a failed citation', async () => {
     const answer = [
       'It absorbs most medium-frequency UV light.[1]{c1}',
       'EVI1',
       'c1|1|"It absorbs 97 to 99 percent of the medium-frequency ultraviolet light"',
       'END_EVI1',
     ].join('\n');
-    const result = await gate(answer, judgeReturning({ 'c1|1': { class: 'error', confidence: null, reasons: [] } }));
-    expect(result.verdict).toBe('pass');
+    const result = await gate(answer, judgeReturning({ 'c1|1': { class: 'error', confidence: null, reasons: ['judge_timeout'] } }));
+    expect(result.verdict).toBe('unverified');
+    expect(result.problems).toEqual([]);
+    expect(result.unjudged).toEqual([{ claimId: 'c1', sourceIndex: 1, reason: 'judge_timeout' }]);
+    expect(result.instructionsForModel).toBeNull();
   });
 
   it('flags uncited factual sentences but not initials, questions or headings', async () => {
