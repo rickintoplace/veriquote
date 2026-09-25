@@ -246,7 +246,7 @@ function judgeFigure(t) {
     const n = d.binary.tp + d.binary.fp + d.binary.fn + d.binary.tn;
     return {
       model: d.model.replace(/^openai-|^typesafe\//, '').replace(/-0731$/, '') +
-        (d.kind === 'decisions' ? ' (decision model)' : d.thinking === false ? ', no reasoning' : ''),
+        (d.kind === 'decisions' ? ' (decision model)' : d.kind === 'logprobs' ? ' (logprobs)' : d.thinking === false ? ', no reasoning' : ''),
       // "caught" = not called fully supported, so higher is better in both panels
       caught: 1 - none.full / noneN,
       caughtCi: wilson(none.partial + none.none, noneN),
@@ -267,7 +267,7 @@ function judgeFigure(t) {
   const bottom = top + rows.length * rowH;
   const foot = wrap(
     `Caught: share of the pairs annotators marked “does not support” (${Math.min(...rows.map((r) => r.noneN))}–${Math.max(...rows.map((r) => r.noneN))} per model). ` +
-      'Decision model: returns class probabilities, no text or reasons. Specialised NLI model: TRUE (Honovich et al., 2022), as reported by Gao et al. (2023).',
+      'Decision model: returns class probabilities, no text or reasons. Logprobs: an open chat model read the same way, from the probabilities of a single answer token, without reasoning. Specialised NLI model: TRUE (Honovich et al., 2022), as reported by Gao et al. (2023).',
     118,
   );
   const H = bottom + 62 + foot.length * 15;
@@ -399,7 +399,7 @@ function demoData() {
     const noneN = nn.full + nn.partial + nn.none;
     const n = d.binary.tp + d.binary.fp + d.binary.fn + d.binary.tn;
     return {
-      model: d.model.replace(/^openai-|^typesafe\//, '').replace(/-0731$/, ''),
+      model: d.model.replace(/^openai-|^typesafe\//, '').replace(/-0731$/, '') + (d.kind === 'logprobs' ? ' (logprobs)' : ''),
       reasoning: d.thinking !== false,
       kind: d.kind ?? 'chat',
       falseGreen: nn.full / noneN, falseGreenCi: wilson(nn.full, noneN), unsupported: noneN,

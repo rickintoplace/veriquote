@@ -13,6 +13,11 @@
  * --decisions judges with a decision model (e.g. typesafe/jev-1.13) through
  * OpenRouter's decisions endpoint instead of a chat model; see
  * bench/lib/decisions-judge.mjs.
+ *
+ * --logprobs reads an open chat model the same way: one answer token, class
+ * probabilities from its logprobs, no reasoning. The raw probabilities go to
+ * bench/results/judge-<model>-logprobs-raw.jsonl, so a rerun costs nothing;
+ * see bench/lib/logprobs-judge.mjs.
  */
 
 import { createHash } from 'node:crypto';
@@ -24,6 +29,7 @@ import { ChatCompletionsJudge } from '../../dist/index.js';
 import { makeRng } from '../lib/rng.mjs';
 import { RateLimitedClient } from '../lib/http.mjs';
 import { DecisionsJudge } from '../lib/decisions-judge.mjs';
+import { LogprobsJudge } from '../lib/logprobs-judge.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
@@ -49,6 +55,8 @@ const WAIT = process.argv.includes('--wait');
 // Hybrid reasoning models served by vLLM honour this switch; others ignore it.
 const THINKING = !process.argv.includes('--no-thinking');
 const DECISIONS = process.argv.includes('--decisions');
+const LOGPROBS = process.argv.includes('--logprobs');
+const KIND = DECISIONS ? 'decisions' : LOGPROBS ? 'logprobs' : 'chat';
 
 const apiKey = process.env.VERIQUOTE_JUDGE_API_KEY ?? process.env.OPENROUTER_API_KEY;
 if (!apiKey) {
@@ -100,6 +108,14 @@ console.error(`quote cap ${CAP_QUOTE} chars truncates ${truncated} of ${sample.l
 
 const judge = DECISIONS
   ? new DecisionsJudge({ apiKey, model: MODEL, caps: { quote: CAP_QUOTE, context: CAP_CONTEXT } })
+  : LOGPROBS
+  ? new LogprobsJudge({
+      apiKey,
+      model: MODEL,
+      baseUrl: BASE_URL,
+      caps: { quote: CAP_QUOTE, context: CAP_CONTEXT },
+      cachePath: arg('cache', join(HERE, '..', 'results', `judge-${MODEL.replace(/\//g, '-')}-logprobs-raw.jsonl`)),
+    })
   : new ChatCompletionsJudge({
       apiKey,
       model: MODEL,
@@ -146,7 +162,7 @@ async function worker(queue) {
 }
 
 // Refuse to start a run that cannot fit in what is left of the quota.
-if (!DECISIONS) try {
+if (KIND === 'chat') try {
   const probe = new RateLimitedClient({ baseUrl: BASE_URL, apiKey });
   await probe.readBudget({ model: MODEL });
   probe.assertBudget(batches.length, { wait: WAIT });
@@ -266,9 +282,17 @@ if (jsonFlag !== -1) {
       {
         generatedBy: 'bench/judge/run.mjs',
         model: MODEL,
-        kind: DECISIONS ? 'decisions' : 'chat',
-        thinking: DECISIONS ? null : THINKING,
-        usage: DECISIONS ? judge.usage : undefined,
+        kind: KIND,
+        thinking: KIND === 'chat' ? THINKING : null,
+        usage: DECISIONS
+          ? judge.usage
+          : LOGPROBS
+          ? {
+              requests: judge.usage.requests,
+              cached: judge.usage.cached,
+              medianRequestMs: judge.usage.latencyMs.sort((a, b) => a - b)[Math.floor(judge.usage.latencyMs.length / 2)] ?? null,
+            }
+          : undefined,
         seed: SEED,
         dataset: 'ALCE human_eval citations (MIT, princeton-nlp/ALCE)',
         datasetSha256: createHash('sha256').update(readFileSync(DATA)).digest('hex').slice(0, 16),
