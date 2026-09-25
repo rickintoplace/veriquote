@@ -1,0 +1,84 @@
+{"key":"ff4a6288453e6ad50299efd1c0c8524f0d251dfe7532ebd67b7a22ff52de26a3","result":{"class":"entailed","confidence":1,"reasons":["Quote directly lists both synthesis and dietary sources."]}}
+{"key":"2238b88760fa8825ecc843150dfcd60ac820ed426a6338674502da9851f457ba","result":{"class":"entailed","confidence":1,"reasons":["Quote explicitly states not a vitamin and hormone status."]}}
+{"key":"fba48abac5d9ea784bea84a19bd1269c0beea91327d7a39c91d69e67bb998354","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly matches the claim."]}}
+{"key":"490a283981c5da6ab495d4081daaf1174ab2258cc083651832d96406954a0902","result":{"class":"entailed","confidence":1,"reasons":["Quote directly supports the claim."]}}
+{"key":"aa4dc2e56e4d68d008738117b41e5695d0576ee3e74f2cfe4e21d8591b06dbf4","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly matches the claim."]}}
+{"key":"9b87750a23ec16a297088206dec472db4285b5e47d9e9f88674e2142ada12803","result":{"class":"entailed","confidence":1,"reasons":["Quote fully covers both secretion and production regulation."]}}
+{"key":"f5a838314085e9516c878a1616b818cd2b4d35a5abe505ac377c77f5c69ab448","result":{"class":"entailed","confidence":1,"reasons":["Quote directly states the claim verbatim."]}}
+{"key":"807d4bc1f671aa2ce5ff7fc3a8419307d0a86a00491ac950b618109f486dfc6a","result":{"class":"entailed","confidence":1,"reasons":["Quote covers all claim components exactly."]}}
+{"key":"ac754d0e4a98a59d5e1710d1f062402e0d6ecf21258dedb31c3d9c1d085b5514","result":{"class":"entailed","confidence":1,"reasons":["Quote directly states the claim's content."]}}
+{"key":"1e71ed836a35eac366e80dec0676ae960109d09a19574b479d66410c93dd3090","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly matches the claim."]}}
+{"key":"f4bfce912f224b9377fb8f6e02313000f45bce15d0464a27f4aca17459846112","result":{"class":"entailed","confidence":1,"reasons":["Quote fully supports the claim."]}}
+{"key":"3930598d22c5cf075a564912bd53f8d40fe9420033389c97715143407e4a4006","result":{"class":"entailed","confidence":1,"reasons":["Quote directly confirms the claim."]}}
+{"key":"700362f8eb32574d39c490e9649500237304437d4c6d7dfd0d2853d930f8f37f","result":{"class":"entailed","confidence":1,"reasons":["Quote fully supports the claim."]}}
+{"key":"e0845d71e9f91356866e824f3de613725fd5abbf3a1297f85b1bca856c2d4780","result":{"class":"entailed","confidence":1,"reasons":["Quote matches claim almost verbatim."]}}
+{"key":"205dc2a7254bdfe4db654280c02ef73ecb7eb6771c68644a5a644ffd1e867fc9","result":{"class":"partially_entailed","confidence":0.7,"reasons":["Quote supports Dobsonmeter and ground measurement.","Claim's 'Historically monitored' is not directly stated."]}}
+{"key":"0196fdf84a486325468ab309f8c8796daabf703247134d19a83d12c95835490c","result":{"class":"entailed","confidence":1,"reasons":["Quote directly supports the claim."]}}
+{"key":"a1dc89acfec96c45ff7b07ce9fc23303fd1fca43bd4c3de95544186ab4652030","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly matches the claim."]}}
+{"key":"acb3620a016279008aad2e025746ce67e0a173b4c45f820027c63e3716775177","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly matches the claim."]}}
+{"key":"7d8cd307d3536c14b329294cd26c7cdc42aaab7cf1a81d1e6030e04ed168b084","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly matches the claim."]}}
+{"key":"21894d24eb423f33b0bc1d195216ab72fb439a4a5f508fa766274f0dbd64b464","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly matches the claim."]}}
+{"key":"4462a10913d10081a4332697841dd3f1c1cebd04e9eff59ee92e9f012a708479","result":{"class":"entailed","confidence":1,"reasons":["Quote fully supports the claim's content and details."]}}
+{"key":"31c52965dc1d31c531edabc164823124a3722999fce2b1ccead4dc7ecafd78e4","result":{"class":"entailed","confidence":1,"reasons":["Quote directly supports both primary drivers and natural occurrence."]}}
+{"key":"606df9e7b7cd21aca32d40e18051d41ea095ba76a3cefa078bb39684181fde59","result":{"class":"entailed","confidence":1,"reasons":["Quote fully covers all claim elements."]}}
+{"key":"6aeafed432c461ae6b022d657a592db187890e32dfc14f728b173d9a44208c1e","result":{"class":"entailed","confidence":1,"reasons":["Quote explicitly lists the three mechanisms."]}}
+{"key":"bd7b01ffcd78f15eb3165d52828c2fc6546e6f33d13132989997b3f5e2438d2d","result":{"class":"entailed","confidence":1,"reasons":["Quote fully supports all claim details."]}}
+{"key":"ef6c6c09b53b7f7d34f8117108018b17f7ea941ec86a6bc6dd66c2f6417b43bb","result":{"class":"entailed","confidence":1,"reasons":["Quote fully supports all claim components."]}}
+{"key":"7f6399e7bc79f4effc11826af20c3961ab2c715226edbdb231d81eaf5cb188a3","result":{"class":"entailed","confidence":1,"reasons":["Quote directly confirms the claim."]}}
+{"key":"f41df09e219b49eec7d6de280c45de97e10a458f2c961bfa0a5a59b4aa7e8e1f","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly matches the claim."]}}
+{"key":"42e3231e4ddf763068af22787a46eef59b9a2b1a854eb7325ea1a00880f4524c","result":{"class":"entailed","confidence":1,"reasons":["Quote fully supports the conversion pathway."]}}
+{"key":"8c32d619a0cac508d4337c1c29ddea8d15c915f82a1a23ab80f01246c35aecbf","result":{"class":"entailed","confidence":1,"reasons":["Quote directly confirms the claim."]}}
+{"key":"d8ef9e956c84a066ac2c61bfeb4a2eefd2f8f6bb0e2ebd6ba9ccaa534146f142","result":{"class":"entailed","confidence":1,"reasons":["Quote fully supports both descriptions."]}}
+{"key":"6fad6b33334c08d79ec4192dc22b79a9a95416e4d1c67b15bca332f2f4413936","result":{"class":"entailed","confidence":1,"reasons":["Quote directly confirms the claim."]}}
+{"key":"d78f061e0ccdb2b2564ced56f2c73b64e3b329420d851c2ade12c52d67e6aaca","result":{"class":"entailed","confidence":1,"reasons":["Quote fully supports both parts of the claim."]}}
+{"key":"dc3e7236266e93f22d7af38c776dec163774e9e5e683031c86f90fdc39397601","result":{"class":"entailed","confidence":1,"reasons":["Quote directly confirms the claim."]}}
+{"key":"6a0a4abe9aeab47ab2664560e64365cc397d5a5506876437fee3df917b005756","result":{"class":"entailed","confidence":1,"reasons":["Quote directly supports all claim elements."]}}
+{"key":"8dbfe1a59066569c833e9c1b68d9ca94deeefafe90a56b8d43ca00c00ac61745","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly matches the claim."]}}
+{"key":"341a478dc24f9f847390e2443c7256fb5f21b8add7fa38aee409c6a2ca686f14","result":{"class":"entailed","confidence":1,"reasons":["Quote directly states the claim."]}}
+{"key":"01fbcc12442953e16830035791f639c33dce7250433138f0bd6d1c5e54601e63","result":{"class":"entailed","confidence":1,"reasons":["Quote fully describes the mechanism."]}}
+{"key":"ea835f6fd5c54184a0fa4ed065a90c83fc117ada4986144b1e4fe918a4b69f5e","result":{"class":"entailed","confidence":1,"reasons":["Quote explicitly supports the claim."]}}
+{"key":"22cedc268a70d8e5cfdec9ef2e589bc8032dc95f4941d548d35f8cdf2d88aebf","result":{"class":"entailed","confidence":1,"reasons":["Quote directly confirms the claim."]}}
+{"key":"8086103b61f9aea9c52022269fa09d960d7996ccbb68797c83b7fbb34c3a2629","result":{"class":"entailed","confidence":1,"reasons":["Quote directly supports the claim."]}}
+{"key":"f4655750439da49706ce099a4ffe38f9a83bc274b5761a7261322959a62c9671","result":{"class":"entailed","confidence":1,"reasons":["Quote directly supports the claim."]}}
+{"key":"5582c05e63e2a089b01594b14de9e7711517bf88d7f9b73a384116e8f242b5e0","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly matches the claim's content."]}}
+{"key":"b8409c3f5910245a02df7c1e80fd28c12d93352fe594fbaa7693c1c3b12bfec2","result":{"class":"entailed","confidence":1,"reasons":["Quote directly supports the claim verbatim."]}}
+{"key":"71132a55302803666101b6c9d2ca4eefdda0d487008ab5ced20a2c80ebdaadd1","result":{"class":"entailed","confidence":1,"reasons":["Quote is identical to the claim."]}}
+{"key":"b246c700ed407e9094686691249228035d1156bfdbcae343b353b2b072c93b61","result":{"class":"entailed","confidence":1,"reasons":["Quote directly states 25(OH)D is measured in serum to assess vitamin D status."]}}
+{"key":"d27390e243c285c8ceb727839a0d5344f6b60ab8496090fb655b6e8a706e9ca5","result":{"class":"entailed","confidence":1,"reasons":["Quote confirms Dobson developed the Dobsonmeter to measure stratospheric ozone from the ground."]}}
+{"key":"0eaecc2519bdf940c2c7949f3745467bc86ee7eefdc6dc7c1054a24e828d7205","result":{"class":"entailed","confidence":1,"reasons":["Quote fully supports all claim components."]}}
+{"key":"73a870793020c3032527aeadf3f2c44550df9570d594177e4ddad6802e362afc","result":{"class":"entailed","confidence":1,"reasons":["Quote directly supports every claim element."]}}
+{"key":"913b32898b9c29053a5efe34c4c1aef4180a2b376ad026134c66f97e35277260","result":{"class":"entailed","confidence":1,"reasons":["Quote covers all aspects of the claim."]}}
+{"key":"444a96b839e2df3bf13fea6c818e6f12274661ae51954946f3742d4b73aaa4f6","result":{"class":"entailed","confidence":1,"reasons":["Quote covers all claim components exactly."]}}
+{"key":"4e08a8440aa65d460ef9636578447ed7a8414136300fe7fe88d778e4676a6472","result":{"class":"entailed","confidence":1,"reasons":["Quote directly supports the claim."]}}
+{"key":"4542539ea367932c9ad9ec71b5485c02be4c5dc1fa1f6f7e6f291ca476c44451","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly matches the claim."]}}
+{"key":"2da4c6d1fdc4b8f97b570ef4eef377068434914201e393e7d89d471011730ee0","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly matches the claim."]}}
+{"key":"e41731c98c1799942cf2e16db0d249f1887dbc5e4478e4d7bede0fcd3ed9ba33","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly matches the claim."]}}
+{"key":"d8d840f004573acf57d89646bd01c9830842a8b2ec337928788993ca7bb0bb2d","result":{"class":"entailed","confidence":1,"reasons":["Quote directly states the claim verbatim."]}}
+{"key":"0e07d5bf3a5b001fa12f6fd4429b53c4ea62e624220ae3e24647f825d7572419","result":{"class":"entailed","confidence":1,"reasons":["Quote covers all claim components explicitly."]}}
+{"key":"c367cb75a2e5e39647b4117427fd02e51f7a6aa5a9dc3346f28a75c21ddca0ee","result":{"class":"entailed","confidence":1,"reasons":["Quote matches the claim exactly."]}}
+{"key":"218678c5395ecf4b902cc79ee2b49eb1122ce52f50d4a4fb42962f970b05c385","result":{"class":"entailed","confidence":1,"reasons":["Quote fully matches claim content and details."]}}
+{"key":"1b95b69498535a47e835b99c27ecdca88985c6a8c58924f4381eb12e054ce1c3","result":{"class":"entailed","confidence":1,"reasons":["Quote directly supports both deduction and ozone match."]}}
+{"key":"ad67b8a4e6ebbc81ae949953a40a8a465f3d8b5132df7cf3470b0279eeced4c9","result":{"class":"entailed","confidence":1,"reasons":["Quote matches claim verbatim."]}}
+{"key":"bb42470c33e8db05189e7e5e02ff58ac4f56482471cd30bada44020e74be284c","result":{"class":"entailed","confidence":1,"reasons":["Quote directly supports the claim."]}}
+{"key":"3d92d0f9cb11897c51d24bb0c2632ee567e137cf8d8963112b4b4e5757442522","result":{"class":"entailed","confidence":1,"reasons":["Quote matches claim verbatim."]}}
+{"key":"c907ee80301073765f1e2e1b05b4e3265429b411f8e2a117b19177078bb051be","result":{"class":"entailed","confidence":1,"reasons":["Quote directly states the same claim."]}}
+{"key":"1e1b6598754e31b9be547e9c43ba4525e6da05081204b4edc9d200b3ac88ef75","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly matches the claim."]}}
+{"key":"4dcf80ebcf520d82059489672ad7cb0262d402baa410a2c5a9b82a665bec9746","result":{"class":"entailed","confidence":1,"reasons":["Quote supports both examples and details."]}}
+{"key":"1c25fe394a135d6796da1397464e96efa506c63536f4068c98ae1bc5d17a39e1","result":{"class":"entailed","confidence":1,"reasons":["The quote directly supports all claim components."]}}
+{"key":"863ddf03b455a8c672ce351beefc729055679774ca77b93622e5859c5d650c6e","result":{"class":"entailed","confidence":1,"reasons":["Quote directly matches claim wording and meaning."]}}
+{"key":"44541877f8572191d9eb279338aa1c4a80f257d7d1a732240b37af96dc10434b","result":{"class":"entailed","confidence":1,"reasons":["Quote fully supports all claim elements."]}}
+{"key":"a0812d35162653c4ccd8064a08d3971297d1f7be36b15152ef79ca9ea245d309","result":{"class":"entailed","confidence":1,"reasons":["Quote covers both microbiological and clinical resistance as claimed."]}}
+{"key":"97cca1970a1ed6a6828da826144762e62dc7feb43292189c2a93fde8be2537a4","result":{"class":"entailed","confidence":1,"reasons":["Quote explicitly states horizontal gene transfer and spread across species."]}}
+{"key":"6980549c4cef07729617e4be4fcbfe5c155afc33bba8d01b62374830df4347d4","result":{"class":"entailed","confidence":1,"reasons":["Quote directly states the same figures and attribution."]}}
+{"key":"f234a080db8493c63d460212f3df759b060b6309cf5085b3e1bf929ab94a5bcf","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly matches the claim's wording."]}}
+{"key":"3195a72832489ed48491441d6edbc17323e8b6bd31cdf49ee069777838948773","result":{"class":"entailed","confidence":1,"reasons":["Quote verbatim supports the claim."]}}
+{"key":"8e55e58dfec717c4f8542b99812f1f5150bea5b9395e5d1d8210b3c890f03775","result":{"class":"entailed","confidence":1,"reasons":["Quote directly states all claim details."]}}
+{"key":"b66fff73ca090a7d5298365d03b16154cc0879749da2b29f4cfaea5d1ea26024","result":{"class":"entailed","confidence":1,"reasons":["Quote matches claim exactly."]}}
+{"key":"240ab7e5a2cf83ea16c2c862c5212db7e16223f94125c6d0e5c604bb0c2bfa8e","result":{"class":"entailed","confidence":1,"reasons":["Quote fully supports the claim."]}}
+{"key":"a5094a36f0f04f6921c213991ab37e67f5d9d8f717e494250b7eeef2da1b431f","result":{"class":"entailed","confidence":1,"reasons":["Quote directly confirms the claim."]}}
+{"key":"5d0bfa277a63142119d9d127f987fcbe87980482926ad46b1b089fde6bce62d7","result":{"class":"entailed","confidence":1,"reasons":["Quote explicitly supports the claim."]}}
+{"key":"6ed659e70865a3111a98a8a9c19657b7bf8e1a85c131b058834f728a4d90b0b0","result":{"class":"entailed","confidence":1,"reasons":["Quote directly supports the claim about selective pressure."]}}
+{"key":"cbea565ffb731f4b5bcd0f8e2e5dcd3f25c77b44669fef268e821f97e7e6bc1d","result":{"class":"entailed","confidence":1,"reasons":["Quote fully covers all elements of the claim."]}}
+{"key":"ebdcd34a2dc05d0c555a6586cf28ef7c8c60e2871a7276cfc090e7b53d65a83d","result":{"class":"entailed","confidence":1,"reasons":["Quote fully supports all claim components."]}}
+{"key":"07f4bb367ca799e9e1d00599af3481c0bd41684000d024e110404f3ee118745d","result":{"class":"entailed","confidence":1,"reasons":["Quote directly matches claim details and attribution."]}}
+{"key":"67cd41e7e3dc7734145bbb3bdaabcbb07d53bfb8b663c9c6659ae4644e583458","result":{"class":"entailed","confidence":1,"reasons":["Quote covers absorption and ozone depletion concerns."]}}

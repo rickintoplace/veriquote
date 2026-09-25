@@ -1,5 +1,7 @@
 {
   "generatedBy": "bench/protocol/run.mjs",
+  "rescored": true,
+  "prompt": "end (before 2026-09-25)",
   "models": [
     "deepseek-v4-flash-0731",
     "gemma-4-31b-it",
@@ -56,9 +58,12 @@
       "completeRate": 1,
       "meanCoverage": 1,
       "verbatimRate": 0.9916666666666667,
-      "warningFreeRate": 0.9333333333333333,
+      "elidedRate": 0,
+      "warningFreeRate": 1,
+      "badCitationsOnUnanswerable": 0,
       "cutOffRate": 0,
-      "badCitationsOnUnanswerable": 0.0
+      "claimsPerAnswer": 3.3666666666666667,
+      "meanQuoteChars": 182.19765512265516
     },
     {
       "model": "gemma-4-31b-it",
@@ -68,9 +73,12 @@
       "completeRate": 0.8,
       "meanCoverage": 0.8,
       "verbatimRate": 0.9662698412698413,
+      "elidedRate": 0.03373015873015873,
       "warningFreeRate": 0.8,
+      "badCitationsOnUnanswerable": 0,
       "cutOffRate": 0,
-      "badCitationsOnUnanswerable": 0.0
+      "claimsPerAnswer": 4,
+      "meanQuoteChars": 150.5625
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -80,33 +88,42 @@
       "completeRate": 0.9333333333333333,
       "meanCoverage": 1,
       "verbatimRate": 0.8103448275862069,
+      "elidedRate": 0.04597701149425287,
       "warningFreeRate": 0.9666666666666667,
+      "badCitationsOnUnanswerable": 0,
       "cutOffRate": 0,
-      "badCitationsOnUnanswerable": 0.0
+      "claimsPerAnswer": 1.9666666666666666,
+      "meanQuoteChars": 321.0804597701149
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
       "n": 36,
       "apiFailures": 0,
-      "appendixRate": 0.6666666666666666,
-      "completeRate": 0.43333333333333335,
-      "meanCoverage": 0.7666666666666667,
-      "verbatimRate": 0.5029761904761905,
-      "warningFreeRate": 0.2,
+      "appendixRate": 0.7333333333333333,
+      "completeRate": 0.7,
+      "meanCoverage": 0.872,
+      "verbatimRate": 0.5986652236652237,
+      "elidedRate": 0,
+      "warningFreeRate": 0.3333333333333333,
+      "badCitationsOnUnanswerable": 0,
       "cutOffRate": 0,
-      "badCitationsOnUnanswerable": 0.0
+      "claimsPerAnswer": 2.1333333333333333,
+      "meanQuoteChars": 195.85515873015873
     },
     {
       "model": "openai-gpt-oss-120b",
       "n": 36,
       "apiFailures": 0,
       "appendixRate": 0.9666666666666667,
-      "completeRate": 0.3333333333333333,
+      "completeRate": 0.9666666666666667,
       "meanCoverage": 1,
-      "verbatimRate": 0.910919540229885,
+      "verbatimRate": 0.9195402298850573,
+      "elidedRate": 0.037356321839080456,
       "warningFreeRate": 0.3333333333333333,
+      "badCitationsOnUnanswerable": 0,
       "cutOffRate": 0,
-      "badCitationsOnUnanswerable": 0.0
+      "claimsPerAnswer": 2.1666666666666665,
+      "meanQuoteChars": 264.25
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -116,9 +133,12 @@
       "completeRate": 1,
       "meanCoverage": 1,
       "verbatimRate": 1,
+      "elidedRate": 0,
       "warningFreeRate": 1,
+      "badCitationsOnUnanswerable": 0,
       "cutOffRate": 0,
-      "badCitationsOnUnanswerable": 0.0
+      "claimsPerAnswer": 3.033333333333333,
+      "meanQuoteChars": 168.59111111111113
     },
     {
       "model": "glm-5.3-flash",
@@ -128,9 +148,12 @@
       "completeRate": 0.9655172413793104,
       "meanCoverage": 0.9655172413793104,
       "verbatimRate": 0.9955357142857143,
+      "elidedRate": 0,
       "warningFreeRate": 0.9655172413793104,
+      "badCitationsOnUnanswerable": 0,
       "cutOffRate": 0,
-      "badCitationsOnUnanswerable": 0.0
+      "claimsPerAnswer": 4.551724137931035,
+      "meanQuoteChars": 161.21920351473923
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -140,9 +163,12 @@
       "completeRate": 1,
       "meanCoverage": 1,
       "verbatimRate": 1,
+      "elidedRate": 0,
       "warningFreeRate": 1,
+      "badCitationsOnUnanswerable": 0,
       "cutOffRate": 0,
-      "badCitationsOnUnanswerable": 0.0
+      "claimsPerAnswer": 3.5789473684210527,
+      "meanQuoteChars": 169.93421052631575
     }
   ],
   "runs": [
@@ -153,19 +179,20 @@
       "unanswerable": false,
       "claims": 2,
       "citedPairs": 2,
-      "evidenceLines": 2,
+      "evidenceLines": 3,
       "hasAppendix": true,
       "complete": true,
       "coverage": 1,
       "verbatimRate": 1,
-      "warnings": [
-        "EVI1: duplicate evidence for c2|1; keeping first occurrence."
-      ],
+      "warnings": [],
       "failed": false,
       "answerChars": 929,
       "finishReason": "stop",
       "completionTokens": 210,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 139,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -184,7 +211,10 @@
       "answerChars": 1100,
       "finishReason": "stop",
       "completionTokens": 321,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 174.66666666666666,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -203,7 +233,10 @@
       "answerChars": 1077,
       "finishReason": "stop",
       "completionTokens": 225,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 134,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -222,7 +255,10 @@
       "answerChars": 652,
       "finishReason": "stop",
       "completionTokens": 146,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 118.5,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -241,7 +277,10 @@
       "answerChars": 1130,
       "finishReason": "stop",
       "completionTokens": 253,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 311,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -260,7 +299,10 @@
       "answerChars": 803,
       "finishReason": "stop",
       "completionTokens": 190,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 153,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -279,7 +321,10 @@
       "answerChars": 1520,
       "finishReason": "stop",
       "completionTokens": 311,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 274.6666666666667,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -298,7 +343,10 @@
       "answerChars": 756,
       "finishReason": "stop",
       "completionTokens": 150,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 196.5,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -317,7 +365,10 @@
       "answerChars": 1385,
       "finishReason": "stop",
       "completionTokens": 251,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 225.33333333333334,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -336,7 +387,10 @@
       "answerChars": 533,
       "finishReason": "stop",
       "completionTokens": 148,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 113,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -355,7 +409,10 @@
       "answerChars": 2197,
       "finishReason": "stop",
       "completionTokens": 513,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 151.16666666666666,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -374,7 +431,10 @@
       "answerChars": 2560,
       "finishReason": "stop",
       "completionTokens": 533,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 180.16666666666666,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -393,7 +453,10 @@
       "answerChars": 931,
       "finishReason": "stop",
       "completionTokens": 193,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 144,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -412,7 +475,10 @@
       "answerChars": 827,
       "finishReason": "stop",
       "completionTokens": 212,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 181.5,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -421,22 +487,20 @@
       "unanswerable": false,
       "claims": 7,
       "citedPairs": 7,
-      "evidenceLines": 7,
+      "evidenceLines": 11,
       "hasAppendix": true,
       "complete": true,
       "coverage": 1,
       "verbatimRate": 1,
-      "warnings": [
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c3|2; keeping first occurrence.",
-        "EVI1: duplicate evidence for c7|3; keeping first occurrence."
-      ],
+      "warnings": [],
       "failed": false,
       "answerChars": 3758,
       "finishReason": "stop",
       "completionTokens": 810,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 162.72727272727272,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -455,7 +519,10 @@
       "answerChars": 344,
       "finishReason": "stop",
       "completionTokens": 63,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -474,7 +541,10 @@
       "answerChars": 259,
       "finishReason": "stop",
       "completionTokens": 49,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -493,7 +563,10 @@
       "answerChars": 646,
       "finishReason": "stop",
       "completionTokens": 131,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 259,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -512,7 +585,10 @@
       "answerChars": 1360,
       "finishReason": "stop",
       "completionTokens": 308,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 147.75,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -531,7 +607,10 @@
       "answerChars": 625,
       "finishReason": "stop",
       "completionTokens": 173,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 343,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -550,7 +629,10 @@
       "answerChars": 1040,
       "finishReason": "stop",
       "completionTokens": 219,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 134,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -569,7 +651,10 @@
       "answerChars": 652,
       "finishReason": "stop",
       "completionTokens": 145,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 118.5,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -588,7 +673,10 @@
       "answerChars": 1205,
       "finishReason": "stop",
       "completionTokens": 276,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 207,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -607,7 +695,10 @@
       "answerChars": 967,
       "finishReason": "stop",
       "completionTokens": 228,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 231.5,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -626,7 +717,10 @@
       "answerChars": 1658,
       "finishReason": "stop",
       "completionTokens": 341,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 274.6666666666667,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -645,7 +739,10 @@
       "answerChars": 756,
       "finishReason": "stop",
       "completionTokens": 150,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 196.5,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -664,7 +761,10 @@
       "answerChars": 1275,
       "finishReason": "stop",
       "completionTokens": 233,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 188.66666666666666,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -683,7 +783,10 @@
       "answerChars": 533,
       "finishReason": "stop",
       "completionTokens": 148,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 113,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -702,7 +805,10 @@
       "answerChars": 2131,
       "finishReason": "stop",
       "completionTokens": 467,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 151.28571428571428,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -721,7 +827,10 @@
       "answerChars": 2986,
       "finishReason": "stop",
       "completionTokens": 631,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 225.16666666666666,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -740,7 +849,10 @@
       "answerChars": 859,
       "finishReason": "stop",
       "completionTokens": 181,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 125.66666666666667,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -759,7 +871,10 @@
       "answerChars": 827,
       "finishReason": "stop",
       "completionTokens": 212,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 181.5,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -778,7 +893,10 @@
       "answerChars": 2984,
       "finishReason": "stop",
       "completionTokens": 648,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 168.5,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -797,7 +915,10 @@
       "answerChars": 352,
       "finishReason": "stop",
       "completionTokens": 64,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -816,7 +937,10 @@
       "answerChars": 237,
       "finishReason": "stop",
       "completionTokens": 46,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "deepseek-v4-flash-0731",
@@ -835,7 +959,10 @@
       "answerChars": 476,
       "finishReason": "stop",
       "completionTokens": 104,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 99,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -859,7 +986,10 @@
       "answerChars": 547,
       "finishReason": "stop",
       "completionTokens": 131,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -878,7 +1008,10 @@
       "answerChars": 983,
       "finishReason": "stop",
       "completionTokens": 293,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 148.66666666666666,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -901,7 +1034,10 @@
       "answerChars": 462,
       "finishReason": "stop",
       "completionTokens": 88,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -920,7 +1056,10 @@
       "answerChars": 1206,
       "finishReason": "stop",
       "completionTokens": 267,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 134.25,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -939,7 +1078,10 @@
       "answerChars": 1259,
       "finishReason": "stop",
       "completionTokens": 316,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 207,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -958,7 +1100,10 @@
       "answerChars": 937,
       "finishReason": "stop",
       "completionTokens": 244,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 145,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -977,7 +1122,10 @@
       "answerChars": 1148,
       "finishReason": "stop",
       "completionTokens": 268,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 148.75,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -996,7 +1144,10 @@
       "answerChars": 850,
       "finishReason": "stop",
       "completionTokens": 176,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 130.33333333333334,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1015,7 +1166,10 @@
       "answerChars": 2149,
       "finishReason": "stop",
       "completionTokens": 411,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 172,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1034,7 +1188,10 @@
       "answerChars": 876,
       "finishReason": "stop",
       "completionTokens": 246,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 93.25,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1059,7 +1216,10 @@
       "answerChars": 890,
       "finishReason": "stop",
       "completionTokens": 193,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1078,7 +1238,10 @@
       "answerChars": 1681,
       "finishReason": "stop",
       "completionTokens": 414,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 115.33333333333333,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1097,7 +1260,10 @@
       "answerChars": 1033,
       "finishReason": "stop",
       "completionTokens": 204,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0.3333333333333333,
+      "quoteChars": 183.66666666666666,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1116,7 +1282,10 @@
       "answerChars": 697,
       "finishReason": "stop",
       "completionTokens": 179,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 181.5,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1135,7 +1304,10 @@
       "answerChars": 2021,
       "finishReason": "stop",
       "completionTokens": 466,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 135.71428571428572,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1154,7 +1326,10 @@
       "answerChars": 162,
       "finishReason": "stop",
       "completionTokens": 39,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1173,7 +1348,10 @@
       "answerChars": 169,
       "finishReason": "stop",
       "completionTokens": 37,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1192,7 +1370,10 @@
       "answerChars": 163,
       "finishReason": "stop",
       "completionTokens": 35,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1216,7 +1397,10 @@
       "answerChars": 558,
       "finishReason": "stop",
       "completionTokens": 134,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1235,7 +1419,10 @@
       "answerChars": 983,
       "finishReason": "stop",
       "completionTokens": 293,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 148.66666666666666,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1258,7 +1445,10 @@
       "answerChars": 462,
       "finishReason": "stop",
       "completionTokens": 88,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1277,7 +1467,10 @@
       "answerChars": 1230,
       "finishReason": "stop",
       "completionTokens": 271,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 146,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1296,7 +1489,10 @@
       "answerChars": 1238,
       "finishReason": "stop",
       "completionTokens": 313,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 207,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1315,7 +1511,10 @@
       "answerChars": 911,
       "finishReason": "stop",
       "completionTokens": 239,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 145,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1334,7 +1533,10 @@
       "answerChars": 1148,
       "finishReason": "stop",
       "completionTokens": 268,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 148.75,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1353,7 +1555,10 @@
       "answerChars": 850,
       "finishReason": "stop",
       "completionTokens": 176,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 130.33333333333334,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1372,7 +1577,10 @@
       "answerChars": 2149,
       "finishReason": "stop",
       "completionTokens": 411,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 172,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1391,7 +1599,10 @@
       "answerChars": 882,
       "finishReason": "stop",
       "completionTokens": 246,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 93.5,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1416,7 +1627,10 @@
       "answerChars": 890,
       "finishReason": "stop",
       "completionTokens": 193,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1435,7 +1649,10 @@
       "answerChars": 1681,
       "finishReason": "stop",
       "completionTokens": 414,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 115.33333333333333,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1454,7 +1671,10 @@
       "answerChars": 1033,
       "finishReason": "stop",
       "completionTokens": 204,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0.3333333333333333,
+      "quoteChars": 183.66666666666666,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1473,7 +1693,10 @@
       "answerChars": 752,
       "finishReason": "stop",
       "completionTokens": 197,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 181.5,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1492,7 +1715,10 @@
       "answerChars": 2132,
       "finishReason": "stop",
       "completionTokens": 481,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0.14285714285714285,
+      "quoteChars": 146.28571428571428,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1511,7 +1737,10 @@
       "answerChars": 162,
       "finishReason": "stop",
       "completionTokens": 39,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1530,7 +1759,10 @@
       "answerChars": 173,
       "finishReason": "stop",
       "completionTokens": 37,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "gemma-4-31b-it",
@@ -1549,7 +1781,10 @@
       "answerChars": 163,
       "finishReason": "stop",
       "completionTokens": 35,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -1568,7 +1803,10 @@
       "answerChars": 1006,
       "finishReason": "stop",
       "completionTokens": 221,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 272.5,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -1587,7 +1825,10 @@
       "answerChars": 608,
       "finishReason": "stop",
       "completionTokens": 178,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 343,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -1606,7 +1847,10 @@
       "answerChars": 814,
       "finishReason": "stop",
       "completionTokens": 163,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 223.5,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -1625,7 +1869,10 @@
       "answerChars": 1112,
       "finishReason": "stop",
       "completionTokens": 228,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 118.5,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -1644,7 +1891,10 @@
       "answerChars": 1057,
       "finishReason": "stop",
       "completionTokens": 241,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 623,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -1663,7 +1913,10 @@
       "answerChars": 883,
       "finishReason": "stop",
       "completionTokens": 217,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 203.5,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -1682,7 +1935,10 @@
       "answerChars": 1350,
       "finishReason": "stop",
       "completionTokens": 287,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 235,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -1701,7 +1957,10 @@
       "answerChars": 762,
       "finishReason": "stop",
       "completionTokens": 145,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 394,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -1724,7 +1983,10 @@
       "answerChars": 1203,
       "finishReason": "stop",
       "completionTokens": 212,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 176,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -1743,7 +2005,10 @@
       "answerChars": 551,
       "finishReason": "stop",
       "completionTokens": 137,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 248,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -1762,7 +2027,10 @@
       "answerChars": 1864,
       "finishReason": "stop",
       "completionTokens": 393,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 192,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -1781,7 +2049,10 @@
       "answerChars": 1529,
       "finishReason": "stop",
       "completionTokens": 319,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 400.5,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -1800,7 +2071,10 @@
       "answerChars": 864,
       "finishReason": "stop",
       "completionTokens": 163,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 175,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -1819,7 +2093,10 @@
       "answerChars": 764,
       "finishReason": "stop",
       "completionTokens": 212,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 181.5,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -1838,7 +2115,10 @@
       "answerChars": 2951,
       "finishReason": "stop",
       "completionTokens": 633,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0.6666666666666666,
+      "quoteChars": 501,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -1857,7 +2137,10 @@
       "answerChars": 369,
       "finishReason": "stop",
       "completionTokens": 68,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -1876,7 +2159,10 @@
       "answerChars": 193,
       "finishReason": "stop",
       "completionTokens": 41,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -1895,7 +2181,10 @@
       "answerChars": 296,
       "finishReason": "stop",
       "completionTokens": 58,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -1914,7 +2203,10 @@
       "answerChars": 1934,
       "finishReason": "stop",
       "completionTokens": 384,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 1275,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -1933,7 +2225,10 @@
       "answerChars": 608,
       "finishReason": "stop",
       "completionTokens": 178,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 343,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -1952,7 +2247,10 @@
       "answerChars": 841,
       "finishReason": "stop",
       "completionTokens": 167,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 223.5,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -1971,7 +2269,10 @@
       "answerChars": 440,
       "finishReason": "stop",
       "completionTokens": 83,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -1990,7 +2291,10 @@
       "answerChars": 1007,
       "finishReason": "stop",
       "completionTokens": 233,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 623,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -2009,7 +2313,10 @@
       "answerChars": 805,
       "finishReason": "stop",
       "completionTokens": 203,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 164.5,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -2028,7 +2335,10 @@
       "answerChars": 1350,
       "finishReason": "stop",
       "completionTokens": 287,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 235,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -2047,7 +2357,10 @@
       "answerChars": 1157,
       "finishReason": "stop",
       "completionTokens": 209,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 394,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -2066,7 +2379,10 @@
       "answerChars": 1139,
       "finishReason": "stop",
       "completionTokens": 222,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 177.33333333333334,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -2085,7 +2401,10 @@
       "answerChars": 800,
       "finishReason": "stop",
       "completionTokens": 207,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 190.5,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -2104,7 +2423,10 @@
       "answerChars": 2414,
       "finishReason": "stop",
       "completionTokens": 517,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 336.5,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -2123,7 +2445,10 @@
       "answerChars": 1846,
       "finishReason": "stop",
       "completionTokens": 430,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 204.5,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -2142,7 +2467,10 @@
       "answerChars": 912,
       "finishReason": "stop",
       "completionTokens": 173,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 175,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -2161,7 +2489,10 @@
       "answerChars": 840,
       "finishReason": "stop",
       "completionTokens": 225,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 181.5,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -2180,7 +2511,10 @@
       "answerChars": 2680,
       "finishReason": "stop",
       "completionTokens": 572,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0.6666666666666666,
+      "quoteChars": 501,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -2199,7 +2533,10 @@
       "answerChars": 369,
       "finishReason": "stop",
       "completionTokens": 68,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -2218,7 +2555,10 @@
       "answerChars": 173,
       "finishReason": "stop",
       "completionTokens": 38,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "mistral-medium-3.5-128b",
@@ -2237,7 +2577,10 @@
       "answerChars": 314,
       "finishReason": "stop",
       "completionTokens": 58,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2256,7 +2599,10 @@
       "answerChars": 1081,
       "finishReason": "stop",
       "completionTokens": 237,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 306,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2277,7 +2623,10 @@
       "answerChars": 998,
       "finishReason": "stop",
       "completionTokens": 316,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 182.5,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2298,7 +2647,10 @@
       "answerChars": 844,
       "finishReason": "stop",
       "completionTokens": 161,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2323,7 +2675,10 @@
       "answerChars": 1161,
       "finishReason": "stop",
       "completionTokens": 241,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2344,7 +2699,10 @@
       "answerChars": 609,
       "finishReason": "stop",
       "completionTokens": 130,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2363,7 +2721,10 @@
       "answerChars": 1461,
       "finishReason": "stop",
       "completionTokens": 354,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 170.75,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2372,22 +2733,20 @@
       "unanswerable": false,
       "claims": 4,
       "citedPairs": 4,
-      "evidenceLines": 0,
-      "hasAppendix": false,
-      "complete": false,
-      "coverage": 0,
-      "verbatimRate": null,
-      "warnings": [
-        "Citation c1|1 has no evidence item in the EVI1 appendix.",
-        "Citation c2|1 has no evidence item in the EVI1 appendix.",
-        "Citation c3|1 has no evidence item in the EVI1 appendix.",
-        "Citation c4|1 has no evidence item in the EVI1 appendix."
-      ],
+      "evidenceLines": 4,
+      "hasAppendix": true,
+      "complete": true,
+      "coverage": 1,
+      "verbatimRate": 0.75,
+      "warnings": [],
       "failed": false,
       "answerChars": 1349,
       "finishReason": "stop",
       "completionTokens": 301,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 106.5,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2396,21 +2755,20 @@
       "unanswerable": false,
       "claims": 1,
       "citedPairs": 1,
-      "evidenceLines": 1,
+      "evidenceLines": 4,
       "hasAppendix": true,
       "complete": true,
       "coverage": 1,
-      "verbatimRate": 1,
-      "warnings": [
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence."
-      ],
+      "verbatimRate": 0.5,
+      "warnings": [],
       "failed": false,
       "answerChars": 1607,
       "finishReason": "stop",
       "completionTokens": 338,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 177.25,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2419,20 +2777,20 @@
       "unanswerable": false,
       "claims": 2,
       "citedPairs": 2,
-      "evidenceLines": 2,
+      "evidenceLines": 4,
       "hasAppendix": true,
       "complete": true,
       "coverage": 1,
-      "verbatimRate": 0.5,
-      "warnings": [
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence."
-      ],
+      "verbatimRate": 0.25,
+      "warnings": [],
       "failed": false,
       "answerChars": 1908,
       "finishReason": "stop",
       "completionTokens": 384,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 191.25,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2440,24 +2798,23 @@
       "taskId": "amr-burden",
       "unanswerable": false,
       "claims": 1,
-      "citedPairs": 0,
-      "evidenceLines": 1,
+      "citedPairs": 1,
+      "evidenceLines": 4,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
+      "complete": true,
+      "coverage": 1,
       "verbatimRate": 1,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 1088,
       "finishReason": "stop",
       "completionTokens": 252,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 183.5,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2481,7 +2838,10 @@
       "answerChars": 2719,
       "finishReason": "stop",
       "completionTokens": 572,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 148.28571428571428,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2500,7 +2860,10 @@
       "answerChars": 1930,
       "finishReason": "stop",
       "completionTokens": 386,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 228.66666666666666,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2522,7 +2885,10 @@
       "answerChars": 1174,
       "finishReason": "stop",
       "completionTokens": 226,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2545,7 +2911,10 @@
       "answerChars": 572,
       "finishReason": "stop",
       "completionTokens": 148,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2553,31 +2922,28 @@
       "taskId": "cross-three",
       "unanswerable": false,
       "claims": 6,
-      "citedPairs": 0,
+      "citedPairs": 6,
       "evidenceLines": 6,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
+      "complete": true,
+      "coverage": 1,
       "verbatimRate": 0.8333333333333334,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "Claim c2: no citation group directly before marker.",
-        "Claim c3: no citation group directly before marker.",
-        "Claim c4: no citation group directly before marker.",
-        "Claim c5: no citation group directly before marker.",
-        "Claim c6: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer.",
-        "EVI1: evidence for c2|1 has no matching citation in the answer.",
-        "EVI1: evidence for c3|2 has no matching citation in the answer.",
-        "EVI1: evidence for c4|2 has no matching citation in the answer.",
-        "EVI1: evidence for c5|3 has no matching citation in the answer.",
-        "EVI1: evidence for c6|3 has no matching citation in the answer."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c2: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c3: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c4: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c5: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c6: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 3660,
       "finishReason": "stop",
       "completionTokens": 767,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 172.16666666666666,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2596,7 +2962,10 @@
       "answerChars": 1073,
       "finishReason": "stop",
       "completionTokens": 205,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2617,7 +2986,10 @@
       "answerChars": 1013,
       "finishReason": "stop",
       "completionTokens": 231,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2636,7 +3008,10 @@
       "answerChars": 781,
       "finishReason": "stop",
       "completionTokens": 150,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2658,7 +3033,10 @@
       "answerChars": 728,
       "finishReason": "stop",
       "completionTokens": 152,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2667,21 +3045,22 @@
       "unanswerable": false,
       "claims": 1,
       "citedPairs": 1,
-      "evidenceLines": 1,
+      "evidenceLines": 3,
       "hasAppendix": true,
       "complete": true,
       "coverage": 1,
-      "verbatimRate": 0,
+      "verbatimRate": 0.3333333333333333,
       "warnings": [
-        "Claim c1: duplicate claim id; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence."
+        "Claim c1: duplicate claim id; keeping first occurrence."
       ],
       "failed": false,
       "answerChars": 1059,
       "finishReason": "stop",
       "completionTokens": 326,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 166,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2690,21 +3069,20 @@
       "unanswerable": false,
       "claims": 1,
       "citedPairs": 1,
-      "evidenceLines": 1,
+      "evidenceLines": 4,
       "hasAppendix": true,
       "complete": true,
       "coverage": 1,
-      "verbatimRate": 0,
-      "warnings": [
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence."
-      ],
+      "verbatimRate": 0.5,
+      "warnings": [],
       "failed": false,
       "answerChars": 1527,
       "finishReason": "stop",
       "completionTokens": 316,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 201,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2726,7 +3104,10 @@
       "answerChars": 1272,
       "finishReason": "stop",
       "completionTokens": 274,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 118.5,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2745,7 +3126,10 @@
       "answerChars": 946,
       "finishReason": "stop",
       "completionTokens": 215,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 458,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2753,24 +3137,23 @@
       "taskId": "ozone-location",
       "unanswerable": false,
       "claims": 1,
-      "citedPairs": 0,
-      "evidenceLines": 1,
+      "citedPairs": 1,
+      "evidenceLines": 4,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
-      "verbatimRate": 0,
+      "complete": true,
+      "coverage": 1,
+      "verbatimRate": 0.5,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 1806,
       "finishReason": "stop",
       "completionTokens": 419,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 158.5,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2789,7 +3172,10 @@
       "answerChars": 1455,
       "finishReason": "stop",
       "completionTokens": 302,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 122,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2797,20 +3183,23 @@
       "taskId": "photo-storage",
       "unanswerable": false,
       "claims": 1,
-      "citedPairs": 0,
-      "evidenceLines": 0,
-      "hasAppendix": false,
-      "complete": false,
-      "coverage": null,
-      "verbatimRate": null,
+      "citedPairs": 1,
+      "evidenceLines": 1,
+      "hasAppendix": true,
+      "complete": true,
+      "coverage": 1,
+      "verbatimRate": 1,
       "warnings": [
-        "Claim c1: no citation group directly before marker."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 1224,
       "finishReason": "stop",
       "completionTokens": 242,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 399,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2818,33 +3207,24 @@
       "taskId": "amr-drivers",
       "unanswerable": false,
       "claims": 2,
-      "citedPairs": 0,
-      "evidenceLines": 2,
+      "citedPairs": 2,
+      "evidenceLines": 12,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
-      "verbatimRate": 0.5,
+      "complete": true,
+      "coverage": 1,
+      "verbatimRate": 1,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "Claim c2: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: evidence for c2|1 has no matching citation in the answer."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c2: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 3319,
       "finishReason": "stop",
       "completionTokens": 671,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 159.08333333333334,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2852,24 +3232,23 @@
       "taskId": "amr-burden",
       "unanswerable": false,
       "claims": 1,
-      "citedPairs": 0,
-      "evidenceLines": 1,
+      "citedPairs": 1,
+      "evidenceLines": 4,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
+      "complete": true,
+      "coverage": 1,
       "verbatimRate": 1,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 1177,
       "finishReason": "stop",
       "completionTokens": 266,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 173.25,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2890,7 +3269,10 @@
       "answerChars": 1340,
       "finishReason": "stop",
       "completionTokens": 266,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2909,7 +3291,10 @@
       "answerChars": 1937,
       "finishReason": "stop",
       "completionTokens": 411,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 169.25,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2917,29 +3302,23 @@
       "taskId": "cross-biology",
       "unanswerable": false,
       "claims": 1,
-      "citedPairs": 0,
-      "evidenceLines": 2,
+      "citedPairs": 2,
+      "evidenceLines": 9,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
-      "verbatimRate": 0.5,
+      "complete": true,
+      "coverage": 1,
+      "verbatimRate": 0.7777777777777778,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|1; keeping first occurrence.",
-        "EVI1: evidence for c1|2 has no matching citation in the answer.",
-        "EVI1: duplicate evidence for c1|2; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|2; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|2; keeping first occurrence.",
-        "EVI1: duplicate evidence for c1|2; keeping first occurrence."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 2796,
       "finishReason": "stop",
       "completionTokens": 558,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 156.11111111111111,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2948,21 +3327,22 @@
       "unanswerable": false,
       "claims": 2,
       "citedPairs": 2,
-      "evidenceLines": 2,
+      "evidenceLines": 4,
       "hasAppendix": true,
       "complete": true,
       "coverage": 1,
       "verbatimRate": 0,
       "warnings": [
-        "Claim c2: duplicate claim id; keeping first occurrence.",
-        "EVI1: duplicate evidence for c2|2; keeping first occurrence.",
-        "EVI1: duplicate evidence for c2|2; keeping first occurrence."
+        "Claim c2: duplicate claim id; keeping first occurrence."
       ],
       "failed": false,
       "answerChars": 1367,
       "finishReason": "stop",
       "completionTokens": 360,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": 0,
+      "quoteChars": 161.25,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -2985,7 +3365,10 @@
       "answerChars": 1639,
       "finishReason": "stop",
       "completionTokens": 326,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -3000,13 +3383,16 @@
       "coverage": null,
       "verbatimRate": null,
       "warnings": [
-        "EVI1: malformed evidence line ignored: c0| |No information available on recommended daily vitamin D dose in micrograms\u2026"
+        "EVI1: malformed evidence line ignored: c0| |No information available on recommended daily vitamin D dose in micrograms…"
       ],
       "failed": false,
       "answerChars": 1025,
       "finishReason": "stop",
       "completionTokens": 203,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -3025,7 +3411,10 @@
       "answerChars": 892,
       "finishReason": "stop",
       "completionTokens": 169,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "meta-llama-3.1-8b-instruct",
@@ -3044,7 +3433,10 @@
       "answerChars": 1133,
       "finishReason": "stop",
       "completionTokens": 218,
-      "reasoningChars": 0
+      "reasoningChars": 0,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3052,25 +3444,25 @@
       "taskId": "vitd-synthesis",
       "unanswerable": false,
       "claims": 3,
-      "citedPairs": 0,
+      "citedPairs": 3,
       "evidenceLines": 3,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
+      "complete": true,
+      "coverage": 1,
       "verbatimRate": 1,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "Claim c2: no citation group directly before marker.",
-        "Claim c3: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer.",
-        "EVI1: evidence for c2|1 has no matching citation in the answer.",
-        "EVI1: evidence for c3|1 has no matching citation in the answer."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c2: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c3: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 1242,
       "finishReason": "stop",
       "completionTokens": 1796,
-      "reasoningChars": 7147
+      "reasoningChars": 7147,
+      "elidedRate": 0,
+      "quoteChars": 220.66666666666666,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3089,7 +3481,10 @@
       "answerChars": 703,
       "finishReason": "stop",
       "completionTokens": 582,
-      "reasoningChars": 1443
+      "reasoningChars": 1443,
+      "elidedRate": 0,
+      "quoteChars": 343,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3097,23 +3492,24 @@
       "taskId": "insulin-regulation",
       "unanswerable": false,
       "claims": 2,
-      "citedPairs": 0,
+      "citedPairs": 2,
       "evidenceLines": 2,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
+      "complete": true,
+      "coverage": 1,
       "verbatimRate": 1,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "Claim c2: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer.",
-        "EVI1: evidence for c2|1 has no matching citation in the answer."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c2: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 756,
       "finishReason": "stop",
       "completionTokens": 790,
-      "reasoningChars": 3170
+      "reasoningChars": 3170,
+      "elidedRate": 0,
+      "quoteChars": 223.5,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3121,23 +3517,24 @@
       "taskId": "insulin-anabolic",
       "unanswerable": false,
       "claims": 2,
-      "citedPairs": 0,
+      "citedPairs": 2,
       "evidenceLines": 2,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
+      "complete": true,
+      "coverage": 1,
       "verbatimRate": 0.5,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "Claim c2: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer.",
-        "EVI1: evidence for c2|1 has no matching citation in the answer."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c2: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 1103,
       "finishReason": "stop",
       "completionTokens": 1148,
-      "reasoningChars": 4457
+      "reasoningChars": 4457,
+      "elidedRate": 0,
+      "quoteChars": 315.5,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3145,21 +3542,23 @@
       "taskId": "ozone-discovery",
       "unanswerable": false,
       "claims": 1,
-      "citedPairs": 0,
+      "citedPairs": 1,
       "evidenceLines": 1,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
+      "complete": true,
+      "coverage": 1,
       "verbatimRate": 1,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 1128,
       "finishReason": "stop",
       "completionTokens": 777,
-      "reasoningChars": 2451
+      "reasoningChars": 2451,
+      "elidedRate": 0,
+      "quoteChars": 623,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3167,23 +3566,24 @@
       "taskId": "ozone-location",
       "unanswerable": false,
       "claims": 2,
-      "citedPairs": 0,
+      "citedPairs": 2,
       "evidenceLines": 2,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
+      "complete": true,
+      "coverage": 1,
       "verbatimRate": 1,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "Claim c2: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer.",
-        "EVI1: evidence for c2|1 has no matching citation in the answer."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c2: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 886,
       "finishReason": "stop",
       "completionTokens": 954,
-      "reasoningChars": 3134
+      "reasoningChars": 3134,
+      "elidedRate": 0,
+      "quoteChars": 270,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3191,25 +3591,25 @@
       "taskId": "photo-oxygen",
       "unanswerable": false,
       "claims": 3,
-      "citedPairs": 0,
+      "citedPairs": 3,
       "evidenceLines": 3,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
+      "complete": true,
+      "coverage": 1,
       "verbatimRate": 1,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "Claim c2: no citation group directly before marker.",
-        "Claim c3: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer.",
-        "EVI1: evidence for c2|1 has no matching citation in the answer.",
-        "EVI1: evidence for c3|1 has no matching citation in the answer."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c2: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c3: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 1602,
       "finishReason": "stop",
       "completionTokens": 1231,
-      "reasoningChars": 4191
+      "reasoningChars": 4191,
+      "elidedRate": 0,
+      "quoteChars": 320,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3217,21 +3617,23 @@
       "taskId": "photo-storage",
       "unanswerable": false,
       "claims": 1,
-      "citedPairs": 0,
+      "citedPairs": 1,
       "evidenceLines": 1,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
+      "complete": true,
+      "coverage": 1,
       "verbatimRate": 1,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 722,
       "finishReason": "stop",
       "completionTokens": 501,
-      "reasoningChars": 1828
+      "reasoningChars": 1828,
+      "elidedRate": 0,
+      "quoteChars": 394,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3239,23 +3641,24 @@
       "taskId": "amr-drivers",
       "unanswerable": false,
       "claims": 2,
-      "citedPairs": 0,
+      "citedPairs": 2,
       "evidenceLines": 2,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
+      "complete": true,
+      "coverage": 1,
       "verbatimRate": 1,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "Claim c2: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer.",
-        "EVI1: evidence for c2|1 has no matching citation in the answer."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c2: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 941,
       "finishReason": "stop",
       "completionTokens": 801,
-      "reasoningChars": 3412
+      "reasoningChars": 3412,
+      "elidedRate": 0,
+      "quoteChars": 195.5,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3263,21 +3666,23 @@
       "taskId": "amr-burden",
       "unanswerable": false,
       "claims": 1,
-      "citedPairs": 0,
+      "citedPairs": 1,
       "evidenceLines": 1,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
+      "complete": true,
+      "coverage": 1,
       "verbatimRate": 1,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 255,
       "finishReason": "stop",
       "completionTokens": 427,
-      "reasoningChars": 1697
+      "reasoningChars": 1697,
+      "elidedRate": 0,
+      "quoteChars": 103,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3285,27 +3690,26 @@
       "taskId": "cross-hormones",
       "unanswerable": false,
       "claims": 4,
-      "citedPairs": 0,
+      "citedPairs": 4,
       "evidenceLines": 4,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
-      "verbatimRate": 0.25,
+      "complete": true,
+      "coverage": 1,
+      "verbatimRate": 0.5,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "Claim c2: no citation group directly before marker.",
-        "Claim c3: no citation group directly before marker.",
-        "Claim c4: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer.",
-        "EVI1: evidence for c2|1 has no matching citation in the answer.",
-        "EVI1: evidence for c3|2 has no matching citation in the answer.",
-        "EVI1: evidence for c4|2 has no matching citation in the answer."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c2: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c3: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c4: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 1541,
       "finishReason": "stop",
       "completionTokens": 1272,
-      "reasoningChars": 4148
+      "reasoningChars": 4148,
+      "elidedRate": 0.25,
+      "quoteChars": 234,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3313,25 +3717,25 @@
       "taskId": "cross-atmosphere",
       "unanswerable": false,
       "claims": 3,
-      "citedPairs": 0,
+      "citedPairs": 3,
       "evidenceLines": 3,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
+      "complete": true,
+      "coverage": 1,
       "verbatimRate": 0.6666666666666666,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "Claim c2: no citation group directly before marker.",
-        "Claim c3: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer.",
-        "EVI1: evidence for c2|1 has no matching citation in the answer.",
-        "EVI1: evidence for c3|2 has no matching citation in the answer."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c2: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c3: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 1023,
       "finishReason": "stop",
       "completionTokens": 1240,
-      "reasoningChars": 4613
+      "reasoningChars": 4613,
+      "elidedRate": 0.3333333333333333,
+      "quoteChars": 135.66666666666666,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3350,7 +3754,10 @@
       "answerChars": 640,
       "finishReason": "stop",
       "completionTokens": 863,
-      "reasoningChars": 3778
+      "reasoningChars": 3778,
+      "elidedRate": 0,
+      "quoteChars": 175,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3369,7 +3776,10 @@
       "answerChars": 717,
       "finishReason": "stop",
       "completionTokens": 792,
-      "reasoningChars": 2556
+      "reasoningChars": 2556,
+      "elidedRate": 0,
+      "quoteChars": 160.5,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3377,25 +3787,25 @@
       "taskId": "cross-three",
       "unanswerable": false,
       "claims": 3,
-      "citedPairs": 0,
+      "citedPairs": 3,
       "evidenceLines": 3,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
+      "complete": true,
+      "coverage": 1,
       "verbatimRate": 1,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "Claim c2: no citation group directly before marker.",
-        "Claim c3: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer.",
-        "EVI1: evidence for c2|2 has no matching citation in the answer.",
-        "EVI1: evidence for c3|3 has no matching citation in the answer."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c2: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c3: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 1357,
       "finishReason": "stop",
       "completionTokens": 1611,
-      "reasoningChars": 6542
+      "reasoningChars": 6542,
+      "elidedRate": 0,
+      "quoteChars": 219,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3414,7 +3824,10 @@
       "answerChars": 186,
       "finishReason": "stop",
       "completionTokens": 191,
-      "reasoningChars": 713
+      "reasoningChars": 713,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3433,7 +3846,10 @@
       "answerChars": 174,
       "finishReason": "stop",
       "completionTokens": 184,
-      "reasoningChars": 654
+      "reasoningChars": 654,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3452,7 +3868,10 @@
       "answerChars": 155,
       "finishReason": "stop",
       "completionTokens": 308,
-      "reasoningChars": 1319
+      "reasoningChars": 1319,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3460,23 +3879,24 @@
       "taskId": "vitd-synthesis",
       "unanswerable": false,
       "claims": 2,
-      "citedPairs": 0,
+      "citedPairs": 2,
       "evidenceLines": 2,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
+      "complete": true,
+      "coverage": 1,
       "verbatimRate": 1,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "Claim c2: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer.",
-        "EVI1: evidence for c2|1 has no matching citation in the answer."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c2: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 932,
       "finishReason": "stop",
       "completionTokens": 910,
-      "reasoningChars": 3280
+      "reasoningChars": 3280,
+      "elidedRate": 0,
+      "quoteChars": 235,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3495,7 +3915,10 @@
       "answerChars": 635,
       "finishReason": "stop",
       "completionTokens": 711,
-      "reasoningChars": 1971
+      "reasoningChars": 1971,
+      "elidedRate": 0,
+      "quoteChars": 343,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3503,23 +3926,24 @@
       "taskId": "insulin-regulation",
       "unanswerable": false,
       "claims": 2,
-      "citedPairs": 0,
+      "citedPairs": 2,
       "evidenceLines": 2,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
+      "complete": true,
+      "coverage": 1,
       "verbatimRate": 1,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "Claim c2: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer.",
-        "EVI1: evidence for c2|1 has no matching citation in the answer."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c2: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 612,
       "finishReason": "stop",
       "completionTokens": 583,
-      "reasoningChars": 2270
+      "reasoningChars": 2270,
+      "elidedRate": 0,
+      "quoteChars": 153,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3527,23 +3951,24 @@
       "taskId": "insulin-anabolic",
       "unanswerable": false,
       "claims": 2,
-      "citedPairs": 0,
+      "citedPairs": 2,
       "evidenceLines": 2,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
+      "complete": true,
+      "coverage": 1,
       "verbatimRate": 0.5,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "Claim c2: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer.",
-        "EVI1: evidence for c2|1 has no matching citation in the answer."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c2: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 1119,
       "finishReason": "stop",
       "completionTokens": 1236,
-      "reasoningChars": 4935
+      "reasoningChars": 4935,
+      "elidedRate": 0,
+      "quoteChars": 315.5,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3562,7 +3987,10 @@
       "answerChars": 947,
       "finishReason": "stop",
       "completionTokens": 792,
-      "reasoningChars": 2641
+      "reasoningChars": 2641,
+      "elidedRate": 0,
+      "quoteChars": 527,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3581,7 +4009,10 @@
       "answerChars": 966,
       "finishReason": "stop",
       "completionTokens": 1542,
-      "reasoningChars": 5590
+      "reasoningChars": 5590,
+      "elidedRate": 0,
+      "quoteChars": 179.66666666666666,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3589,23 +4020,24 @@
       "taskId": "photo-oxygen",
       "unanswerable": false,
       "claims": 2,
-      "citedPairs": 0,
+      "citedPairs": 2,
       "evidenceLines": 2,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
+      "complete": true,
+      "coverage": 1,
       "verbatimRate": 0.5,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "Claim c2: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer.",
-        "EVI1: evidence for c2|1 has no matching citation in the answer."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c2: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 890,
       "finishReason": "stop",
       "completionTokens": 925,
-      "reasoningChars": 3489
+      "reasoningChars": 3489,
+      "elidedRate": 0.5,
+      "quoteChars": 268.5,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3624,7 +4056,10 @@
       "answerChars": 679,
       "finishReason": "stop",
       "completionTokens": 607,
-      "reasoningChars": 2369
+      "reasoningChars": 2369,
+      "elidedRate": 0,
+      "quoteChars": 394,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3632,23 +4067,24 @@
       "taskId": "amr-drivers",
       "unanswerable": false,
       "claims": 2,
-      "citedPairs": 0,
+      "citedPairs": 2,
       "evidenceLines": 2,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
+      "complete": true,
+      "coverage": 1,
       "verbatimRate": 1,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "Claim c2: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer.",
-        "EVI1: evidence for c2|1 has no matching citation in the answer."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c2: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 896,
       "finishReason": "stop",
       "completionTokens": 1038,
-      "reasoningChars": 4566
+      "reasoningChars": 4566,
+      "elidedRate": 0,
+      "quoteChars": 195.5,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3656,21 +4092,23 @@
       "taskId": "amr-burden",
       "unanswerable": false,
       "claims": 1,
-      "citedPairs": 0,
+      "citedPairs": 1,
       "evidenceLines": 1,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
+      "complete": true,
+      "coverage": 1,
       "verbatimRate": 1,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 500,
       "finishReason": "stop",
       "completionTokens": 653,
-      "reasoningChars": 2452
+      "reasoningChars": 2452,
+      "elidedRate": 0,
+      "quoteChars": 363,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3689,7 +4127,10 @@
       "answerChars": 1303,
       "finishReason": "stop",
       "completionTokens": 1953,
-      "reasoningChars": 7418
+      "reasoningChars": 7418,
+      "elidedRate": 0,
+      "quoteChars": 181.25,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3714,7 +4155,10 @@
       "answerChars": 1091,
       "finishReason": "stop",
       "completionTokens": 1705,
-      "reasoningChars": 7072
+      "reasoningChars": 7072,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3733,7 +4177,10 @@
       "answerChars": 707,
       "finishReason": "stop",
       "completionTokens": 531,
-      "reasoningChars": 2053
+      "reasoningChars": 2053,
+      "elidedRate": 0,
+      "quoteChars": 175,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3741,23 +4188,24 @@
       "taskId": "cross-measurement",
       "unanswerable": false,
       "claims": 2,
-      "citedPairs": 0,
+      "citedPairs": 2,
       "evidenceLines": 2,
       "hasAppendix": true,
-      "complete": false,
-      "coverage": null,
+      "complete": true,
+      "coverage": 1,
       "verbatimRate": 1,
       "warnings": [
-        "Claim c1: no citation group directly before marker.",
-        "Claim c2: no citation group directly before marker.",
-        "EVI1: evidence for c1|1 has no matching citation in the answer.",
-        "EVI1: evidence for c2|2 has no matching citation in the answer."
+        "Claim c1: no citation group directly before marker; sources taken from the EVI1 appendix.",
+        "Claim c2: no citation group directly before marker; sources taken from the EVI1 appendix."
       ],
       "failed": false,
       "answerChars": 782,
       "finishReason": "stop",
       "completionTokens": 710,
-      "reasoningChars": 2162
+      "reasoningChars": 2162,
+      "elidedRate": 0,
+      "quoteChars": 181.5,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3776,7 +4224,10 @@
       "answerChars": 1371,
       "finishReason": "stop",
       "completionTokens": 1112,
-      "reasoningChars": 3821
+      "reasoningChars": 3821,
+      "elidedRate": 0,
+      "quoteChars": 219,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3795,7 +4246,10 @@
       "answerChars": 166,
       "finishReason": "stop",
       "completionTokens": 188,
-      "reasoningChars": 720
+      "reasoningChars": 720,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3814,7 +4268,10 @@
       "answerChars": 196,
       "finishReason": "stop",
       "completionTokens": 109,
-      "reasoningChars": 314
+      "reasoningChars": 314,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "openai-gpt-oss-120b",
@@ -3833,7 +4290,10 @@
       "answerChars": 170,
       "finishReason": "stop",
       "completionTokens": 122,
-      "reasoningChars": 447
+      "reasoningChars": 447,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -3852,7 +4312,10 @@
       "answerChars": 1004,
       "finishReason": "stop",
       "completionTokens": 3598,
-      "reasoningChars": 13616
+      "reasoningChars": 13616,
+      "elidedRate": 0,
+      "quoteChars": 173.5,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -3871,7 +4334,10 @@
       "answerChars": 898,
       "finishReason": "stop",
       "completionTokens": 5035,
-      "reasoningChars": 16510
+      "reasoningChars": 16510,
+      "elidedRate": 0,
+      "quoteChars": 148.66666666666666,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -3890,7 +4356,10 @@
       "answerChars": 883,
       "finishReason": "stop",
       "completionTokens": 2444,
-      "reasoningChars": 9833
+      "reasoningChars": 9833,
+      "elidedRate": 0,
+      "quoteChars": 148.66666666666666,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -3909,7 +4378,10 @@
       "answerChars": 905,
       "finishReason": "stop",
       "completionTokens": 3321,
-      "reasoningChars": 13487
+      "reasoningChars": 13487,
+      "elidedRate": 0,
+      "quoteChars": 118.5,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -3928,7 +4400,10 @@
       "answerChars": 1005,
       "finishReason": "stop",
       "completionTokens": 3959,
-      "reasoningChars": 14680
+      "reasoningChars": 14680,
+      "elidedRate": 0,
+      "quoteChars": 263,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -3947,7 +4422,10 @@
       "answerChars": 923,
       "finishReason": "stop",
       "completionTokens": 3354,
-      "reasoningChars": 11924
+      "reasoningChars": 11924,
+      "elidedRate": 0,
+      "quoteChars": 129.33333333333334,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -3966,7 +4444,10 @@
       "answerChars": 1735,
       "finishReason": "stop",
       "completionTokens": 3692,
-      "reasoningChars": 13971
+      "reasoningChars": 13971,
+      "elidedRate": 0,
+      "quoteChars": 162,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -3985,7 +4466,10 @@
       "answerChars": 595,
       "finishReason": "stop",
       "completionTokens": 3138,
-      "reasoningChars": 13349
+      "reasoningChars": 13349,
+      "elidedRate": 0,
+      "quoteChars": 266,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4004,7 +4488,10 @@
       "answerChars": 1599,
       "finishReason": "stop",
       "completionTokens": 5383,
-      "reasoningChars": 23276
+      "reasoningChars": 23276,
+      "elidedRate": 0,
+      "quoteChars": 127.33333333333333,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4023,7 +4510,10 @@
       "answerChars": 886,
       "finishReason": "stop",
       "completionTokens": 4593,
-      "reasoningChars": 16979
+      "reasoningChars": 16979,
+      "elidedRate": 0,
+      "quoteChars": 130,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4042,7 +4532,10 @@
       "answerChars": 1639,
       "finishReason": "stop",
       "completionTokens": 4536,
-      "reasoningChars": 17651
+      "reasoningChars": 17651,
+      "elidedRate": 0,
+      "quoteChars": 146.25,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4061,7 +4554,10 @@
       "answerChars": 2117,
       "finishReason": "stop",
       "completionTokens": 5788,
-      "reasoningChars": 22365
+      "reasoningChars": 22365,
+      "elidedRate": 0,
+      "quoteChars": 223.6,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4080,7 +4576,10 @@
       "answerChars": 1224,
       "finishReason": "stop",
       "completionTokens": 3213,
-      "reasoningChars": 12885
+      "reasoningChars": 12885,
+      "elidedRate": 0,
+      "quoteChars": 200.33333333333334,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4099,7 +4598,10 @@
       "answerChars": 683,
       "finishReason": "stop",
       "completionTokens": 3187,
-      "reasoningChars": 11175
+      "reasoningChars": 11175,
+      "elidedRate": 0,
+      "quoteChars": 181.5,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4118,7 +4620,10 @@
       "answerChars": 1870,
       "finishReason": "stop",
       "completionTokens": 5864,
-      "reasoningChars": 22151
+      "reasoningChars": 22151,
+      "elidedRate": 0,
+      "quoteChars": 184.33333333333334,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4137,7 +4642,10 @@
       "answerChars": 409,
       "finishReason": "stop",
       "completionTokens": 1554,
-      "reasoningChars": 6202
+      "reasoningChars": 6202,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4156,7 +4664,10 @@
       "answerChars": 287,
       "finishReason": "stop",
       "completionTokens": 851,
-      "reasoningChars": 3206
+      "reasoningChars": 3206,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4175,7 +4686,10 @@
       "answerChars": 383,
       "finishReason": "stop",
       "completionTokens": 924,
-      "reasoningChars": 3842
+      "reasoningChars": 3842,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4194,7 +4708,10 @@
       "answerChars": 908,
       "finishReason": "stop",
       "completionTokens": 4376,
-      "reasoningChars": 16688
+      "reasoningChars": 16688,
+      "elidedRate": 0,
+      "quoteChars": 173.5,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4213,7 +4730,10 @@
       "answerChars": 898,
       "finishReason": "stop",
       "completionTokens": 4717,
-      "reasoningChars": 15290
+      "reasoningChars": 15290,
+      "elidedRate": 0,
+      "quoteChars": 148.66666666666666,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4232,7 +4752,10 @@
       "answerChars": 755,
       "finishReason": "stop",
       "completionTokens": 2831,
-      "reasoningChars": 11178
+      "reasoningChars": 11178,
+      "elidedRate": 0,
+      "quoteChars": 153,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4251,7 +4774,10 @@
       "answerChars": 907,
       "finishReason": "stop",
       "completionTokens": 3060,
-      "reasoningChars": 12060
+      "reasoningChars": 12060,
+      "elidedRate": 0,
+      "quoteChars": 118.5,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4270,7 +4796,10 @@
       "answerChars": 1015,
       "finishReason": "stop",
       "completionTokens": 3554,
-      "reasoningChars": 12933
+      "reasoningChars": 12933,
+      "elidedRate": 0,
+      "quoteChars": 175,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4289,7 +4818,10 @@
       "answerChars": 926,
       "finishReason": "stop",
       "completionTokens": 3600,
-      "reasoningChars": 12879
+      "reasoningChars": 12879,
+      "elidedRate": 0,
+      "quoteChars": 239,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4308,7 +4840,10 @@
       "answerChars": 1078,
       "finishReason": "stop",
       "completionTokens": 3742,
-      "reasoningChars": 14797
+      "reasoningChars": 14797,
+      "elidedRate": 0,
+      "quoteChars": 144.33333333333334,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4327,7 +4862,10 @@
       "answerChars": 771,
       "finishReason": "stop",
       "completionTokens": 3063,
-      "reasoningChars": 12006
+      "reasoningChars": 12006,
+      "elidedRate": 0,
+      "quoteChars": 196.5,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4346,7 +4884,10 @@
       "answerChars": 1882,
       "finishReason": "stop",
       "completionTokens": 4181,
-      "reasoningChars": 17902
+      "reasoningChars": 17902,
+      "elidedRate": 0,
+      "quoteChars": 165.8,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4365,7 +4906,10 @@
       "answerChars": 942,
       "finishReason": "stop",
       "completionTokens": 2868,
-      "reasoningChars": 9957
+      "reasoningChars": 9957,
+      "elidedRate": 0,
+      "quoteChars": 130,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4384,7 +4928,10 @@
       "answerChars": 1220,
       "finishReason": "stop",
       "completionTokens": 5241,
-      "reasoningChars": 20418
+      "reasoningChars": 20418,
+      "elidedRate": 0,
+      "quoteChars": 122.25,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4403,7 +4950,10 @@
       "answerChars": 2516,
       "finishReason": "stop",
       "completionTokens": 5627,
-      "reasoningChars": 21047
+      "reasoningChars": 21047,
+      "elidedRate": 0,
+      "quoteChars": 184.16666666666666,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4422,7 +4972,10 @@
       "answerChars": 950,
       "finishReason": "stop",
       "completionTokens": 3307,
-      "reasoningChars": 13632
+      "reasoningChars": 13632,
+      "elidedRate": 0,
+      "quoteChars": 198,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4441,7 +4994,10 @@
       "answerChars": 581,
       "finishReason": "stop",
       "completionTokens": 2597,
-      "reasoningChars": 8855
+      "reasoningChars": 8855,
+      "elidedRate": 0,
+      "quoteChars": 139,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4460,7 +5016,10 @@
       "answerChars": 1179,
       "finishReason": "stop",
       "completionTokens": 6305,
-      "reasoningChars": 24048
+      "reasoningChars": 24048,
+      "elidedRate": 0,
+      "quoteChars": 167,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4479,7 +5038,10 @@
       "answerChars": 311,
       "finishReason": "stop",
       "completionTokens": 1247,
-      "reasoningChars": 4794
+      "reasoningChars": 4794,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4498,7 +5060,10 @@
       "answerChars": 296,
       "finishReason": "stop",
       "completionTokens": 1300,
-      "reasoningChars": 4947
+      "reasoningChars": 4947,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "qwen3.6-35b-a3b",
@@ -4517,7 +5082,10 @@
       "answerChars": 329,
       "finishReason": "stop",
       "completionTokens": 926,
-      "reasoningChars": 3884
+      "reasoningChars": 3884,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4536,7 +5104,10 @@
       "answerChars": 2150,
       "finishReason": "stop",
       "completionTokens": 2858,
-      "reasoningChars": 10176
+      "reasoningChars": 10176,
+      "elidedRate": 0,
+      "quoteChars": 138.16666666666666,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4555,7 +5126,10 @@
       "answerChars": 1074,
       "finishReason": "stop",
       "completionTokens": 909,
-      "reasoningChars": 2044
+      "reasoningChars": 2044,
+      "elidedRate": 0,
+      "quoteChars": 148.66666666666666,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4574,7 +5148,10 @@
       "answerChars": 1154,
       "finishReason": "stop",
       "completionTokens": 1010,
-      "reasoningChars": 3651
+      "reasoningChars": 3651,
+      "elidedRate": 0,
+      "quoteChars": 148.66666666666666,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4593,7 +5170,10 @@
       "answerChars": 906,
       "finishReason": "stop",
       "completionTokens": 2483,
-      "reasoningChars": 10361
+      "reasoningChars": 10361,
+      "elidedRate": 0,
+      "quoteChars": 118.5,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4612,7 +5192,10 @@
       "answerChars": 1351,
       "finishReason": "stop",
       "completionTokens": 3345,
-      "reasoningChars": 12744
+      "reasoningChars": 12744,
+      "elidedRate": 0,
+      "quoteChars": 117.25,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4631,7 +5214,10 @@
       "answerChars": 1934,
       "finishReason": "stop",
       "completionTokens": 1294,
-      "reasoningChars": 3535
+      "reasoningChars": 3535,
+      "elidedRate": 0,
+      "quoteChars": 161.5,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4650,7 +5236,10 @@
       "answerChars": 2805,
       "finishReason": "stop",
       "completionTokens": 4249,
-      "reasoningChars": 16105
+      "reasoningChars": 16105,
+      "elidedRate": 0,
+      "quoteChars": 148.85714285714286,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4672,7 +5261,10 @@
       "answerChars": 478,
       "finishReason": "stop",
       "completionTokens": 580,
-      "reasoningChars": 2253
+      "reasoningChars": 2253,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4691,7 +5283,10 @@
       "answerChars": 2527,
       "finishReason": "stop",
       "completionTokens": 4182,
-      "reasoningChars": 18761
+      "reasoningChars": 18761,
+      "elidedRate": 0,
+      "quoteChars": 215.4,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4710,7 +5305,10 @@
       "answerChars": 849,
       "finishReason": "stop",
       "completionTokens": 746,
-      "reasoningChars": 2243
+      "reasoningChars": 2243,
+      "elidedRate": 0,
+      "quoteChars": 126,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4729,7 +5327,10 @@
       "answerChars": 2581,
       "finishReason": "stop",
       "completionTokens": 3128,
-      "reasoningChars": 11270
+      "reasoningChars": 11270,
+      "elidedRate": 0,
+      "quoteChars": 177.66666666666666,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4748,7 +5349,10 @@
       "answerChars": 3850,
       "finishReason": "stop",
       "completionTokens": 7241,
-      "reasoningChars": 28069
+      "reasoningChars": 28069,
+      "elidedRate": 0,
+      "quoteChars": 180.5,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4767,7 +5371,10 @@
       "answerChars": 4020,
       "finishReason": "stop",
       "completionTokens": 7051,
-      "reasoningChars": 28669
+      "reasoningChars": 28669,
+      "elidedRate": 0,
+      "quoteChars": 211.77777777777777,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4786,7 +5393,10 @@
       "answerChars": 2102,
       "finishReason": "stop",
       "completionTokens": 1572,
-      "reasoningChars": 4293
+      "reasoningChars": 4293,
+      "elidedRate": 0,
+      "quoteChars": 136,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4805,7 +5415,10 @@
       "answerChars": 3480,
       "finishReason": "stop",
       "completionTokens": 4108,
-      "reasoningChars": 15094
+      "reasoningChars": 15094,
+      "elidedRate": 0,
+      "quoteChars": 171,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4824,7 +5437,10 @@
       "answerChars": 834,
       "finishReason": "stop",
       "completionTokens": 352,
-      "reasoningChars": 825
+      "reasoningChars": 825,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4843,7 +5459,10 @@
       "answerChars": 494,
       "finishReason": "stop",
       "completionTokens": 291,
-      "reasoningChars": 893
+      "reasoningChars": 893,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4862,7 +5481,10 @@
       "answerChars": 665,
       "finishReason": "stop",
       "completionTokens": 697,
-      "reasoningChars": 2744
+      "reasoningChars": 2744,
+      "elidedRate": 0,
+      "quoteChars": 100,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4881,7 +5503,10 @@
       "answerChars": 2230,
       "finishReason": "stop",
       "completionTokens": 3172,
-      "reasoningChars": 11312
+      "reasoningChars": 11312,
+      "elidedRate": 0,
+      "quoteChars": 138.16666666666666,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4900,7 +5525,10 @@
       "answerChars": 1082,
       "finishReason": "stop",
       "completionTokens": 937,
-      "reasoningChars": 2202
+      "reasoningChars": 2202,
+      "elidedRate": 0,
+      "quoteChars": 148.66666666666666,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4919,7 +5547,10 @@
       "answerChars": 1377,
       "finishReason": "stop",
       "completionTokens": 1005,
-      "reasoningChars": 3437
+      "reasoningChars": 3437,
+      "elidedRate": 0,
+      "quoteChars": 148.66666666666666,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4938,7 +5569,10 @@
       "answerChars": 1150,
       "finishReason": "stop",
       "completionTokens": 1357,
-      "reasoningChars": 5047
+      "reasoningChars": 5047,
+      "elidedRate": 0,
+      "quoteChars": 118.5,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4957,7 +5591,10 @@
       "answerChars": 1665,
       "finishReason": "stop",
       "completionTokens": 2229,
-      "reasoningChars": 7998
+      "reasoningChars": 7998,
+      "elidedRate": 0,
+      "quoteChars": 207,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4976,7 +5613,10 @@
       "answerChars": 1758,
       "finishReason": "stop",
       "completionTokens": 2105,
-      "reasoningChars": 7075
+      "reasoningChars": 7075,
+      "elidedRate": 0,
+      "quoteChars": 146.2,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -4995,7 +5635,10 @@
       "answerChars": 1899,
       "finishReason": "stop",
       "completionTokens": 1118,
-      "reasoningChars": 3226
+      "reasoningChars": 3226,
+      "elidedRate": 0,
+      "quoteChars": 197.25,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -5014,7 +5657,10 @@
       "answerChars": 901,
       "finishReason": "stop",
       "completionTokens": 621,
-      "reasoningChars": 2052
+      "reasoningChars": 2052,
+      "elidedRate": 0,
+      "quoteChars": 196.5,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -5033,7 +5679,10 @@
       "answerChars": 2374,
       "finishReason": "stop",
       "completionTokens": 1926,
-      "reasoningChars": 7367
+      "reasoningChars": 7367,
+      "elidedRate": 0,
+      "quoteChars": 190.25,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -5052,7 +5701,10 @@
       "answerChars": 820,
       "finishReason": "stop",
       "completionTokens": 707,
-      "reasoningChars": 2093
+      "reasoningChars": 2093,
+      "elidedRate": 0,
+      "quoteChars": 126.33333333333333,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -5071,7 +5723,10 @@
       "answerChars": 2743,
       "finishReason": "stop",
       "completionTokens": 3596,
-      "reasoningChars": 12292
+      "reasoningChars": 12292,
+      "elidedRate": 0,
+      "quoteChars": 137.875,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -5097,7 +5752,10 @@
       "answerChars": 2844,
       "finishReason": "stop",
       "completionTokens": 3985,
-      "reasoningChars": 15674
+      "reasoningChars": 15674,
+      "elidedRate": 0,
+      "quoteChars": 205.16666666666666,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -5116,7 +5774,10 @@
       "answerChars": 1576,
       "finishReason": "stop",
       "completionTokens": 1826,
-      "reasoningChars": 5753
+      "reasoningChars": 5753,
+      "elidedRate": 0,
+      "quoteChars": 181.5,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -5135,7 +5796,10 @@
       "answerChars": 3734,
       "finishReason": "stop",
       "completionTokens": 4740,
-      "reasoningChars": 17741
+      "reasoningChars": 17741,
+      "elidedRate": 0,
+      "quoteChars": 172.11111111111111,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -5154,7 +5818,10 @@
       "answerChars": 1115,
       "finishReason": "stop",
       "completionTokens": 376,
-      "reasoningChars": 833
+      "reasoningChars": 833,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -5173,7 +5840,10 @@
       "answerChars": 799,
       "finishReason": "stop",
       "completionTokens": 336,
-      "reasoningChars": 746
+      "reasoningChars": 746,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "glm-5.3-flash",
@@ -5192,7 +5862,10 @@
       "answerChars": 987,
       "finishReason": "stop",
       "completionTokens": 892,
-      "reasoningChars": 3367
+      "reasoningChars": 3367,
+      "elidedRate": 0,
+      "quoteChars": 259,
+      "support": null
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -5211,7 +5884,10 @@
       "answerChars": 1060,
       "finishReason": "stop",
       "completionTokens": 2571,
-      "reasoningChars": 8697
+      "reasoningChars": 8697,
+      "elidedRate": 0,
+      "quoteChars": 134.75,
+      "support": null
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -5251,7 +5927,10 @@
       "answerChars": 1320,
       "finishReason": "stop",
       "completionTokens": 7634,
-      "reasoningChars": 28407
+      "reasoningChars": 28407,
+      "elidedRate": 0,
+      "quoteChars": 155,
+      "support": null
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -5277,7 +5956,10 @@
       "answerChars": 1830,
       "finishReason": "stop",
       "completionTokens": 5296,
-      "reasoningChars": 20161
+      "reasoningChars": 20161,
+      "elidedRate": 0,
+      "quoteChars": 225.8,
+      "support": null
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -5296,7 +5978,10 @@
       "answerChars": 757,
       "finishReason": "stop",
       "completionTokens": 6234,
-      "reasoningChars": 23628
+      "reasoningChars": 23628,
+      "elidedRate": 0,
+      "quoteChars": 196.5,
+      "support": null
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -5315,7 +6000,10 @@
       "answerChars": 2226,
       "finishReason": "stop",
       "completionTokens": 5378,
-      "reasoningChars": 21477
+      "reasoningChars": 21477,
+      "elidedRate": 0,
+      "quoteChars": 176.16666666666666,
+      "support": null
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -5334,7 +6022,10 @@
       "answerChars": 854,
       "finishReason": "stop",
       "completionTokens": 4653,
-      "reasoningChars": 16765
+      "reasoningChars": 16765,
+      "elidedRate": 0,
+      "quoteChars": 201.5,
+      "support": null
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -5353,7 +6044,10 @@
       "answerChars": 1082,
       "finishReason": "stop",
       "completionTokens": 5270,
-      "reasoningChars": 19031
+      "reasoningChars": 19031,
+      "elidedRate": 0,
+      "quoteChars": 138.5,
+      "support": null
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -5386,7 +6080,10 @@
       "answerChars": 698,
       "finishReason": "stop",
       "completionTokens": 3474,
-      "reasoningChars": 12093
+      "reasoningChars": 12093,
+      "elidedRate": 0,
+      "quoteChars": 181.5,
+      "support": null
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -5412,7 +6109,10 @@
       "answerChars": 484,
       "finishReason": "stop",
       "completionTokens": 4697,
-      "reasoningChars": 18440
+      "reasoningChars": 18440,
+      "elidedRate": null,
+      "quoteChars": null,
+      "support": null
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -5431,7 +6131,10 @@
       "answerChars": 499,
       "finishReason": "stop",
       "completionTokens": 3512,
-      "reasoningChars": 13705
+      "reasoningChars": 13705,
+      "elidedRate": 0,
+      "quoteChars": 154,
+      "support": null
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -5450,7 +6153,10 @@
       "answerChars": 499,
       "finishReason": "stop",
       "completionTokens": 3846,
-      "reasoningChars": 15581
+      "reasoningChars": 15581,
+      "elidedRate": 0,
+      "quoteChars": 259,
+      "support": null
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -5469,7 +6175,10 @@
       "answerChars": 1080,
       "finishReason": "stop",
       "completionTokens": 4253,
-      "reasoningChars": 15412
+      "reasoningChars": 15412,
+      "elidedRate": 0,
+      "quoteChars": 134.75,
+      "support": null
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -5488,7 +6197,10 @@
       "answerChars": 1052,
       "finishReason": "stop",
       "completionTokens": 5405,
-      "reasoningChars": 17254
+      "reasoningChars": 17254,
+      "elidedRate": 0,
+      "quoteChars": 148.66666666666666,
+      "support": null
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -5507,7 +6219,10 @@
       "answerChars": 660,
       "finishReason": "stop",
       "completionTokens": 4403,
-      "reasoningChars": 16793
+      "reasoningChars": 16793,
+      "elidedRate": 0,
+      "quoteChars": 153,
+      "support": null
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -5526,7 +6241,10 @@
       "answerChars": 930,
       "finishReason": "stop",
       "completionTokens": 4247,
-      "reasoningChars": 15395
+      "reasoningChars": 15395,
+      "elidedRate": 0,
+      "quoteChars": 135.33333333333334,
+      "support": null
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -5552,7 +6270,10 @@
       "answerChars": 1937,
       "finishReason": "stop",
       "completionTokens": 6466,
-      "reasoningChars": 23518
+      "reasoningChars": 23518,
+      "elidedRate": 0,
+      "quoteChars": 156.66666666666666,
+      "support": null
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -5578,7 +6299,10 @@
       "answerChars": 834,
       "finishReason": "stop",
       "completionTokens": 3850,
-      "reasoningChars": 14330
+      "reasoningChars": 14330,
+      "elidedRate": 0,
+      "quoteChars": 196.5,
+      "support": null
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -5597,7 +6321,10 @@
       "answerChars": 1574,
       "finishReason": "stop",
       "completionTokens": 6586,
-      "reasoningChars": 25353
+      "reasoningChars": 25353,
+      "elidedRate": 0,
+      "quoteChars": 188.25,
+      "support": null
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -5623,7 +6350,10 @@
       "answerChars": 1625,
       "finishReason": "stop",
       "completionTokens": 4988,
-      "reasoningChars": 17440
+      "reasoningChars": 17440,
+      "elidedRate": 0,
+      "quoteChars": 135.16666666666666,
+      "support": null
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -5642,7 +6372,10 @@
       "answerChars": 2008,
       "finishReason": "stop",
       "completionTokens": 6995,
-      "reasoningChars": 24666
+      "reasoningChars": 24666,
+      "elidedRate": 0,
+      "quoteChars": 191.2,
+      "support": null
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -5661,7 +6394,10 @@
       "answerChars": 766,
       "finishReason": "stop",
       "completionTokens": 3483,
-      "reasoningChars": 13953
+      "reasoningChars": 13953,
+      "elidedRate": 0,
+      "quoteChars": 198,
+      "support": null
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -5680,7 +6416,10 @@
       "answerChars": 698,
       "finishReason": "stop",
       "completionTokens": 4509,
-      "reasoningChars": 15520
+      "reasoningChars": 15520,
+      "elidedRate": 0,
+      "quoteChars": 181.5,
+      "support": null
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -5706,7 +6445,10 @@
       "answerChars": 489,
       "finishReason": "stop",
       "completionTokens": 3318,
-      "reasoningChars": 12635
+      "reasoningChars": 12635,
+      "elidedRate": 0,
+      "quoteChars": 145,
+      "support": null
     },
     {
       "model": "qwen3.5-397b-a17b",
@@ -5732,7 +6474,10 @@
       "answerChars": 560,
       "finishReason": "stop",
       "completionTokens": 4624,
-      "reasoningChars": 18777
+      "reasoningChars": 18777,
+      "elidedRate": 0,
+      "quoteChars": 259,
+      "support": null
     }
   ]
 }
