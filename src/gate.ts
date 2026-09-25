@@ -19,7 +19,8 @@ export type ProblemType =
   | 'quote_not_in_source'
   | 'contradicted_by_source'
   | 'overstated'
-  | 'weakly_supported';
+  | 'weakly_supported'
+  | 'ellipsis_hides_qualifier';
 
 export interface GateProblem {
   claimId: string;
@@ -90,14 +91,26 @@ export function gateReport(
 
 function isProblem(c: CitationVerification, minScore: number): boolean {
   if (c.textMatch.method === 'not_found') return true;
+  if (hidesQualifier(c)) return true;
   const cls = c.entailment?.class;
   if (cls === 'contradicted' || cls === 'overstated') return true;
   // A null score means the judge errored; an outage is not evidence against the claim.
   return c.score !== null && c.score < minScore;
 }
 
+/**
+ * The ellipsis leaves out a word such as "not" or "except", and no judge has
+ * read the full passage. A judge verdict settles it either way ("not only …
+ * but also" is harmless), so this only fires without one.
+ */
+function hidesQualifier(c: CitationVerification): boolean {
+  const judged = c.entailment && c.entailment.class !== 'error';
+  return !judged && (c.textMatch.omittedCues?.length ?? 0) > 0;
+}
+
 function problemType(c: CitationVerification): ProblemType {
   if (c.textMatch.method === 'not_found') return 'quote_not_in_source';
+  if (hidesQualifier(c)) return 'ellipsis_hides_qualifier';
   if (c.entailment?.class === 'contradicted') return 'contradicted_by_source';
   if (c.entailment?.class === 'overstated') return 'overstated';
   return 'weakly_supported';
@@ -141,6 +154,8 @@ const FIX: Record<ProblemType, string> = {
   contradicted_by_source: 'the cited source contradicts this claim — remove the claim or correct it to match the source',
   overstated: 'this claim is stronger or more general than the evidence — weaken it to exactly what the quote supports',
   weakly_supported: 'this claim is only weakly supported — cite a better passage or soften the wording',
+  ellipsis_hides_qualifier:
+    'the ellipsis in the quote leaves out a word that may reverse or limit the statement — quote the passage without the omission, or split it into separate quotes',
 };
 
 function correctionInstructions(problems: GateProblem[], uncited: string[]): string {

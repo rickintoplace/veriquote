@@ -40,39 +40,54 @@ export async function verifyAnswer(options: VerifyOptions): Promise<Verification
   const warnings = [...parsed.warnings];
   const claimById = new Map(parsed.claims.map((c) => [c.id, c]));
 
-  const citations: CitationVerification[] = [];
+  // One citation per (claim, source) pair; a pair may carry several quotes.
+  const pairs = new Map<string, { claimId: string; sourceIndex: number; quotes: string[] }>();
   for (const item of parsed.evidence) {
-    const claim = claimById.get(item.claimId);
-    const source = sources[item.sourceIndex - 1];
+    const key = `${item.claimId}|${item.sourceIndex}`;
+    const pair = pairs.get(key) ?? { claimId: item.claimId, sourceIndex: item.sourceIndex, quotes: [] };
+    pair.quotes.push(item.quote);
+    pairs.set(key, pair);
+  }
+
+  const citations: CitationVerification[] = [];
+  for (const [key, pair] of pairs) {
+    const source = sources[pair.sourceIndex - 1];
     if (!source) {
-      warnings.push(
-        `EVI1: evidence ${item.claimId}|${item.sourceIndex} references a source that was not provided.`,
-      );
+      warnings.push(`EVI1: evidence ${key} references a source that was not provided.`);
       continue;
     }
-    const textMatch: QuoteMatch = matchQuoteAgainstSource(item.quote, source, match);
+    const parts = pair.quotes.map((quote) => ({ quote, textMatch: matchQuoteAgainstSource(quote, source, match) }));
+    const textMatch = combineMatches(parts.map((p) => p.textMatch));
+    for (const cue of textMatch.omittedCues ?? []) {
+      warnings.push(`Citation ${key}: the ellipsis in the quote leaves out "${cue}".`);
+    }
     citations.push({
-      claimId: item.claimId,
-      sourceIndex: item.sourceIndex,
-      claimText: claim?.text ?? '',
-      quote: item.quote,
+      claimId: pair.claimId,
+      sourceIndex: pair.sourceIndex,
+      claimText: claimById.get(pair.claimId)?.text ?? '',
+      quote: pair.quotes.join(' […] '),
       textMatch,
+      ...(parts.length > 1 ? { parts } : {}),
       score: textMatch.score,
     });
   }
 
   if (judge) {
     const judgeable = citations.filter((c) => c.claimText && c.quote);
-    const inputs: EntailmentInput[] = judgeable.map((c) => ({
-      id: `${c.claimId}|${c.sourceIndex}`,
-      claim: c.claimText,
-      quote: c.quote,
-      context: contextWindow(
-        sources[c.sourceIndex - 1],
-        c.textMatch,
-        contextWindowChars,
-      ),
-    }));
+    const inputs: EntailmentInput[] = judgeable.map((c) => {
+      const source = sources[c.sourceIndex - 1];
+      const parts = c.parts ?? [{ quote: c.quote, textMatch: c.textMatch }];
+      return {
+        id: `${c.claimId}|${c.sourceIndex}`,
+        claim: c.claimText,
+        // An ellipsis must not hide what it left out (a "not", a qualifier):
+        // the judge rates the passage as the source has it.
+        quote: parts
+          .map((p) => (p.textMatch.method === 'elided' ? matchedText(source, p.textMatch) ?? p.quote : p.quote))
+          .join(' […] '),
+        context: parts.map((p) => contextWindow(source, p.textMatch, contextWindowChars)).join(' […] '),
+      };
+    });
     const results = await judge.judge(inputs, { signal });
     if (results.length !== inputs.length) {
       warnings.push(
@@ -107,6 +122,23 @@ export async function verifyAnswer(options: VerifyOptions): Promise<Verification
     warnings,
     summary: summarize(citations, Boolean(judge)),
   };
+}
+
+/** Several quotes for one pair count as their weakest match, carrying every cue. */
+function combineMatches(matches: QuoteMatch[]): QuoteMatch {
+  if (matches.length === 1) return matches[0];
+  const weakest = matches.reduce((a, b) => (b.score < a.score ? b : a));
+  const cues = [...new Set(matches.flatMap((m) => m.omittedCues ?? []))];
+  const { omittedCues: _, ...rest } = weakest;
+  return cues.length ? { ...rest, omittedCues: cues } : rest;
+}
+
+/** The matched region of the source field, if its offsets are known. */
+function matchedText(source: SourceDocument | undefined, m: QuoteMatch): string | undefined {
+  if (!source || m.start === undefined || m.end === undefined) return undefined;
+  const extra = /^extraTexts\[(\d+)\]$/.exec(m.field);
+  const text = extra ? source.extraTexts?.[Number(extra[1])] : source.text;
+  return text?.slice(m.start, m.end);
 }
 
 /** Source text around the matched region, for judge disambiguation. */

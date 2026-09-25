@@ -19,6 +19,33 @@ async function gate(answer: string, judge?: EntailmentJudge) {
 }
 
 describe('gateReport', () => {
+  describe('an ellipsis that leaves out a qualifier', () => {
+    const answer = [
+      'The ozone layer absorbs medium-frequency ultraviolet light from the Sun.[1]{c1}',
+      'EVI1',
+      'c1|1|"It absorbs … the medium-frequency ultraviolet light from the Sun"',
+      'END_EVI1',
+    ].join('\n');
+    const LIMITED = { text: SOURCE.text.replace('It absorbs 97 to 99 percent of', 'It absorbs only a fraction of') };
+    const run = async (judge?: EntailmentJudge) => {
+      const report = await verifyAnswer({ answer, sources: [LIMITED], judge });
+      return gateReport(report, answer);
+    };
+
+    it('is a problem when no judge has read the full passage', async () => {
+      const result = await run();
+      expect(result.verdict).toBe('revise');
+      expect(result.problems[0].type).toBe('ellipsis_hides_qualifier');
+      expect(result.instructionsForModel).toContain('ellipsis');
+    });
+
+    it('is left to the judge when one ran', async () => {
+      expect((await run(judgeReturning({}))).verdict).toBe('pass');
+      const overstated = judgeReturning({ 'c1|1': { class: 'overstated', confidence: 0.4, reasons: [] } });
+      expect((await run(overstated)).problems[0].type).toBe('overstated');
+    });
+  });
+
   it('passes a verbatim, supported citation', async () => {
     const answer = [
       'It absorbs most medium-frequency UV light.[1]{c1}',

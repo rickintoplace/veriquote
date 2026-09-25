@@ -262,6 +262,13 @@ function judgeFromEnv(args: Args, io: CliIo): { judge?: EntailmentJudge; model?:
 
 // ------------------------------------------------------------------ output
 
+const MATCH_LABEL: Record<string, string> = {
+  exact: 'verbatim',
+  normalized: 'verbatim',
+  elided: 'verbatim with omission',
+  fuzzy: 'fuzzy',
+};
+
 function renderHuman(
   report: VerificationReport,
   gate: GateResult,
@@ -289,7 +296,7 @@ function renderHuman(
     const match =
       cit.textMatch.method === 'not_found'
         ? red(`quote not in source (best ${cit.textMatch.score.toFixed(2)})`)
-        : `${cit.textMatch.method === 'fuzzy' ? 'fuzzy' : 'verbatim'} ${cit.textMatch.score.toFixed(2)}`;
+        : `${MATCH_LABEL[cit.textMatch.method]} ${cit.textMatch.score.toFixed(2)}`;
     const judged = cit.entailment
       ? cit.entailment.class === 'error'
         ? yellow('judge error')
@@ -297,8 +304,12 @@ function renderHuman(
       : '';
     out.push(`${mark} ${cit.claimId} [${cit.sourceIndex}]  ${[match, judged].filter(Boolean).join(' · ')}`);
     out.push(`    ${truncate(cit.claimText || '(no claim text)', 160)}`);
+    const hides = gate.problems.find((p) => p.claimId === cit.claimId && p.sourceIndex === cit.sourceIndex)?.type === 'ellipsis_hides_qualifier';
     if (bad && cit.textMatch.method === 'not_found') out.push(dim('    the quoted text does not occur in the source'));
-    else if (bad && cit.entailment?.reasons.length) out.push(dim(`    ${cit.entailment.reasons.map((r) => r.trim().replace(/[.;]+$/, '')).join('; ')}`));
+    else if (hides) {
+      const cues = (cit.textMatch.omittedCues ?? []).map((c) => `"${c}"`).join(', ');
+      out.push(dim(`    the ellipsis leaves out ${cues}; run with a judge to check the full passage`));
+    } else if (bad && cit.entailment?.reasons.length) out.push(dim(`    ${cit.entailment.reasons.map((r) => r.trim().replace(/[.;]+$/, '')).join('; ')}`));
     else if (bad && cit.score !== null && cit.textMatch.method !== 'not_found') {
       out.push(dim(`    combined score ${cit.score.toFixed(2)} is below the minimum ${minScore.toFixed(2)}`));
     }

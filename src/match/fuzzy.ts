@@ -3,8 +3,11 @@
  *
  * Strategy, in order of preference:
  *   1. exact raw substring,
- *   2. exact substring after normalization (quotes, dashes, case, whitespace),
- *   3. best sliding window by character-trigram Dice similarity, with a
+ *   2. exact substring after normalization (quotes, dashes, case, whitespace,
+ *      an ellipsis at either end),
+ *   3. elided: the fragments around inner ellipses occur literally, in order,
+ *      with at most `maxElisionGap` characters left out between them,
+ *   4. best sliding window by character-trigram Dice similarity, with a
  *      coarse scan followed by a fine refinement around the best offset.
  *
  * Everything here is pure and deterministic: same inputs, same result.
@@ -25,6 +28,11 @@ export interface MatchOptions {
   fuzzyThreshold?: number;
   /** Window sizes to try, as multiples of the quote length. Default [0.85, 1, 1.15]. */
   windowScales?: number[];
+  /**
+   * Most (normalized) characters one ellipsis may stand for. Fragments further
+   * apart are separate passages, not one elided quote. Default 300.
+   */
+  maxElisionGap?: number;
 }
 
 const DEFAULTS: Required<MatchOptions> = {
@@ -32,7 +40,42 @@ const DEFAULTS: Required<MatchOptions> = {
   shortQuoteLength: 90,
   fuzzyThreshold: 0.4,
   windowScales: [0.85, 1, 1.15],
+  maxElisionGap: 300,
 };
+
+/** "...", "…" (NFKC turns it into "..."), "[...]", "(...)", ". . ." — in normalized text. */
+const ELLIPSIS = /\s*(?:\[\s*\.(?:\s?\.){2,}\s*\]|\(\s*\.(?:\s?\.){2,}\s*\)|\.(?:\s?\.){2,})\s*/g;
+/** An elided quote needs one fragment at least this long to anchor it. */
+const MIN_ELISION_ANCHOR = 20;
+/** Elided matches rank just below literal ones. */
+const ELIDED_SCORE = 0.99;
+
+/**
+ * Words that reverse, limit or qualify a statement, in English and German.
+ * Found in the text an ellipsis leaves out, they make the elision worth a
+ * second look: "the landlord is … permitted to terminate" may have dropped
+ * a "not".
+ */
+const CUE_WORDS = [
+  // negation
+  'not', 'no', 'never', 'none', 'neither', 'nor', 'without', 'cannot', 'nothing', 'nobody',
+  'nicht', 'kein', 'keine', 'keinen', 'keinem', 'keiner', 'keines', 'nie', 'niemals', 'weder', 'ohne',
+  // exception, condition, limitation
+  'except', 'unless', 'excluding', 'only', 'außer', 'ausser', 'ausgenommen', 'sofern', 'nur',
+  // contrast
+  'but', 'however', 'although', 'though', 'whereas', 'despite',
+  'aber', 'jedoch', 'obwohl', 'allerdings', 'trotz',
+];
+const CUE = new RegExp(`(?<![\\p{L}\\p{N}])(?:${CUE_WORDS.join('|')})(?![\\p{L}\\p{N}])|(?<=\\p{L})n't(?!\\p{L})`, 'gu');
+
+/** Cue words in the given ranges of normalized text, deduplicated, in order of appearance. */
+function cuesIn(text: string, ranges: Array<[number, number]>): string[] {
+  const found = new Set<string>();
+  for (const [from, to] of ranges) {
+    for (const m of text.slice(from, to).matchAll(CUE)) found.add(m[0]);
+  }
+  return [...found];
+}
 
 /** Multiset of character trigrams of `s` as gram -> count. */
 export function trigramCounts(s: string): Map<string, number> {
@@ -192,15 +235,31 @@ export function matchQuoteAgainstText(
   const t = normalizeForMatch(text);
   if (!q.text || !t.text) return empty;
 
-  const normIndex = t.text.indexOf(q.text);
-  if (normIndex !== -1) {
-    return {
-      method: 'normalized',
-      score: 1,
-      start: t.map[normIndex],
-      end: mapEndOffset(t.map, normIndex + q.text.length - 1, text),
-      field: 'text',
-    };
+  const fragments = q.text.split(ELLIPSIS).filter(Boolean);
+  if (fragments.length === 1) {
+    const normIndex = t.text.indexOf(fragments[0]);
+    if (normIndex !== -1) {
+      return {
+        method: 'normalized',
+        score: 1,
+        start: t.map[normIndex],
+        end: mapEndOffset(t.map, normIndex + fragments[0].length - 1, text),
+        field: 'text',
+      };
+    }
+  } else if (fragments.some((f) => f.length >= MIN_ELISION_ANCHOR)) {
+    const span = findElided(fragments, t.text, opts.maxElisionGap);
+    if (span) {
+      const cues = cuesIn(t.text, span.gaps);
+      return {
+        method: 'elided',
+        score: ELIDED_SCORE,
+        start: t.map[span.start],
+        end: mapEndOffset(t.map, span.end - 1, text),
+        field: 'text',
+        ...(cues.length ? { omittedCues: cues } : {}),
+      };
+    }
   }
 
   const hit = bestFuzzyWindow(q.text, t.text, opts.windowScales);
@@ -217,6 +276,34 @@ export function matchQuoteAgainstText(
     end: mapEndOffset(t.map, lastNormIndex, text),
     field: 'text',
   };
+}
+
+interface ElidedSpan {
+  start: number;
+  end: number;
+  /** The omitted stretches between fragments, as [from, to) in `text`. */
+  gaps: Array<[number, number]>;
+}
+
+/**
+ * First span of `text` holding every fragment literally, in order, with gaps of
+ * at most `maxGap`; offsets refer to `text`. Null if there is none.
+ */
+function findElided(fragments: string[], text: string, maxGap: number): ElidedSpan | null {
+  for (let first = text.indexOf(fragments[0]); first !== -1; first = text.indexOf(fragments[0], first + 1)) {
+    let end = first + fragments[0].length;
+    const gaps: Array<[number, number]> = [];
+    for (const fragment of fragments.slice(1)) {
+      // The earliest occurrence leaves the most room for the fragments after it.
+      const at = text.indexOf(fragment, end);
+      if (at === -1) return null;
+      if (at - end > maxGap) break;
+      gaps.push([end, at]);
+      end = at + fragment.length;
+    }
+    if (gaps.length === fragments.length - 1) return { start: first, end, gaps };
+  }
+  return null;
 }
 
 /** Exclusive end offset in the original text for the normalized char at `lastIndex`. */

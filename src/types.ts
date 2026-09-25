@@ -57,6 +57,13 @@ export type MatchMethod =
   | 'exact'
   /** Substring after Unicode/typography normalization and case folding. */
   | 'normalized'
+  /**
+   * The quote omits text, marked with an ellipsis ("…", "...", "[…]"): every
+   * fragment occurs literally, in order and close together. `start`/`end`
+   * cover the whole passage, omitted text included, and that passage is what
+   * the judge sees.
+   */
+  | 'elided'
   /** Best fuzzy window by character-trigram Dice similarity. */
   | 'fuzzy'
   /** No window reached the fuzzy score threshold. */
@@ -66,8 +73,9 @@ export type MatchMethod =
 export interface QuoteMatch {
   method: MatchMethod;
   /**
-   * Similarity in [0, 1]. `1` only for exact/normalized hits; fuzzy scores
-   * are capped at 0.99 so a perfect score always implies a literal hit.
+   * Similarity in [0, 1]. `1` only for exact/normalized hits; elided and
+   * fuzzy scores are capped at 0.99 so a perfect score always implies a
+   * literal hit.
    */
   score: number;
   /** Start offset of the matched region in the original source field, if known. */
@@ -76,6 +84,12 @@ export interface QuoteMatch {
   end?: number;
   /** Which source field matched: `"text"` or `"extraTexts[i]"`. */
   field: string;
+  /**
+   * `elided` only: words in the omitted text that can reverse or limit a
+   * statement ("not", "except", "only", "however", …). A hint, not a verdict:
+   * the judge sees the full passage and decides.
+   */
+  omittedCues?: string[];
 }
 
 /** Qualitative entailment classes produced by the LLM judge. */
@@ -122,8 +136,12 @@ export interface CitationVerification {
   claimId: string;
   sourceIndex: number;
   claimText: string;
+  /** The quote; several quotes for the same (claim, source) pair are joined with " […] ". */
   quote: string;
+  /** The match of the quote; with several quotes, the weakest one (cues of all of them). */
   textMatch: QuoteMatch;
+  /** One entry per quote, present only when the pair has more than one. */
+  parts?: { quote: string; textMatch: QuoteMatch }[];
   /** Absent when verification ran without a judge. */
   entailment?: EntailmentResult;
   /**
