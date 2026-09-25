@@ -31,18 +31,33 @@ The answering model receives numbered sources and an instruction block
    END_EVI1
    ```
 
-   One line per (claim, source) pair; quotes are verbatim, single-line
-   (`\n`, `\"`, `\\` escapes), preferably 80–240 characters.
-3. **Completeness.** Every cited pair must have an appendix line; if the model
-   cannot quote, it must drop the citation. The parser cross-checks both
+   One line per (claim, source) pair, or several when one passage does not
+   cover the claim; quotes are verbatim, single-line (`\n`, `\"`, `\\`
+   escapes), one contiguous passage each, preferably 80–240 characters.
+   With `evidenceFirst` the block comes before the answer: the model selects
+   its passages first and then writes only what they support.
+3. **Completeness and sufficiency.** Every cited pair must have an appendix
+   line; if the model cannot quote, it must drop the citation. The quotes of a
+   sentence must together contain every detail it states (numbers,
+   populations, conditions, hedges); otherwise the detail goes. The parser cross-checks both
    directions and emits warnings for violations (missing evidence, orphan
-   evidence, duplicate ids, non-adjacent markers).
+   evidence, duplicate ids, non-adjacent markers). A claim marker without its
+   `[n]` group takes its sources from the appendix, with a warning.
 
 Design choices: line-oriented plain text survives streaming and markdown
 pipelines better than JSON; the appendix is located by scanning **from the
 end** of the answer so body text mentioning "EVI1" cannot confuse the parser;
 the human-readable `[n]` markers remain meaningful for clients that ignore the
 protocol.
+
+The parser is strict about evidence lines and lenient about their framing,
+because models and gateways vary it: `**EVI1**`, `EVI1:`, evidence on the
+`EVI1` line, a code fence around the block, a garbled or missing `END_EVI1`,
+and a trailing run of evidence lines with no `EVI1` line are all accepted. A
+line counts as the start only when evidence or `END_EVI1` follows, so a
+heading about the EVI1 gene does not swallow the answer. `stripForDisplay()`
+applies the same rules to a partial answer, so a streaming client never shows
+a half-written appendix or marker.
 
 ## 3. Deterministic quote matching
 
@@ -54,8 +69,24 @@ Given a quote and the source's extracted text, the matcher returns
    Normalization is per code point (NFKC, case folding, unified quote/dash
    variants, removal of soft hyphens and zero-width characters, whitespace
    collapse) with an **offset map**, so match positions are still reported in
-   raw-source coordinates for highlighting.
-3. **Fuzzy:** sliding-window comparison using **character-trigram multiset
+   raw-source coordinates for highlighting. An ellipsis at either end of the
+   quote is dropped: nothing inside the quote is missing.
+3. **Elided:** the quote leaves text out, marked `…`, `...`, `[…]` or `(...)`.
+   Every fragment must occur literally (after normalization), in the quote's
+   order, with at most 300 characters between neighbours, and one fragment
+   must be at least 20 characters long -> score 0.99. `start`/`end` span the
+   whole passage including what was left out, and **that passage, not the
+   elided quote, goes to the judge**, so an ellipsis cannot hide a "not" or a
+   qualifier. Fragments out of order or far apart are a collage, not an
+   elision, and fall through to the fuzzy step.
+
+   The omitted stretches are also scanned for words that reverse or limit a
+   statement (English and German negations, exceptions, "only", contrasts;
+   whole words, plus `n't`) and reported as `omittedCues`. That is a hint, not
+   a verdict: "not only … but also" is harmless. A judge that has read the full
+   passage decides; without a judge verdict, the gate treats the citation as
+   a problem (`ellipsis_hides_qualifier`).
+4. **Fuzzy:** sliding-window comparison using **character-trigram multiset
    Dice similarity**. Windows of 0.85×, 1.0×, and 1.15× the quote length slide
    over the normalized source with a coarse step of `clamp(len/8, 10, 80)`;
    trigram counts and the multiset intersection are updated incrementally
@@ -73,7 +104,9 @@ The matcher is pure: no I/O, no randomness, no locale dependence.
 
 Text presence does not imply support. A small LLM judge receives, per item:
 the **claim** (marker-free sentence text), the **quote**, and a **context
-window** of source text around the matched region (default ±420 chars). It
+window** of source text around the matched region (default ±420 chars). A pair
+with several quotes is one item: the quotes are joined with ` […] ` and the
+pair's text match is its weakest quote's, so one invented quote fails it. It
 returns a class and a confidence (degree of support):
 
 | class | confidence | semantics |
@@ -140,9 +173,9 @@ typography, OCR-style noise, scholarly elision, PDF hyphenation -- are accepted
 at 100% (n=1,121, median score 1.000). Quotes absent from the source -- a real
 quote attributed to the wrong document, or an honest paraphrase offered in
 place of a quote -- are rejected at 100% (n=187, median 0.249). The two
-distributions do not overlap: no faithful quote scores below 0.660 and no
+distributions do not overlap: no faithful quote scores below 0.851 and no
 absent quote above 0.396. The default `fuzzyThreshold` of 0.4 sits in that gap,
-and the whole band from 0.40 to 0.65 yields 100% on both sides.
+and the whole band from 0.40 to 0.85 yields 100% on both sides.
 
 Quotes that are near-verbatim but semantically altered (a figure swapped, a
 negation inserted, a hedge strengthened, two fragments spliced) are accepted at
@@ -167,11 +200,19 @@ green is worse than one flagged for review. Note that ALCE pairs a sentence
 with a whole passage rather than a model-selected quote, so this measures the
 judge in isolation, under a harder condition than deployment.
 
-**Protocol compliance**. Whether a given answering model emits a parseable
-appendix at all is decided mechanically by `parseAnswer()` over 18 tasks, three
-of which the sources deliberately cannot answer. Compliance varies enough
-between models that it must be measured per model before deployment, not
-assumed. Separately, prompting for verbatim quotes is not itself a
+**Protocol compliance and support**. Whether a given answering model emits a
+parseable appendix at all is decided mechanically by `parseAnswer()` over 18
+tasks, three of which the sources deliberately cannot answer. Compliance varies
+enough between models that it must be measured per model before deployment,
+not assumed. With the current instructions, four good open models quote
+verbatim in 100% of cases, and a judge rates 71–97% of their citations as fully
+supported, depending on the model. Adding explicit sufficiency rules to the
+instructions raised full support by 7.6 points (95% interval 1.5–14.2) under
+the chat judge and by 14.1 points (7.6–21.5) under an independent decision
+model, with no fewer cited claims; putting the evidence before the answer did
+not add a reliable gain. Verbatim copying is therefore close to solved for
+strong models, and sufficiency -- a quote that covers only part of its claim --
+is the main remaining failure, which is what the judge is for. Separately, prompting for verbatim quotes is not itself a
 hallucination mitigation: it is not designed to reduce how often a model
 fabricates; it makes the fabrication checkable. The verification step is
 therefore not optional.

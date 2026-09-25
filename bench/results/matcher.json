@@ -85,9 +85,9 @@
       "operator": "elision",
       "family": "faithful",
       "n": 119,
-      "medianScore": 0.701,
-      "minScore": 0.66,
-      "maxScore": 0.853,
+      "medianScore": 0.99,
+      "minScore": 0.99,
+      "maxScore": 0.99,
       "acceptedRate": 1,
       "realism": "natural",
       "note": "middle replaced by an ellipsis"
@@ -223,9 +223,9 @@
     }
   ],
   "separation": {
-    "lowestFaithfulScore": 0.66,
+    "lowestFaithfulScore": 0.851,
     "highestAbsentScore": 0.396,
-    "gap": 0.264
+    "gap": 0.455
   },
   "thresholdSweep": [
     {
@@ -280,22 +280,22 @@
     },
     {
       "threshold": 0.7,
-      "faithfulKept": 0.9509366636931311,
+      "faithfulKept": 1,
       "absentRejected": 1
     },
     {
       "threshold": 0.75,
-      "faithfulKept": 0.9107939339875112,
+      "faithfulKept": 1,
       "absentRejected": 1
     },
     {
       "threshold": 0.8,
-      "faithfulKept": 0.8974130240856378,
+      "faithfulKept": 1,
       "absentRejected": 1
     },
     {
       "threshold": 0.85,
-      "faithfulKept": 0.8947368421052632,
+      "faithfulKept": 1,
       "absentRejected": 1
     }
   ]

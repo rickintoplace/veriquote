@@ -13,12 +13,13 @@ deterministic matcher confirms that the quote is in the source, and an LLM
 judge decides whether the quote supports the claim.
 
 Both checks are needed. Strong models copy quotes reliably: the best open
-models in my tests quoted verbatim in over 99% of cases, and a recent study
-measured 98% for a frontier model. But a real quote is not a supported claim;
+models in my tests quoted verbatim in 100% of cases, and a recent study
+measured 98% for a frontier model. But a real quote is not a supported claim:
 in that study, only 37% of the model's claims were fully supported by their
-quotes.[^zhang] Weaker models also leave citations without any quote, and a
-judge asked whether a quote supports a claim is not built to notice that the
-quote was made up. VeriQuote is written in TypeScript, has no dependencies and
+quotes,[^zhang] and in my tests 71% to 97% were, depending on the model.
+Weaker models also leave citations without any quote, and a judge asked
+whether a quote supports a claim is not built to notice that the quote was
+made up. VeriQuote is written in TypeScript, has no dependencies and
 runs in Node and in the browser.
 
 **Try it in the browser:** [rickinto.place/veriquote](https://rickinto.place/veriquote)
@@ -111,13 +112,13 @@ it: in the example above, it rates the made-up quote in `c4` as "entailed 0.90".
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/matcher-dark.svg">
-  <img alt="Matcher score ranges for fifteen kinds of quote damage: faithful quotes score between 0.66 and 1.0, quotes that are not in the source between 0.14 and 0.40, and quotes whose meaning was changed score high because they are still near-verbatim." src="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/matcher-light.svg">
+  <img alt="Matcher score ranges for fifteen kinds of quote damage: faithful quotes score between 0.85 and 1.0, quotes that are not in the source between 0.14 and 0.40, and quotes whose meaning was changed score high because they are still near-verbatim." src="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/matcher-light.svg">
 </picture>
 
 The matcher benchmark needs no API key and no labels, because the right answer
 is known by construction: 2,061 quotes built from five Wikipedia articles, then
 copied faithfully, reformatted, altered or replaced in fifteen different ways. `npm run bench:matcher` reproduces it in
-about two seconds. Faithfully copied quotes never score below 0.660, quotes
+about two seconds. Faithfully copied quotes never score below 0.851, quotes
 that are not in the source never above 0.396, and the default threshold of 0.4
 sits in that gap. The amber rows are there on purpose: a quote whose meaning was
 changed is still near-verbatim, and catching it is the judge's job.
@@ -131,7 +132,7 @@ fails every citation below 0.5 and leaves the rest to the judge.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/judges-dark.svg">
-  <img alt="Five open judge models against the human labels of ALCE: they catch between 75% and 84% of unsupported citations, and agree with the annotators on 76.7% to 80.3% of pairs, around the 77.6% of the TRUE NLI model." src="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/judges-light.svg">
+  <img alt="Five open judge models and one decision model against the human labels of ALCE: they catch between 75% and 87.5% of unsupported citations, and agree with the annotators on 74.0% to 80.3% of pairs, around the 77.6% of the TRUE NLI model." src="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/judges-light.svg">
 </picture>
 
 The judge is measured against the human annotators of ALCE[^alce], with the
@@ -145,8 +146,17 @@ reaches Cohen's κ 0.53 on the three-way labels (full, partial or no support).
 For comparison, ALCE reports κ 0.525 between its automatic metric and the
 annotators on citation precision.
 
+`jev-1.13` is a different kind of judge: a closed decision model that returns
+a probability per class instead of text, so it gives no reasons. Through
+OpenRouter it judged the same 240 pairs in 6 seconds for under one cent, with
+the fewest unsupported citations let through. On all 2,896 ALCE pairs it
+catches 89.7% (κ 0.530), for $0.09. It is an optional backend, not part of
+VeriQuote ([`bench/lib/decisions-judge.mjs`](bench/lib/decisions-judge.mjs)),
+and ALCE has been public since 2023, so training contamination cannot be ruled
+out for it or for any other judge here.
+
 Before trusting any of this, look at the left panel: even the best judge lets
-one unsupported citation in six through as fully supported. No judge should be
+one unsupported citation in eight through as fully supported. No judge should be
 the only check. With only 56 unsupported pairs per run the intervals are wide,
 so neighbouring models are not really separated. With reasoning switched off,
 all three hybrid models caught less and agreed less while answering five to ten
@@ -158,27 +168,35 @@ rather than a quote, which makes its task harder than in normal use.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/protocol-dark.svg">
-  <img alt="Protocol compliance for eight answering models: qwen3.6, qwen3.5, deepseek-v4-flash and glm-5.3-flash are close to 100% complete and verbatim; gpt-oss-120b is complete in 33.3% of answers; mistral-medium quotes verbatim in 81.0% of citations; llama-3.1-8b manages about half." src="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/protocol-light.svg">
+  <img alt="Four open answering models with the current citation instructions: all quote verbatim in 100% of cases; fully supported citations range from 71.4% to 97.4% depending on model and judge, highest for qwen3.8-27b and glm-5.3-flash, lowest for qwen3.6-35b-a3b." src="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/protocol-light.svg">
 </picture>
 
-Each model answered 18 questions twice, with the citation instructions in its
-system prompt, and `parseAnswer()` decided mechanically whether it complied.
-Every raw answer is in
-[`bench/results/protocol-answers.jsonl`](bench/results/protocol-answers.jsonl).
-The strongest open models tested follow the format almost perfectly. Two
-others show failures a reader would not notice: `gpt-oss-120b` almost always
-prints the appendix, yet only a third of its answers give every citation a
-quote. `mistral-medium` is nearly always complete, but only 81% of its quotes
-are exact copies; the rest mostly join passages with "..." or change a few
-words, and the matcher still finds them at a lower score. On the three
-questions the sources cannot answer, no model attached a citation without a
-real quote.
+Four good open models answered 18 questions twice with the citation
+instructions in their system prompt. Every quote was matched against its
+source, and two judges rated whether the quotes cover every detail of the claim
+(*fully supported*). All quotes were verbatim. The share of fully supported
+citations depends more on the model than on the judge.
+
+The instructions were revised on the strength of this benchmark: they now ask
+that the quotes of a sentence contain every number, population, condition and
+hedge it states, and otherwise drop the detail. On the same tasks and models,
+that raised full support by 7.6 points (95% interval 1.5–14.2) with the chat
+judge and by 14.1 points (7.6–21.5) with the decision model, while the answers
+stated as many cited claims as before. Writing the evidence before the answer
+(`evidenceFirst`) added nothing reliable (+3.6 and −0.3 points, both intervals
+spanning zero), made one model drop quotes, and hides the answer until the
+evidence is written, so it is not the default. On the three questions the
+sources cannot answer, no model attached a citation without a real quote.
+Every raw answer is in `bench/results/`, and
+[`bench/README.md`](bench/README.md#2-protocol-compliance) has the full tables,
+including weaker models under the previous instructions.
 
 <details>
 <summary>The numbers behind the figures</summary>
 
 | judge model | caught ↑ | agreement | Cohen's κ |
 | --- | ---: | ---: | ---: |
+| `jev-1.13` (decision model) | 87.5% | 79.6% | 0.497 |
 | `glm-5.3-flash` | 83.9% | 80.3% | 0.529 |
 | `deepseek-v4-flash` | 81.8% | 78.7% | 0.435 |
 | `qwen3.6-35b-a3b` | 81.8% | 78.1% | 0.454 |
@@ -195,16 +213,15 @@ real quote.
 | near-verbatim, meaning changed | 586 | 0.932 | 100.0% |
 | not in the source | 187 | 0.249 | 0.0% |
 
-| answering model | appendix | complete | verbatim | warning-free |
+| answering model | verbatim | complete | fully supported (deepseek-v4-flash) | fully supported (jev-1.13) |
 | --- | ---: | ---: | ---: | ---: |
-| qwen3.6-35b-a3b | 100.0% | 100.0% | 100.0% | 100.0% |
-| qwen3.5-397b-a17b | 100.0% | 100.0% | 100.0% | 100.0% |
-| deepseek-v4-flash | 100.0% | 100.0% | 99.2% | 93.3% |
-| glm-5.3-flash | 96.6% | 96.6% | 99.6% | 96.6% |
-| gemma-4-31b-it | 80.0% | 80.0% | 96.6% | 80.0% |
-| mistral-medium-3.5-128b | 96.7% | 93.3% | 81.0% | 96.7% |
-| gpt-oss-120b | 96.7% | 33.3% | 91.1% | 33.3% |
-| llama-3.1-8b-instruct | 66.7% | 43.3% | 50.3% | 20.0% |
+| qwen3.8-27b | 100.0% | 100.0% | 97.4% | 97.4% |
+| glm-5.3-flash | 100.0% | 100.0% | 95.1% | 93.0% |
+| deepseek-v4-flash | 100.0% | 100.0% | 88.0% | 90.0% |
+| qwen3.6-35b-a3b | 100.0% | 96.7% | 76.9% | 71.4% |
+
+`deepseek-v4-flash` also judges its own answers here; the decision model is the
+independent check, and it ranks the models the same way.
 
 The figures are rendered from `bench/results/*.json` by
 [`bench/figures/render.mjs`](bench/figures/render.mjs).
@@ -290,6 +307,7 @@ single source.
 | `verifyAnswer(options)` | The full pipeline: parse, match, judge, report. |
 | `parseAnswer(answer)` | Claims, quotes and protocol warnings, without verifying anything. |
 | `parseEvi1Appendix` / `stripEvi1Appendix` / `serializeEvi1Appendix` | Low-level handling of the appendix. |
+| `stripForDisplay(text)` | The answer as a reader sees it, also mid-stream: no appendix, no `{cX}` markers, no half-streamed `EVI1` or `{c`. |
 | `matchQuoteAgainstSource(quote, source, options?)` | The deterministic matcher on its own. |
 | `ChatCompletionsJudge` | Judge for any OpenAI-compatible API. |
 | `EntailmentJudge` (interface) | Bring your own judge, such as a local NLI model. |
@@ -374,4 +392,4 @@ are also in [`CITATION.cff`](CITATION.cff).
 
 [^zhang]: Zhang, J., Chen, Y., Commodore-Mensah, Y., & Oberst, M. (2026). *Verifiable by construction: Claim-level evaluation of verbatim citation in clinical question answering* (Version 2) [Preprint]. arXiv. https://doi.org/10.48550/arXiv.2609.15964
 
-[^veriquote]: Heilmann, E. (2026). *VeriQuote: Deterministic and semantic verification of quote-grounded LLM citations* (Version 0.2.2) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.21552379
+[^veriquote]: Heilmann, E. (2026). *VeriQuote: Deterministic and semantic verification of quote-grounded LLM citations* (Version 0.3.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.21552379

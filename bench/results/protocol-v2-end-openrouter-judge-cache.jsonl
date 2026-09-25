@@ -1,0 +1,76 @@
+{"key":"8853a1e0fb7b858abf68b2ec456746778a5fd8053ca926cd11ff69a3c82cf22a","result":{"class":"entailed","confidence":1,"reasons":["Quote directly supports all claim components."]}}
+{"key":"6b9146b5c9991ddf127675c19832439ba5c61cc27077003343315fc9d9491d47","result":{"class":"entailed","confidence":1,"reasons":["Quote explicitly states both key points."]}}
+{"key":"d21dda951ad7e849b0a5753d02bf0a495826f44869e1366744ff81b1638eaad2","result":{"class":"entailed","confidence":1,"reasons":["Quote fully matches claim details and sequence."]}}
+{"key":"6be99e0711fa0cf0f41280a1f90c369244709c3c789cc608a9bc0dc69a923df8","result":{"class":"entailed","confidence":1,"reasons":["Quote directly states the claim verbatim."]}}
+{"key":"8105d411b76edfa2f80a2dad17db6cb65e7bd535f8fe192d35f7bf45f9373cec","result":{"class":"entailed","confidence":1,"reasons":["Quote directly states high glucose stimulates and low glucose inhibits secretion."]}}
+{"key":"c40403cf77fb04e6268170a62e7923ecde4ccb8552536bd443b375b45c8858e9","result":{"class":"entailed","confidence":1,"reasons":["Quote explicitly confirms strong inhibition of liver glucose production by high insulin."]}}
+{"key":"d5265e03c6007b14bfc0b210fce430c2c02242d9de9d25e71e8ef198d1f12ae3","result":{"class":"entailed","confidence":1,"reasons":["Quote directly states the claim verbatim."]}}
+{"key":"18e5125d3da805dbde901cb4c4949444d1a55f30a8b85e4883db5f837aeab6e8","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly matches the claim."]}}
+{"key":"7f5202b8b86a16bb7d8c16b9c6a88ee87c99ce1f29042e91430821035ef7d312","result":{"class":"entailed","confidence":1,"reasons":["Quote fully supports the claim."]}}
+{"key":"7a1a5ef8b3fbbdf07a947ead650e541601f96d831dfdf3088d526925a54c23eb","result":{"class":"entailed","confidence":1,"reasons":["Quote directly confirms the claim."]}}
+{"key":"1e71ed836a35eac366e80dec0676ae960109d09a19574b479d66410c93dd3090","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly matches the claim."]}}
+{"key":"f2e96965623ee39607477c50a786b036c9194e880e3b4ae1d89514a873d05f39","result":{"class":"entailed","confidence":1,"reasons":["Quote fully supports all claim details."]}}
+{"key":"6fd26b853f5b70aed3265f76960aca4a5003fc4e9f71b7748ab2b0faf516cfd8","result":{"class":"entailed","confidence":1,"reasons":["Quote directly matches claim details and wording."]}}
+{"key":"7b2ddbc7df6ba3d1a2029717f804b16f150d036f52378385280216bb46a1a007","result":{"class":"entailed","confidence":1,"reasons":["Quote fully supports all claim elements."]}}
+{"key":"b413379a4d39ff6bdd728ae27054771949f509004b55bb6fbfa1df78ca7a0686","result":{"class":"entailed","confidence":1,"reasons":["Quote directly matches the claim verbatim."]}}
+{"key":"eda514cf97316eb6277738992da69184201cb49853eeb1467027f1f0c8c024e4","result":{"class":"entailed","confidence":1,"reasons":["Quote directly supports the claim's statement."]}}
+{"key":"ef2b4cc6e9deae326cd06e398c6bc2c85438adbdf4ed57b328d7fabda395c790","result":{"class":"entailed","confidence":1,"reasons":["Quote explicitly names purple bacteria and Halobacterium as examples."]}}
+{"key":"239e802158ad394384be3609b8381e6241c12858aaabffeb2a97fd71a4d56013","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly matches the claim."]}}
+{"key":"41fd4476d3325c0f4870ba50b5108480e72f0de137d1ea9496b3c3da676baa7c","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly matches the claim."]}}
+{"key":"88b9d585851b6895b0daa846a3ea447812b8ecc6eef473ad5ee7905e7c636516","result":{"class":"entailed","confidence":1,"reasons":["Quote directly states misuse and improper management are primary drivers.","Mentions antibiotic overuse in medicine and agriculture increasing selective pressure."]}}
+{"key":"0ea7d9577079ec2910f0fe15638a8f40e829e1ff3c549622ec3311f57579eb64","result":{"class":"entailed","confidence":1,"reasons":["Quote confirms natural occurrence via genetic mutations and resistant genes.","Details spontaneous mutation, horizontal gene transfer, and three mechanisms."]}}
+{"key":"2ca9b4deae210a42a250b632ad41edba37a90f1a9cad15624c41ad992a8cc1c8","result":{"class":"entailed","confidence":1,"reasons":["Quote directly matches all claim details."]}}
+{"key":"cb944520bb7a9cb27df3855f39bd2033b89e760c14003adc9444ac3eee0b654b","result":{"class":"entailed","confidence":1,"reasons":["Quote explicitly supports the claim."]}}
+{"key":"3486565b155ecbb4fc9e1f4fec6fc8cb0fbe1a7610d6e8fa432482e5469eda91","result":{"class":"entailed","confidence":1,"reasons":["Quote directly states vitamin D is a fat-soluble secosteroid hormone and names D3 and D2."]}}
+{"key":"cb7b2dd9cf59492f1f73d32248ed0769aa6f5560724d315ff485ae7d135f1e51","result":{"class":"entailed","confidence":1,"reasons":["Quote explicitly covers conditional essentiality, UVB synthesis, and dietary sources."]}}
+{"key":"9ff1713e88ced840a6c92189fb4aca43a366b319e66dc4e65f2bb50ea61659f3","result":{"class":"entailed","confidence":1,"reasons":["Quote confirms 25(OH)D measurement and calcitriol binding to nuclear receptors."]}}
+{"key":"38a37416a124cd8bec026b64d2fee833edb541580c3e8de5b7c280db80ee99f5","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly describes insulin as a peptide hormone from pancreatic beta cells."]}}
+{"key":"2d52fd7c3abb0983fdc80ba7e700bae8dc57c590087709995b0e91d1f396d480","result":{"class":"entailed","confidence":1,"reasons":["Quote states main anabolic hormone and glucose absorption into specified cells."]}}
+{"key":"ddaf492cf40eae6a0fa8f4357b2fb4d5f3b8571455eff97085c18f8c09543fcb","result":{"class":"entailed","confidence":1,"reasons":["Quote fully supports glucose-regulated insulin secretion and opposite glucagon pattern."]}}
+{"key":"92c4902d354cb7474567b7cfce8eb4f4492d1805d2e78a83aaa8990ee0223e97","result":{"class":"entailed","confidence":1,"reasons":["Quote fully matches claim details and numbers."]}}
+{"key":"2c599ce234f81d058bed84ec0d26cbd9914bd8b5973a2a5e529a143ae7d0814b","result":{"class":"entailed","confidence":1,"reasons":["Quote covers all claim processes and components."]}}
+{"key":"7868abff616e70e4580a86533a36b8444a9ae8d58f5090454836d82e211bdffd","result":{"class":"entailed","confidence":1,"reasons":["Quote is identical to claim."]}}
+{"key":"24074ae7ecbc12e5b35e1ef6d457daa83cf0527c9ac29819c614e500e19b6273","result":{"class":"entailed","confidence":1,"reasons":["Quote directly supports both claim statements."]}}
+{"key":"a62835df99d54a5b08ea167aadf5305e05244dd9582ab6824963346eaea9c792","result":{"class":"entailed","confidence":1,"reasons":["Quote explicitly states the claim's process."]}}
+{"key":"64a03bf686ecfcfb024828cba1f27620d2cb2f88ca6304b43bbb33555c66dd4f","result":{"class":"entailed","confidence":1,"reasons":["Quote directly supports all claim elements."]}}
+{"key":"55b76cee216bb11e58e250348ffb663ee7686ff81aecd736bca1cd3129549cfa","result":{"class":"entailed","confidence":1,"reasons":["Quote fully covers all claim details."]}}
+{"key":"b9a14d9788e3969fdbaafa41902bea34cb0e8c679a6ed38f5b272f7a3467774e","result":{"class":"entailed","confidence":1,"reasons":["Quote directly states 25(OH)D is measured in serum to assess vitamin D status."]}}
+{"key":"a49bf31f27f57db3cda612f0f77d2feddedccde077ab6c436712be1dc6b75e08","result":{"class":"entailed","confidence":1,"reasons":["Quote confirms Dobson developed the Dobsonmeter to measure stratospheric ozone from the ground."]}}
+{"key":"680b843caf5657fcab95f5b5a8e735f1037683e0de670701de2a7e3844a605dd","result":{"class":"partially_entailed","confidence":0.7,"reasons":["Quote supports core claims but is truncated before nominal links."]}}
+{"key":"96ce944d4a779ecf6e5a401185dfe459f226452e3fc2fcfc112d2a780113a48d","result":{"class":"entailed","confidence":0.95,"reasons":["Quote fully supports all claim elements."]}}
+{"key":"2857f4de30495761f3632a9e3602718234fe0046cef735f575235e87d4e82ccd","result":{"class":"partially_entailed","confidence":0.7,"reasons":["Quote truncated before confirming slowed or stopped depletion."]}}
+{"key":"feb97eeb46fd6536ec15801d4f500b4c08d4064f23371709809899c7977807c7","result":{"class":"entailed","confidence":1,"reasons":["Quote lists all four sources mentioned in claim."]}}
+{"key":"d228814b73a6a360c057d72d3f8d370b21cb491ac05d5669197c39516ec0769a","result":{"class":"entailed","confidence":1,"reasons":["Quote directly states the claim's exact wording."]}}
+{"key":"fba48abac5d9ea784bea84a19bd1269c0beea91327d7a39c91d69e67bb998354","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly matches the claim."]}}
+{"key":"81f39a9c2ab1898ad32f6ef1b8d931783cc0554171071f5db67563bae6a16501","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly matches the claim."]}}
+{"key":"aa4dc2e56e4d68d008738117b41e5695d0576ee3e74f2cfe4e21d8591b06dbf4","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly matches the claim."]}}
+{"key":"35acfa4bbe125c8b975ebb6f4714a1e3e6bfd8fb16ce02603aa1ad247098f456","result":{"class":"entailed","confidence":1,"reasons":["Quote directly supports both high and low glucose effects."]}}
+{"key":"c31dff2cf9391a689fcb97d10ee843f75b127a1a21234e0be55c140f64829105","result":{"class":"entailed","confidence":1,"reasons":["Quote explicitly states liver glucose production and secretion are strongly inhibited by high insulin."]}}
+{"key":"db55905b327ae51e928d9e18282fe214ba1d913bdb922044b9c5f7d5a52d0f15","result":{"class":"entailed","confidence":1,"reasons":["Quote fully supports all claim components."]}}
+{"key":"1ae6380d8f1231a3f388c97bddf67d7aef910801ef989ce558222de2c5fd93ab","result":{"class":"entailed","confidence":1,"reasons":["Quote directly states the claim."]}}
+{"key":"d189cd2f493bd5b0a4a93d66b0cc044baaac91300b3a3a8043f1c9210aef5b39","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly matches the claim."]}}
+{"key":"efbbba79e90d323d72864d05f7417352e5885d619871cd8ed3d9db6edcc484f6","result":{"class":"entailed","confidence":1,"reasons":["Quote fully supports the claim."]}}
+{"key":"79b3df3fcd772fa2cfe7256ced7298859ad5361bc2e64c37cbb2e97b14181635","result":{"class":"entailed","confidence":1,"reasons":["Quote directly confirms both parts of the claim."]}}
+{"key":"3416ba851369cc9e5595359320be2c9091f96e583e7e48dc8933006efeced1d7","result":{"class":"entailed","confidence":1,"reasons":["Quote directly states location, portion, and altitude."]}}
+{"key":"53379b8e5175fa9d29df6b1f05818574a7431ed945c3add102d0f913229416fb","result":{"class":"entailed","confidence":1,"reasons":["Quote confirms no radiation below 310 nm and Dobsonmeter use."]}}
+{"key":"d95fa602e5a7baab1c8c5cdffefdcd86eeb92ef672b31537471d22d49f5864dc","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly matches claim about network and operation."]}}
+{"key":"a94833782e3aad4ef97446ffd2a55102930191862a5b323c38397e532a38bb9a","result":{"class":"entailed","confidence":1,"reasons":["Quote directly states the claim verbatim."]}}
+{"key":"2140a547249ec1202e841b72871afac13f86c427d64ffdc3f590c235322010fc","result":{"class":"entailed","confidence":1,"reasons":["Quote explicitly lists purple bacteria and Halobacterium as anoxygenic photosynthesizers."]}}
+{"key":"a990aa778dbd71b6fe44d60f736d98220402eb0ffee264dc6381caa9bd427a7c","result":{"class":"entailed","confidence":1,"reasons":["Quote fully supports the claim's content and details."]}}
+{"key":"5b9f4bfe2dae6d388e981d76d3bd76f6066a365417ecfc61fb344dc87f9d30d9","result":{"class":"entailed","confidence":1,"reasons":["Quote directly supports both drivers and natural occurrence."]}}
+{"key":"53d88fb50cf3da98214458a9baf37a8c390508769fbb999f0921531a1d32a318","result":{"class":"entailed","confidence":1,"reasons":["Quote fully matches claim's mechanisms and contexts."]}}
+{"key":"584f4bc68fe6f724967b6f51a5c1f44de9aaa97368f449dac2510335e75d97e2","result":{"class":"entailed","confidence":1,"reasons":["Quote explicitly lists all three transfer mechanisms."]}}
+{"key":"0c9e3bef4362de3773f7f33f61b4365c05c74b2e0b50593095c1bc1df7fc8da5","result":{"class":"entailed","confidence":1,"reasons":["Quote directly matches all claim details."]}}
+{"key":"fea99bfc5c454dc76a16561bb8a9dcd189c364900334ddb591fd458b8e8baa75","result":{"class":"entailed","confidence":1,"reasons":["Quote exactly supports the claim."]}}
+{"key":"640e4edceb97f5a6352ef70f4cac0c1a49ea32105f72c34970d1cef50b00d827","result":{"class":"entailed","confidence":1,"reasons":["Quote fully supports the claim."]}}
+{"key":"d0117bc5082db86763ece2870d28d7c313719df174262ec11e374850bc8976f0","result":{"class":"entailed","confidence":1,"reasons":["Quote directly states all claim details."]}}
+{"key":"65ee8b7df3044aa4e289bb718c2d9e5d389810e64697a608eaccc5a2573636c9","result":{"class":"entailed","confidence":1,"reasons":["Quote matches claim exactly."]}}
+{"key":"56047ecf44155af18ff03518355cb9a1270119fa7cd3c4c69f7614e70d847f68","result":{"class":"entailed","confidence":1,"reasons":["Quote fully supports the mechanism described."]}}
+{"key":"29ac137126cf13e4df82eaaf3e5b39dee03d622d2799dee5074691e04ee9a13e","result":{"class":"entailed","confidence":1,"reasons":["Quote directly confirms the claim."]}}
+{"key":"8cdfe5eff2362e5bf579340b0746f3a9dc7fd4ac1bf4195b42199524174e8767","result":{"class":"entailed","confidence":1,"reasons":["Quote explicitly supports the claim."]}}
+{"key":"1fd75813760c6dd16fb3c9f2ee054815305d50cf7ab94a463b441aea3d46dfc8","result":{"class":"entailed","confidence":1,"reasons":["Quote directly supports all claim elements."]}}
+{"key":"557e6dd87caa4e23c03fb7ad20f697100699b19ac1fd4e1648bc11a4109d4e9f","result":{"class":"entailed","confidence":1,"reasons":["Quote fully matches the claim."]}}
+{"key":"da89a17e69b263224f65579ed05cd29e827f4909c9a25734ef747022da3c8181","result":{"class":"entailed","confidence":1,"reasons":["Quote is identical to the claim."]}}
+{"key":"8fb0da646bbe1770e1bd2c3248ba6019317b312d9479d5c90ea61014ef05f1e3","result":{"class":"entailed","confidence":1,"reasons":["Quote directly supports the claim."]}}
+{"key":"47e92a819b531e7b7344da79f5acb4bc720cc134917606c944e001bd4111b830","result":{"class":"entailed","confidence":1,"reasons":["Quote directly states serum measurement of 25(OH)D for vitamin D status."]}}
+{"key":"18d6b4e9a57ebc8cc9bbe4add1b71a090e738323483d1dc17bea7b9b290f6e0f","result":{"class":"entailed","confidence":1,"reasons":["Quote confirms Dobsonmeter developed by Dobson for ground-based stratospheric ozone measurement."]}}
