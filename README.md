@@ -132,7 +132,7 @@ fails every citation below 0.5 and leaves the rest to the judge.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/judges-dark.svg">
-  <img alt="Five open judge models and one decision model against the human labels of ALCE: they catch between 75% and 87.5% of unsupported citations, and agree with the annotators on 74.0% to 80.3% of pairs, around the 77.6% of the TRUE NLI model." src="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/judges-light.svg">
+  <img alt="Open judge models, asked as chat judges or read through their logprobs, and one closed decision model against the human labels of ALCE: they catch between 75% and 89.3% of unsupported citations, and agree with the annotators on 74.0% to 81.3% of pairs, around the 77.6% of the TRUE NLI model." src="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/judges-light.svg">
 </picture>
 
 The judge is measured against the human annotators of ALCE[^alce], with the
@@ -148,15 +148,26 @@ annotators on citation precision.
 
 `jev-1.13` is a different kind of judge: a closed decision model that returns
 a probability per class instead of text, so it gives no reasons. Through
-OpenRouter it judged the same 240 pairs in 6 seconds for under one cent, with
-the fewest unsupported citations let through. On all 2,896 ALCE pairs it
+OpenRouter it judged the same 240 pairs in 6 seconds for under one cent, and
+let fewer unsupported citations through than any chat judge. On all 2,896 ALCE pairs it
 catches 89.7% (κ 0.530), for $0.09. It is an optional backend, not part of
 VeriQuote ([`bench/lib/decisions-judge.mjs`](bench/lib/decisions-judge.mjs)),
 and ALCE has been public since 2023, so training contamination cannot be ruled
 out for it or for any other judge here.
 
+The same idea works with open models. With `--logprobs`, a chat model answers
+with a single letter (fully, partially or not supported), and the judge reads
+the three probabilities from that token's logprobs: no reasoning, one token per
+citation. Read this way, `qwen3.5-397b-a17b` caught 89.3% of the unsupported
+citations (κ 0.526) and `qwen3.6-35b-a3b` 85.7% (κ 0.507), more than either
+model reached as a chat judge with reasoning on. One caveat: this judge's short
+prompt is not the chat judge's prompt, so part of the difference may come from
+the wording rather than the readout. It needs an endpoint that returns logprobs
+and continues a prefilled answer, as vLLM and llama.cpp do
+([`bench/lib/logprobs-judge.mjs`](bench/lib/logprobs-judge.mjs)).
+
 Before trusting any of this, look at the left panel: even the best judge lets
-one unsupported citation in eight through as fully supported. No judge should be
+about one unsupported citation in nine through as fully supported. No judge should be
 the only check. With only 56 unsupported pairs per run the intervals are wide,
 so neighbouring models are not really separated. With reasoning switched off,
 all three hybrid models caught less and agreed less while answering five to ten
@@ -196,7 +207,9 @@ including weaker models under the previous instructions.
 
 | judge model | caught ↑ | agreement | Cohen's κ |
 | --- | ---: | ---: | ---: |
+| `qwen3.5-397b-a17b` (logprobs) | 89.3% | 81.3% | 0.526 |
 | `jev-1.13` (decision model) | 87.5% | 79.6% | 0.497 |
+| `qwen3.6-35b-a3b` (logprobs) | 85.7% | 80.0% | 0.507 |
 | `glm-5.3-flash` | 83.9% | 80.3% | 0.529 |
 | `deepseek-v4-flash` | 81.8% | 78.7% | 0.435 |
 | `qwen3.6-35b-a3b` | 81.8% | 78.1% | 0.454 |

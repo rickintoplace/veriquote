@@ -8,10 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [0.3.0] - 2026-09-25
 
-Measured on four open answering models with two judges: the revised citation
+Measured on three open answering models with two judges: the revised citation
 instructions raise the share of fully supported citations by 7.6 points (95%
 interval 1.5–14.2, chat judge) and 14.1 points (7.6–21.5, decision model),
-with all quotes verbatim and no fewer cited claims. Details in
+with all quotes verbatim and no fewer cited claims. A fourth model, measured
+only with the new instructions, reaches 97.4%. Details in
 `bench/README.md`.
 
 ### Changed
@@ -62,11 +63,18 @@ with all quotes verbatim and no fewer cited claims. Details in
   endpoint's rate limits applied to judge requests too) and `--judge-decisions`.
 - `bench/lib/decisions-judge.mjs` and `bench/judge/run.mjs --decisions`: a
   judge backed by a decision model through OpenRouter's decisions endpoint.
-  `jev-1.13` on the 240 ALCE pairs every judge gets: 12.5% false green (the
-  lowest measured), binary agreement 79.6%, κ 0.497; on all 2,896 pairs 10.3%
+  `jev-1.13` on the 240 ALCE pairs every judge gets: 12.5% false green,
+  binary agreement 79.6%, κ 0.497; on all 2,896 pairs 10.3%
   false green and κ 0.530, for $0.09. Closed model, no reasons, optional.
+- `bench/lib/logprobs-judge.mjs` and `bench/judge/run.mjs --logprobs`: the same
+  idea with an open chat model, which answers with one letter while the judge
+  reads the class probabilities from its logprobs, without reasoning.
+  `qwen3.5-397b-a17b` on the same 240 pairs: 10.7% false green (the lowest
+  measured), binary agreement 81.3%, κ 0.526; `qwen3.6-35b-a3b`: 14.3%, 80.0%,
+  κ 0.507. Its prompt differs from the chat judge's. Raw probabilities in
+  `bench/results/judge-*-logprobs-raw.jsonl`.
 - `stripForDisplay(text)`: the answer body for rendering, safe to call on
-  every streamed chunk — it hides an incomplete appendix, a half-written
+  every streamed chunk: it hides an incomplete appendix, a half-written
   `EVI1` line and a half-written `{c` marker.
 
 ## [0.2.2] - 2026-09-23

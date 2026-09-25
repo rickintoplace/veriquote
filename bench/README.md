@@ -136,7 +136,7 @@ bootstrap over answers within each model (95% intervals):
   unanswerable question.
 
 Caveats: 36 answers per model, so per-model differences carry wide intervals
-(the pooled ones do not); the old answers are three days older, and only
+(the pooled ones are narrower); the old answers are three days older, and only
 `deepseek-v4-flash-0731` is a pinned version; `qwen3.8-27b` has no old run and
 ran through a different provider. Files: `results/protocol-baseline*.json`,
 `results/protocol-v2-*.json`, with `-jev` for the second judge and
@@ -221,16 +221,19 @@ nothing. The README and the demo show its complement, *caught*.
 A wrong citation shown in green is worse than one flagged for review, so that
 rate matters more than the average.
 
-### Results (2026-09-21 and 2026-09-22; `jev-1.13` on 2026-09-25)
+### Results (2026-09-21 and 2026-09-22; logprobs on 2026-09-23; `jev-1.13` on 2026-09-25)
 
-Five open-weight models, the same 240 pairs (seed `20260921`), temperature 0,
-the shipped judge prompt. Judge errors are reported, not dropped; they are
-excluded from the scores.
+Five open-weight models as chat judges with the shipped judge prompt, two of
+them also read through their logprobs, and one closed decision model; the same
+240 pairs (seed `20260921`) and temperature 0 for all. Judge errors are
+reported, not dropped; they are excluded from the scores.
 
 | judge model | false green ↓ | binary agreement | 3-class acc. | macro-F1 | κ | `partial` F1 | errors |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `jev-1.13` (decision model) | **12.5%** | 79.6% | 69.2% | 0.641 | 0.497 | 0.430 | 0 |
-| `glm-5.3-flash` | 16.1% | **80.3%** | **71.5%** | **0.668** | **0.529** | **0.509** | 1 |
+| `qwen3.5-397b-a17b` (logprobs) | **10.7%** | **81.3%** | **71.7%** | 0.666 | 0.526 | 0.478 | 0 |
+| `jev-1.13` (decision model) | 12.5% | 79.6% | 69.2% | 0.641 | 0.497 | 0.430 | 0 |
+| `qwen3.6-35b-a3b` (logprobs) | 14.3% | 80.0% | 70.4% | 0.645 | 0.507 | 0.436 | 0 |
+| `glm-5.3-flash` | 16.1% | 80.3% | 71.5% | **0.668** | **0.529** | **0.509** | 1 |
 | `qwen3.5-397b-a17b` | 20.8% | 79.7% | 69.6% | 0.622 | 0.483 | 0.414 | 13 |
 | `qwen3.6-35b-a3b` | 18.2% | 78.1% | 67.1% | 0.605 | 0.454 | 0.396 | 3 |
 | `deepseek-v4-flash` | 18.2% | 78.7% | 66.5% | 0.570 | 0.435 | 0.282 | 1 |
@@ -260,6 +263,27 @@ F1 0.505, no errors, $0.09 in 70 seconds
 ([`results/full-alce/`](results/full-alce/)). It is a closed model and an
 optional backend; the chat models above are open.
 
+The logprobs rows read open chat models the same way. The model gets a short
+prompt with three options (fully, partially, not supported), answers with one
+token after a prefilled `Answer: `, and the judge takes the class probabilities
+from that token's `top_logprobs`; reasoning is off. Options, prompt and the
+mapping onto VeriQuote's classes (`entailed`, `partially_entailed`,
+`insufficient`) are fixed in [`lib/logprobs-judge.mjs`](lib/logprobs-judge.mjs).
+The raw probabilities per pair are in `results/judge-*-logprobs-raw.jsonl`, so
+the command below reproduces the tables without a request (delete the file to
+query the model again):
+
+```bash
+node --env-file=.env bench/judge/run.mjs --logprobs --model qwen3.5-397b-a17b \
+  --json bench/results/judge-qwen3.5-397b-a17b-logprobs.json
+```
+
+Median request time was 289 ms (`qwen3.5-397b-a17b`) and 144 ms
+(`qwen3.6-35b-a3b`) on a shared endpoint. Its prompt differs from the chat
+judge's, which is the main caveat when comparing the two readouts of the same
+model. Only models that return logprobs and continue a prefilled assistant turn
+can be read this way; `glm-5.3-flash` could not on the endpoint used.
+
 What this says:
 
 - **General-purpose open models match a specialised NLI model** on ALCE's own
@@ -269,13 +293,15 @@ What this says:
   points of sampling error, so read the top four as level with TRUE, not as
   beating it.
 - **False green** (an unsupported citation shown as fully supported) ranges
-  from 12.5% to 25%. With 56 unsupported pairs per run the 95% intervals overlap,
+  from 10.7% to 25%. With 56 unsupported pairs per run the 95% intervals overlap,
   so neighbouring models are not separated; a larger `--limit` would settle the
   ranking.
-- **Reasoning pays for itself in quality.** With `--no-thinking` (vLLM's
-  `enable_thinking: false`, passed through the judge's `extraBody`) all three
-  hybrid models lose agreement and gain false greens, while answering five to
-  ten times faster. The `glm-5.3-flash` run without reasoning lost 36 of 240
+- **For chat judges, reasoning pays for itself in quality.** With
+  `--no-thinking` (vLLM's `enable_thinking: false`, passed through the judge's
+  `extraBody`) all three hybrid models lose agreement and gain false greens,
+  while answering five to ten times faster. Read through their logprobs
+  instead, the two Qwen models do better without reasoning than as chat judges
+  with it. The `glm-5.3-flash` run without reasoning lost 36 of 240
   items to endpoint errors, so read its row with care.
 - **`partial` is the weak class for every model** (F1 0.28–0.51). Judges
   mostly collapse "partially supports" into full or none.
