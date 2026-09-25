@@ -19,6 +19,7 @@ export {
   parseAnswer,
   parseEvi1Appendix,
   stripEvi1Appendix,
+  stripForDisplay,
   serializeEvi1Appendix,
   extractClaims,
   stripClaimMarkers,

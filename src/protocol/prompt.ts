@@ -13,6 +13,12 @@ export interface CitationPromptOptions {
   quoteLengthRange?: [number, number];
   /** Minimum quote length in characters (with stated exceptions). Default 60. */
   minQuoteLength?: number;
+  /**
+   * Put the EVI1 block before the answer: the model selects its passages
+   * first, then writes only what they support. The parser accepts either
+   * position; a streaming client shows nothing until END_EVI1. Default false.
+   */
+  evidenceFirst?: boolean;
 }
 
 /** Build the EVI1 citation instruction block for the answering model. */
@@ -22,7 +28,24 @@ export function buildCitationInstructions(options: CitationPromptOptions = {}): 
     maxCitationsPerClaim = 2,
     quoteLengthRange = [80, 240],
     minQuoteLength = 60,
+    evidenceFirst = false,
   } = options;
+
+  const appendixIntro = evidenceFirst
+    ? `Before you write the answer, output the evidence block. Select the passages
+you will rely on first, one line per planned claim and source, then write the
+answer so that every cited sentence states only what its lines support.`
+    : 'After you finish the answer, append an appendix:';
+  const afterBlock = evidenceFirst
+    ? '- After END_EVI1, write the user-facing answer. The claim ids {cX} in the answer must be the ones used in the block.'
+    : '- Do NOT output anything after END_EVI1.';
+  const important = evidenceFirst
+    ? `- The user-facing answer starts AFTER END_EVI1. Nothing but the block comes before it.
+- The block is required only when you use citations. If you use no
+  citations, do NOT output EVI1/END_EVI1.`
+    : `- The user-facing answer must end BEFORE the EVI1 appendix starts.
+- The appendix is required only when you used citations. If you used no
+  citations, do NOT output EVI1/END_EVI1.`;
 
   return `
 [CITATION BUDGET]
@@ -50,17 +73,20 @@ export function buildCitationInstructions(options: CitationPromptOptions = {}): 
   Example: "...water expands when freezing.[2][5]{c1}"
   Bad: "...freezing.[2] {c1}"
   Bad: "...freezing.[2].{c1}"
-- Every sentence OR bullet that contains citations MUST end with exactly ONE claim marker {cX}.
+- Every sentence OR bullet that contains citations MUST end with exactly ONE claim marker {cX},
+  directly after its [n] group. Never write {cX} without the [n] group, even though the
+  appendix names the source as well.
 - X starts at 1 and increases by 1 for each new cited sentence/bullet in THIS answer.
 - Do NOT place {cX} anywhere else. Uncited sentences get no claim marker.
 
-[QUOTE-BASED EVIDENCE APPENDIX (MANDATORY)]
-After you finish the answer, append an appendix:
+[QUOTE-BASED EVIDENCE ${evidenceFirst ? 'BLOCK' : 'APPENDIX'} (MANDATORY)]
+${appendixIntro}
 - Start with a line containing exactly: EVI1
 - Then output one line per (claim, source) pair in this exact format:
   cX|n|"QUOTE"
+  If one passage does not cover the claim, add further lines for the same pair.
 - End with a line containing exactly: END_EVI1
-- Do NOT output anything after END_EVI1.
+${afterBlock}
 - Do NOT wrap EVI1..END_EVI1 in code fences or markdown.
 
 [COMPLETENESS RULES (MANDATORY)]
@@ -71,10 +97,19 @@ After you finish the answer, append an appendix:
 - If you cannot provide a verbatim quote for a citation, REMOVE that citation
   from the answer. Never leave a citation unverified.
 
+[SUFFICIENCY RULES (MANDATORY)]
+- The quotes of a cited sentence must together contain EVERY detail it states:
+  each number, population, time frame, place, condition, comparison and hedge.
+- If one passage does not cover everything, add another line for the same claim
+  (same or other cited source). Otherwise remove the unquoted detail from the
+  sentence. Never add detail that no quote contains.
+
 Rules for QUOTE:
 - QUOTE must be copied verbatim from the provided source TEXT (not paraphrased).
-- QUOTE must be sufficient to support the claim; prefer the shortest quote that
-  still supports it (typically ${quoteLengthRange[0]}-${quoteLengthRange[1]} characters).
+- Prefer the shortest quote that still covers its part of the claim
+  (typically ${quoteLengthRange[0]}-${quoteLengthRange[1]} characters).
+- Copy one contiguous passage per line. Do NOT shorten a quote with "..." and do
+  NOT join separate passages into one quote; write each passage on its own line.
 - QUOTE must be at least ${minQuoteLength} characters unless it contains a numeric result or is
   a complete standalone sentence that uniquely supports the claim.
 - QUOTE must be a single line: escape newlines as \\n and double quotes as \\".
@@ -92,8 +127,6 @@ Rules for QUOTE:
   claim; when only conclusions are visible, use cautious language.
 
 IMPORTANT:
-- The user-facing answer must end BEFORE the EVI1 appendix starts.
-- The appendix is required only when you used citations. If you used no
-  citations, do NOT output EVI1/END_EVI1.
+${important}
 `.trim();
 }

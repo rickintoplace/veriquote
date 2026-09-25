@@ -70,6 +70,60 @@ describe('verifyAnswer', () => {
     expect(report.summary.minScore).toBeCloseTo(0.4);
   });
 
+  it('gives the judge the full passage behind an elided quote', async () => {
+    const judge = new StubJudge({});
+    const answer = [
+      'Falls dropped by 19% in the trial.[1]{c1}',
+      '',
+      'EVI1',
+      'c1|1|"vitamin D supplementation … reduced the rate of falls by 19%"',
+      'END_EVI1',
+    ].join('\n');
+    const report = await verifyAnswer({ answer, sources: SOURCES, judge });
+    expect(report.citations[0].textMatch.method).toBe('elided');
+    expect(report.citations[0].quote).toBe('vitamin D supplementation … reduced the rate of falls by 19%');
+    expect(judge.received[0].quote).toBe('vitamin D supplementation reduced the rate of falls by 19%');
+  });
+
+  it('verifies several quotes for one pair as one citation, rated by its weakest quote', async () => {
+    const judge = new StubJudge({});
+    const answer = [
+      'Falls dropped by 19%, most in deficient participants.[1]{c1}',
+      '',
+      'EVI1',
+      'c1|1|"reduced the rate of falls by 19% compared with placebo"',
+      'c1|1|"The effect was strongest in participants with baseline deficiency"',
+      'END_EVI1',
+    ].join('\n');
+    const report = await verifyAnswer({ answer, sources: SOURCES, judge });
+    expect(report.citations).toHaveLength(1);
+    const [c] = report.citations;
+    expect(c.parts).toHaveLength(2);
+    expect(c.quote).toBe(
+      'reduced the rate of falls by 19% compared with placebo […] The effect was strongest in participants with baseline deficiency',
+    );
+    expect(judge.received).toHaveLength(1);
+    expect(judge.received[0].quote).toBe(c.quote);
+    expect(report.warnings).toEqual([]);
+
+    const withFake = answer.replace('The effect was strongest', 'The effect vanished entirely');
+    const bad = await verifyAnswer({ answer: withFake, sources: SOURCES });
+    expect(bad.citations[0].textMatch.score).toBeLessThan(1);
+  });
+
+  it('warns about a qualifier left out by an ellipsis', async () => {
+    const answer = [
+      'Fracture incidence differed between groups.[2]{c1}',
+      '',
+      'EVI1',
+      'c1|2|"fracture incidence … differ between groups"',
+      'END_EVI1',
+    ].join('\n');
+    const report = await verifyAnswer({ answer, sources: SOURCES });
+    expect(report.citations[0].textMatch.omittedCues).toEqual(['not']);
+    expect(report.warnings).toEqual(['Citation c1|2: the ellipsis in the quote leaves out "not".']);
+  });
+
   it('sets score to null on judge errors', async () => {
     const judge = new StubJudge({});
     const report = await verifyAnswer({ answer: ANSWER, sources: SOURCES, judge });
