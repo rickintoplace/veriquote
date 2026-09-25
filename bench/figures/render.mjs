@@ -245,7 +245,8 @@ function judgeFigure(t) {
     const noneN = none.full + none.partial + none.none;
     const n = d.binary.tp + d.binary.fp + d.binary.fn + d.binary.tn;
     return {
-      model: d.model.replace(/^openai-/, '').replace(/-0731$/, '') + (d.thinking === false ? ', no reasoning' : ''),
+      model: d.model.replace(/^openai-|^typesafe\//, '').replace(/-0731$/, '') +
+        (d.kind === 'decisions' ? ' (decision model)' : d.thinking === false ? ', no reasoning' : ''),
       // "caught" = not called fully supported, so higher is better in both panels
       caught: 1 - none.full / noneN,
       caughtCi: wilson(none.partial + none.none, noneN),
@@ -264,7 +265,12 @@ function judgeFigure(t) {
   const top = 108;
   const rowH = 30;
   const bottom = top + rows.length * rowH;
-  const H = bottom + 76;
+  const foot = wrap(
+    `Caught: share of the pairs annotators marked “does not support” (${Math.min(...rows.map((r) => r.noneN))}–${Math.max(...rows.map((r) => r.noneN))} per model). ` +
+      'Decision model: returns class probabilities, no text or reasons. Specialised NLI model: TRUE (Honovich et al., 2022), as reported by Gao et al. (2023).',
+    118,
+  );
+  const H = bottom + 62 + foot.length * 15;
   const a1 = xAxis(t, { x0: p1[0], x1: p1[1], y0: top - 6, y1: bottom, domain: [0.6, 1], ticks: [0.6, 0.7, 0.8, 0.9, 1], fmt: (v) => `${Math.round(v * 100)}%` });
   const a2 = xAxis(t, { x0: p2[0], x1: p2[1], y0: top - 6, y1: bottom, domain: [0.65, 0.9], ticks: [0.65, 0.7, 0.75, 0.8, 0.85, 0.9], fmt: (v) => `${Math.round(v * 100)}%` });
   const body = [
@@ -290,23 +296,46 @@ function judgeFigure(t) {
       body.push(text(ax.sx(ci[1]) + 7, cy + 4, pct(v), { size: 11, fill: t.ink2, mono: true }));
     }
   });
-  body.push(text(24, H - 18, `Caught: share of the pairs annotators marked “does not support” (${Math.min(...rows.map((r) => r.noneN))}–${Math.max(...rows.map((r) => r.noneN))} per model). Specialised NLI model: TRUE (Honovich et al., 2022), as reported by Gao et al. (2023).`, { size: 11, fill: t.muted }));
+  foot.forEach((line, i) => body.push(text(24, H - 18 - (foot.length - 1 - i) * 15, line, { size: 11, fill: t.muted })));
   return svg(W, H, t, body, 'Judge models compared against human annotators');
 }
 
 // --------------------------------------------------------------- figure 4
 
+/**
+ * The current citation prompt on the answering models it is recommended for:
+ * the run of the protocol on the first endpoint and the one through OpenRouter, each
+ * rated by two judges (the chat judge and a decision model).
+ */
+function protocolRows() {
+  const runs = ['protocol-v2-end', 'protocol-v2-end-openrouter'];
+  const rows = [];
+  for (const name of runs) {
+    const main = load(`${name}.json`);
+    const second = load(`${name}-jev.json`);
+    for (const s of main.summary) {
+      const j = second.summary.find((x) => x.model === s.model);
+      rows.push({
+        model: s.model.replace(/^[a-z-]+\//, '').replace(/-0731$/, ''),
+        complete: s.completeRate,
+        verbatim: s.verbatimRate,
+        supported: s.strictSupport,
+        supportedJev: j?.strictSupport ?? null,
+        answers: s.n,
+        judge: main.judge.model.replace(/-0731$/, ''),
+        judge2: second.judge.model,
+      });
+    }
+  }
+  return rows.sort((a, b) => b.supported - a.supported);
+}
+
 function protocolFigure(t) {
-  const p = load('protocol.json');
-  const rows = p.summary.map((s) => ({
-    model: s.model.replace(/^openai-|^meta-/, '').replace(/-0731$/, ''),
-    complete: s.completeRate,
-    verbatim: s.verbatimRate,
-    n: s.n,
-  })).sort((a, b) => b.complete + b.verbatim - (a.complete + a.verbatim));
+  const rows = protocolRows();
   const SERIES = [
-    { key: 'complete', name: 'Complete: every cited claim carries a quote', color: t.cComplete },
-    { key: 'verbatim', name: 'Verbatim: the quote is really in the source', color: t.cVerbatim },
+    { key: 'verbatim', name: 'Verbatim: the quote is in the source', color: t.cVerbatim },
+    { key: 'supported', name: `Fully supported (${rows[0].judge})`, color: t.cComplete },
+    { key: 'supportedJev', name: `Fully supported (${rows[0].judge2.replace(/^typesafe\//, '')})`, color: t.s1 },
   ];
   const W = 760;
   const labelRight = 206;
@@ -314,27 +343,28 @@ function protocolFigure(t) {
   const x1 = 700;
   const top = 104;
   const barH = 12;
-  const groupH = 2 * barH + 2 + 18;
+  const groupH = SERIES.length * barH + (SERIES.length - 1) * 2 + 18;
   const bottom = top + rows.length * groupH;
   const H = bottom + 62;
   const { sx, marks } = xAxis(t, { x0, x1, y0: top - 6, y1: bottom, domain: [0, 1], ticks: [0, 0.25, 0.5, 0.75, 1], fmt: (v) => `${v * 100}%` });
   const body = [
-    text(24, 32, 'How well answering models follow the citation instructions', { size: 16, weight: 600, fill: t.ink }),
-    text(24, 52, `Answering models given the citation protocol: 18 tasks, ${p.repeats} runs each. Parsed and matched mechanically, no labels.`, { size: 12, fill: t.ink2 }),
+    text(24, 32, 'Are the quotes real, and do they cover the claim?', { size: 16, weight: 600, fill: t.ink }),
+    text(24, 52, 'Open answering models with the citation instructions: 18 tasks, 2 runs each. Every citation matched and judged.', { size: 12, fill: t.ink2 }),
     ...marks,
   ];
   let lx = 24;
   for (const s of SERIES) {
     body.push(`<rect x="${lx}" y="69" width="10" height="10" rx="2" fill="${s.color}"/>`);
     body.push(text(lx + 16, 78, s.name, { size: 12, fill: t.ink2 }));
-    lx += 16 + s.name.length * 6.5 + 26;
+    lx += 16 + s.name.length * 6.2 + 22;
   }
   rows.forEach((r, i) => {
     const gy = top + i * groupH;
-    body.push(text(labelRight, gy + barH + 5, r.model, { size: 12, fill: t.ink, anchor: 'end' }));
+    body.push(text(labelRight, gy + barH + 12, r.model, { size: 12, fill: t.ink, anchor: 'end' }));
     SERIES.forEach((s, si) => {
       const y = gy + si * (barH + 2);
       const v = r[s.key];
+      if (v == null) return;
       const w = Math.max(4, sx(v) - x0);
       // square at the baseline, 4px rounded data end
       body.push(`<path d="M${x0},${y} h${w - 4} a4,4 0 0 1 4,4 v${barH - 8} a4,4 0 0 1 -4,4 h${-(w - 4)} z" fill="${s.color}"/>`);
@@ -342,8 +372,8 @@ function protocolFigure(t) {
     });
   });
   body.push(`<line x1="${x0}" y1="${top - 6}" x2="${x0}" y2="${bottom}" stroke="${t.axis}" stroke-width="1"/>`);
-  body.push(text(24, H - 18, 'Source: bench/results/protocol.json', { size: 11, fill: t.muted }));
-  return svg(W, H, t, body, 'Citation protocol compliance per answering model');
+  body.push(text(24, H - 18, 'Fully supported: the judge rates the quotes as covering every detail of the claim. Source: bench/results/protocol-v2-end*.json', { size: 11, fill: t.muted }));
+  return svg(W, H, t, body, 'Verbatim quotes and full support per answering model');
 }
 
 // ------------------------------------------------------------------ write
@@ -369,13 +399,13 @@ function demoData() {
     const noneN = nn.full + nn.partial + nn.none;
     const n = d.binary.tp + d.binary.fp + d.binary.fn + d.binary.tn;
     return {
-      model: d.model.replace(/^openai-/, '').replace(/-0731$/, ''),
+      model: d.model.replace(/^openai-|^typesafe\//, '').replace(/-0731$/, ''),
       reasoning: d.thinking !== false,
+      kind: d.kind ?? 'chat',
       falseGreen: nn.full / noneN, falseGreenCi: wilson(nn.full, noneN), unsupported: noneN,
       agreement: d.binary.accuracy, agreementCi: wilson(d.binary.tp + d.binary.tn, n),
     };
   });
-  const p = load('protocol.json');
   return {
     source: 'bench/results/*.json',
     matcher: {
@@ -397,11 +427,12 @@ function demoData() {
     },
     judges, trueNli: 0.776,
     protocol: {
-      tasks: 18, runs: p.repeats,
-      models: p.summary.map((r) => ({
-        model: r.model.replace(/^openai-|^meta-/, '').replace(/-0731$/, ''),
-        complete: r.completeRate, verbatim: r.verbatimRate, answers: r.n,
+      tasks: 18, runs: 2,
+      models: protocolRows().map(({ model, complete, verbatim, supported, supportedJev, answers }) => ({
+        model, complete, verbatim, supported, supportedJev, answers,
       })),
+      judge: protocolRows()[0].judge,
+      judge2: protocolRows()[0].judge2,
     },
   };
 }
