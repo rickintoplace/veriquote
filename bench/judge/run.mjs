@@ -9,6 +9,10 @@
  *
  * Needs an API key. The class mapping below is fixed before any model is run,
  * so it cannot be tuned after seeing the results.
+ *
+ * --decisions judges with a decision model (e.g. typesafe/jev-1.13) through
+ * OpenRouter's decisions endpoint instead of a chat model; see
+ * bench/lib/decisions-judge.mjs.
  */
 
 import { createHash } from 'node:crypto';
@@ -19,6 +23,7 @@ import { fileURLToPath } from 'node:url';
 import { ChatCompletionsJudge } from '../../dist/index.js';
 import { makeRng } from '../lib/rng.mjs';
 import { RateLimitedClient } from '../lib/http.mjs';
+import { DecisionsJudge } from '../lib/decisions-judge.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
@@ -43,6 +48,7 @@ const CAP_CONTEXT = Number(arg('cap-context', '1200'));
 const WAIT = process.argv.includes('--wait');
 // Hybrid reasoning models served by vLLM honour this switch; others ignore it.
 const THINKING = !process.argv.includes('--no-thinking');
+const DECISIONS = process.argv.includes('--decisions');
 
 const apiKey = process.env.VERIQUOTE_JUDGE_API_KEY ?? process.env.OPENROUTER_API_KEY;
 if (!apiKey) {
@@ -92,21 +98,23 @@ console.error(`quote cap ${CAP_QUOTE} chars truncates ${truncated} of ${sample.l
 
 // --------------------------------------------------------------------- run
 
-const judge = new ChatCompletionsJudge({
-  apiKey,
-  model: MODEL,
-  baseUrl: BASE_URL,
-  batchSize: BATCH_SIZE,
-  seed: SEED,
-  extraBody: THINKING ? undefined : { chat_template_kwargs: { enable_thinking: false } },
-  caps: { quote: CAP_QUOTE, context: CAP_CONTEXT },
-  // Shared academic endpoints throttle; let the judge's own backoff absorb it.
-  maxRetries: Number(arg('max-retries', '5')),
-  timeoutMs: Number(arg('timeout-ms', '120000')),
-  headers: BASE_URL.includes('openrouter')
-    ? { 'HTTP-Referer': 'https://github.com/rickintoplace/veriquote', 'X-Title': 'VeriQuote bench' }
-    : undefined,
-});
+const judge = DECISIONS
+  ? new DecisionsJudge({ apiKey, model: MODEL, caps: { quote: CAP_QUOTE, context: CAP_CONTEXT } })
+  : new ChatCompletionsJudge({
+      apiKey,
+      model: MODEL,
+      baseUrl: BASE_URL,
+      batchSize: BATCH_SIZE,
+      seed: SEED,
+      extraBody: THINKING ? undefined : { chat_template_kwargs: { enable_thinking: false } },
+      caps: { quote: CAP_QUOTE, context: CAP_CONTEXT },
+      // Shared academic endpoints throttle; let the judge's own backoff absorb it.
+      maxRetries: Number(arg('max-retries', '5')),
+      timeoutMs: Number(arg('timeout-ms', '120000')),
+      headers: BASE_URL.includes('openrouter')
+        ? { 'HTTP-Referer': 'https://github.com/rickintoplace/veriquote', 'X-Title': 'VeriQuote bench' }
+        : undefined,
+  });
 
 const batches = [];
 for (let i = 0; i < sample.length; i += BATCH_SIZE) batches.push(sample.slice(i, i + BATCH_SIZE));
@@ -138,7 +146,7 @@ async function worker(queue) {
 }
 
 // Refuse to start a run that cannot fit in what is left of the quota.
-try {
+if (!DECISIONS) try {
   const probe = new RateLimitedClient({ baseUrl: BASE_URL, apiKey });
   await probe.readBudget({ model: MODEL });
   probe.assertBudget(batches.length, { wait: WAIT });
@@ -258,7 +266,9 @@ if (jsonFlag !== -1) {
       {
         generatedBy: 'bench/judge/run.mjs',
         model: MODEL,
-        thinking: THINKING,
+        kind: DECISIONS ? 'decisions' : 'chat',
+        thinking: DECISIONS ? null : THINKING,
+        usage: DECISIONS ? judge.usage : undefined,
         seed: SEED,
         dataset: 'ALCE human_eval citations (MIT, princeton-nlp/ALCE)',
         datasetSha256: createHash('sha256').update(readFileSync(DATA)).digest('hex').slice(0, 16),
