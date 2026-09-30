@@ -96,6 +96,8 @@
   :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
   .id { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
   .id.matcher { background: var(--c-matcher); } .id.judge { background: var(--c-judge); }
+  .u-matcher, .u-judge { text-decoration: underline 2px; text-underline-offset: 3px; }
+  .u-matcher { text-decoration-color: var(--c-matcher); } .u-judge { text-decoration-color: var(--c-judge); }
   .ic { width: 1em; height: 1em; flex: none; vertical-align: -0.14em; }
   .topbar { display: flex; justify-content: space-between; gap: 12px; font-size: .86rem; margin-bottom: 28px; }
   .topbar a { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); text-decoration: none; }
@@ -310,7 +312,7 @@
 
 <h2 class="section-title">Eight example citations</h2>
 <p class="section-note">
-  Pick an example. The matcher compares the quote with the source and ignores the claim. The judge compares
+  Pick an example. <span class="u-matcher">The matcher</span> compares the quote with the source and ignores the claim. <span class="u-judge">The judge</span> compares
   the quote with the claim; it sees a little of the source as context but does not check that the quote is
   really there. Each misses what the other catches. The source texts were written for this demo;
   the trial they describe is fictional.
@@ -992,7 +994,7 @@ function protocolChart(W) {
   const sx = scale(0, 1, x0, x1);
   const b = [...axis(sx, [0, 0.25, 0.5, 0.75, 1], top, y1, (v) => pc(v))];
   rows.forEach((r) => {
-    const tip = `${r.model}: ${pc(r.verbatim, 1)} verbatim, ${pc(r.supported, 1)} fully supported (${BENCH.protocol.judge}; ${pc(r.supportedJev, 1)} by ${BENCH.protocol.judge2}), ${pc(r.complete, 1)} complete, ${r.answers} answers`;
+    const tip = `${r.model}: ${pc(r.verbatim, 1)} verbatim, ${pc(r.supported, 1)} fully supported (${BENCH.protocol.judge}; ${pc(r.supportedJev, 1)} by ${BENCH.protocol.judge2.replace(/^typesafe\//, '')}), ${pc(r.complete, 1)} complete, ${r.answers} answers`;
     b.push(`<g class="row proto-row" data-model="${esc(r.model)}" ${tipAttr(tip)}><rect class="hit" x="0" y="0" width="${W}" height="${groupH}"/>`);
     b.push(T(labelW - 10, 7 + barH + 5, narrow ? shortName(r.model) : r.model, narrow ? 's' : '', 'end'));
     [['verbatim', 'var(--c-verbatim)'], ['supported', 'var(--c-complete)']].forEach(([key, color], k) => {
@@ -1026,7 +1028,7 @@ function renderTables() {
     `<table><tr><th>Judge</th><th>Unsupported caught</th><th>False green</th><th>Agreement</th></tr>${judges.map((j) =>
       row([`${j.model}${j.kind === 'decisions' ? ' (decision model)' : j.reasoning ? '' : ', no reasoning'}`, pc(1 - j.falseGreen, 1), pc(j.falseGreen, 1), pc(j.agreement, 1)])).join('')}
       ${row(['TRUE (T5-11B), as reported by ALCE', '', '', pc(BENCH.trueNli, 1)])}</table>` +
-    `<table><tr><th>Answering model</th><th>Verbatim</th><th>Fully supported (${esc(BENCH.protocol.judge)})</th><th>Fully supported (${esc(BENCH.protocol.judge2)})</th><th>Complete</th><th>Answers</th></tr>${BENCH.protocol.models.map((r) =>
+    `<table><tr><th>Answering model</th><th>Verbatim</th><th>Fully supported (${esc(BENCH.protocol.judge)})</th><th>Fully supported (${esc(BENCH.protocol.judge2.replace(/^typesafe\//, ''))})</th><th>Complete</th><th>Answers</th></tr>${BENCH.protocol.models.map((r) =>
       row([r.model, pc(r.verbatim, 1), pc(r.supported, 1), pc(r.supportedJev, 1), pc(r.complete, 1), r.answers])).join('')}</table>`;
 }
 
@@ -1049,7 +1051,7 @@ function renderNumbers() {
   }
   const m = BENCH.matcher;
   $('fig-matcher-sub').innerHTML = `The matcher's score for ${m.items.toLocaleString('en')} quotes built from five Wikipedia articles, then copied faithfully, reformatted, altered or replaced in fifteen ways.<a class="cite" data-cite="veriquote"></a> Drag the threshold: anywhere in the shaded gap, every faithful quote is kept and every missing one is rejected.`;
-  $('fig-protocol-sub').textContent = `${BENCH.protocol.models.length} open answering models got the citation instructions and answered ${BENCH.protocol.tasks} questions, ${BENCH.protocol.runs === 2 ? 'twice each' : `${BENCH.protocol.runs} times each`}. The matcher checked every quote against its source, and a judge rated whether the quotes cover the whole claim.`;
+  $('fig-protocol-sub').textContent = `${['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight'][BENCH.protocol.models.length] ?? BENCH.protocol.models.length} open answering models got the citation instructions and answered ${BENCH.protocol.tasks} questions, ${BENCH.protocol.runs === 2 ? 'twice each' : `${BENCH.protocol.runs} times each`}. The matcher checked every quote against its source, and ${BENCH.protocol.judge} judged whether the quotes cover the whole claim; hover for a second judge, ${BENCH.protocol.judge2.replace(/^typesafe\//, '')}.`;
   const t = BENCH.tango;
   $('fig-tango-foot').innerHTML = `Matcher: generated quotes (n = ${t.absent.n} and ${t.unsupported.manipulatedN}). Judge: ${t.judgeModel} on the ${t.unsupported.judgeN} ALCE citations that annotators marked as unsupported.<a class="cite" data-cite="alce"></a>`;
   thrIndex = Math.max(0, m.sweep.findIndex((s) => s.threshold === m.threshold));
