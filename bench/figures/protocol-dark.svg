@@ -1,52 +1,62 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="398" viewBox="0 0 760 398" role="img" aria-label="Verbatim quotes and full support per answering model" font-family="system-ui, -apple-system, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="472" viewBox="0 0 760 472" role="img" aria-label="Verbatim quotes and full support per answering model" font-family="system-ui, -apple-system, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif">
 <title>Verbatim quotes and full support per answering model</title>
-<rect width="760" height="398" rx="8" fill="#0d1117"/>
+<rect width="760" height="472" rx="8" fill="#0d1117"/>
 <text x="24" y="32" font-size="16" font-weight="600" fill="#ffffff" text-anchor="start">Are the quotes real, and do they cover the claim?</text>
 <text x="24" y="52" font-size="12" font-weight="400" fill="#c3c2b7" text-anchor="start">Open answering models with the citation instructions: 18 tasks, 2 runs each. Every citation matched and judged.</text>
-<line x1="222" y1="98" x2="222" y2="336" stroke="#2c2c2a" stroke-width="1"/>
-<text x="222" y="352" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">0%</text>
-<line x1="341.5" y1="98" x2="341.5" y2="336" stroke="#2c2c2a" stroke-width="1"/>
-<text x="341.5" y="352" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">25%</text>
-<line x1="461" y1="98" x2="461" y2="336" stroke="#2c2c2a" stroke-width="1"/>
-<text x="461" y="352" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">50%</text>
-<line x1="580.5" y1="98" x2="580.5" y2="336" stroke="#2c2c2a" stroke-width="1"/>
-<text x="580.5" y="352" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">75%</text>
-<line x1="700" y1="98" x2="700" y2="336" stroke="#2c2c2a" stroke-width="1"/>
-<text x="700" y="352" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">100%</text>
+<line x1="222" y1="116" x2="222" y2="410" stroke="#2c2c2a" stroke-width="1"/>
+<text x="222" y="426" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">0%</text>
+<line x1="341.5" y1="116" x2="341.5" y2="410" stroke="#2c2c2a" stroke-width="1"/>
+<text x="341.5" y="426" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">25%</text>
+<line x1="461" y1="116" x2="461" y2="410" stroke="#2c2c2a" stroke-width="1"/>
+<text x="461" y="426" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">50%</text>
+<line x1="580.5" y1="116" x2="580.5" y2="410" stroke="#2c2c2a" stroke-width="1"/>
+<text x="580.5" y="426" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">75%</text>
+<line x1="700" y1="116" x2="700" y2="410" stroke="#2c2c2a" stroke-width="1"/>
+<text x="700" y="426" font-size="11" font-weight="400" fill="#898781" text-anchor="middle" font-variant-numeric="tabular-nums">100%</text>
 <rect x="24" y="69" width="10" height="10" rx="2" fill="#107a5c"/>
 <text x="40" y="78" font-size="12" font-weight="400" fill="#c3c2b7" text-anchor="start">Verbatim: the quote is in the source</text>
 <rect x="285.20000000000005" y="69" width="10" height="10" rx="2" fill="#3dab85"/>
 <text x="301.20000000000005" y="78" font-size="12" font-weight="400" fill="#c3c2b7" text-anchor="start">Fully supported (deepseek-v4-flash)</text>
-<rect x="540.2" y="69" width="10" height="10" rx="2" fill="#3987e5"/>
-<text x="556.2" y="78" font-size="12" font-weight="400" fill="#c3c2b7" text-anchor="start">Fully supported (jev-1.13)</text>
-<text x="206" y="128" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">qwen3.8-27b</text>
-<path d="M222,104 h474 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-474 z" fill="#107a5c"/>
-<text x="706" y="114" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">100.0%</text>
-<path d="M222,118 h461.58441558441564 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-461.58441558441564 z" fill="#3dab85"/>
-<text x="693.5844155844156" y="128" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">97.4%</text>
-<path d="M222,132 h461.58441558441564 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-461.58441558441564 z" fill="#3987e5"/>
-<text x="693.5844155844156" y="142" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">97.4%</text>
-<text x="206" y="186" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">glm-5.3-flash</text>
-<path d="M222,162 h474 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-474 z" fill="#107a5c"/>
-<text x="706" y="172" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">100.0%</text>
-<path d="M222,176 h450.4366197183099 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-450.4366197183099 z" fill="#3dab85"/>
-<text x="682.4366197183099" y="186" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">95.1%</text>
-<path d="M222,190 h440.338028169014 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-440.338028169014 z" fill="#3987e5"/>
-<text x="672.338028169014" y="200" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">93.0%</text>
-<text x="206" y="244" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">deepseek-v4-flash</text>
-<path d="M222,220 h474 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-474 z" fill="#107a5c"/>
-<text x="706" y="230" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">100.0%</text>
-<path d="M222,234 h416.64 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-416.64 z" fill="#3dab85"/>
-<text x="648.64" y="244" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">88.0%</text>
-<path d="M222,248 h426.20000000000005 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-426.20000000000005 z" fill="#3987e5"/>
-<text x="658.2" y="258" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">90.0%</text>
-<text x="206" y="302" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">qwen3.6-35b-a3b</text>
-<path d="M222,278 h474 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-474 z" fill="#107a5c"/>
-<text x="706" y="288" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">100.0%</text>
-<path d="M222,292 h363.69230769230774 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-363.69230769230774 z" fill="#3dab85"/>
-<text x="595.6923076923077" y="302" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">76.9%</text>
-<path d="M222,306 h337.42857142857144 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-337.42857142857144 z" fill="#3987e5"/>
-<text x="569.4285714285714" y="316" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">71.4%</text>
-<line x1="222" y1="98" x2="222" y2="336" stroke="#383835" stroke-width="1"/>
-<text x="24" y="380" font-size="11" font-weight="400" fill="#898781" text-anchor="start">Fully supported: the judge rates the quotes as covering every detail of the claim. Source: bench/results/protocol-v2-end*.json</text>
+<rect x="24" y="87" width="10" height="10" rx="2" fill="#3987e5"/>
+<text x="40" y="96" font-size="12" font-weight="400" fill="#c3c2b7" text-anchor="start">Fully supported (jev-1.13)</text>
+<rect x="223.20000000000002" y="87" width="10" height="10" rx="2" fill="#d95926"/>
+<text x="239.20000000000002" y="96" font-size="12" font-weight="400" fill="#c3c2b7" text-anchor="start">Fully supported (pplx-decider)</text>
+<text x="206" y="146" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">qwen3.8-27b</text>
+<path d="M222,122 h474 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-474 z" fill="#107a5c"/>
+<text x="706" y="132" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">100.0%</text>
+<path d="M222,136 h461.58441558441564 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-461.58441558441564 z" fill="#3dab85"/>
+<text x="693.5844155844156" y="146" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">97.4%</text>
+<path d="M222,150 h461.58441558441564 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-461.58441558441564 z" fill="#3987e5"/>
+<text x="693.5844155844156" y="160" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">97.4%</text>
+<path d="M222,164 h461.58441558441564 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-461.58441558441564 z" fill="#d95926"/>
+<text x="693.5844155844156" y="174" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">97.4%</text>
+<text x="206" y="218" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">glm-5.3-flash</text>
+<path d="M222,194 h474 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-474 z" fill="#107a5c"/>
+<text x="706" y="204" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">100.0%</text>
+<path d="M222,208 h450.4366197183099 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-450.4366197183099 z" fill="#3dab85"/>
+<text x="682.4366197183099" y="218" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">95.1%</text>
+<path d="M222,222 h440.338028169014 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-440.338028169014 z" fill="#3987e5"/>
+<text x="672.338028169014" y="232" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">93.0%</text>
+<path d="M222,236 h430.2394366197184 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-430.2394366197184 z" fill="#d95926"/>
+<text x="662.2394366197184" y="246" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">90.8%</text>
+<text x="206" y="290" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">deepseek-v4-flash</text>
+<path d="M222,266 h474 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-474 z" fill="#107a5c"/>
+<text x="706" y="276" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">100.0%</text>
+<path d="M222,280 h416.64 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-416.64 z" fill="#3dab85"/>
+<text x="648.64" y="290" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">88.0%</text>
+<path d="M222,294 h426.20000000000005 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-426.20000000000005 z" fill="#3987e5"/>
+<text x="658.2" y="304" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">90.0%</text>
+<path d="M222,308 h421.4200000000001 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-421.4200000000001 z" fill="#d95926"/>
+<text x="653.4200000000001" y="318" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">89.0%</text>
+<text x="206" y="362" font-size="12" font-weight="400" fill="#ffffff" text-anchor="end">qwen3.6-35b-a3b</text>
+<path d="M222,338 h474 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-474 z" fill="#107a5c"/>
+<text x="706" y="348" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">100.0%</text>
+<path d="M222,352 h363.69230769230774 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-363.69230769230774 z" fill="#3dab85"/>
+<text x="595.6923076923077" y="362" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">76.9%</text>
+<path d="M222,366 h337.42857142857144 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-337.42857142857144 z" fill="#3987e5"/>
+<text x="569.4285714285714" y="376" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">71.4%</text>
+<path d="M222,380 h337.42857142857144 a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-337.42857142857144 z" fill="#d95926"/>
+<text x="569.4285714285714" y="390" font-size="11" font-weight="400" fill="#c3c2b7" text-anchor="start" font-variant-numeric="tabular-nums">71.4%</text>
+<line x1="222" y1="116" x2="222" y2="410" stroke="#383835" stroke-width="1"/>
+<text x="24" y="454" font-size="11" font-weight="400" fill="#898781" text-anchor="start">Fully supported: the judge rates the quotes as covering every detail of the claim. Source: bench/results/protocol-v2-end*.json</text>
 </svg>

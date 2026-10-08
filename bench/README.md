@@ -102,20 +102,20 @@ decision model `jev-1.13` as an independent check (see the judge benchmark
 below). *old* is the previous instructions on the same models, from the stored
 answers of 2026-09-22, judged the same way.
 
-| model | verbatim | complete | claims/answer | fully supported, old → new (deepseek judge) | fully supported, old → new (jev) |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| qwen3.8-27b | 100.0% | 100.0% | 2.8 | – → 97.4% | – → 97.4% |
-| glm-5.3-flash | 100.0% | 100.0% | 4.7 | 88.5% → 95.1% | 79.2% → 93.0% |
-| deepseek-v4-flash | 100.0% | 100.0% | 3.3 | 82.2% → 88.0% | 75.2% → 90.0% |
-| qwen3.6-35b-a3b | 100.0% | 96.7% | 3.0 | 67.0% → 76.9% | 58.2% → 71.4% |
+| model | verbatim | complete | claims/answer | fully supported, old → new (deepseek judge) | fully supported, old → new (jev) | fully supported, old → new (pplx-decider) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| qwen3.8-27b | 100.0% | 100.0% | 2.8 | – → 97.4% | – → 97.4% | – → 97.4% |
+| glm-5.3-flash | 100.0% | 100.0% | 4.7 | 88.5% → 95.1% | 79.2% → 93.0% | 83.1% → 90.8% |
+| deepseek-v4-flash | 100.0% | 100.0% | 3.3 | 82.2% → 88.0% | 75.2% → 90.0% | 77.2% → 89.0% |
+| qwen3.6-35b-a3b | 100.0% | 96.7% | 3.0 | 67.0% → 76.9% | 58.2% → 71.4% | 57.1% → 71.4% |
 
 Pooled over `glm-5.3-flash`, `deepseek-v4-flash` and `qwen3.6-35b-a3b`, with a
 bootstrap over answers within each model (95% intervals):
 
-| change | deepseek judge | jev |
-| --- | ---: | ---: |
-| new instructions vs. old | **+7.6** points (1.5 to 14.2) | **+14.1** points (7.6 to 21.5) |
-| evidence first vs. evidence after | +3.6 (−2.8 to 9.5) | −0.3 (−7.0 to 5.5) |
+| change | deepseek judge | jev | pplx-decider |
+| --- | ---: | ---: | ---: |
+| new instructions vs. old | **+7.6** points (1.5 to 14.2) | **+14.1** points (7.6 to 21.5) | **+11.7** points (4.8 to 19.2) |
+| evidence first vs. evidence after | +3.6 (−2.8 to 9.5) | −0.3 (−7.0 to 5.5) | not run |
 
 - **Asking for sufficiency works.** The new rules (the quotes must contain every
   number, population, condition and hedge of the sentence, otherwise the detail
@@ -139,7 +139,10 @@ Caveats: 36 answers per model, so per-model differences carry wide intervals
 (the pooled ones are narrower); the old answers are three days older, and only
 `deepseek-v4-flash-0731` is a pinned version; `qwen3.8-27b` has no old run and
 ran through a different provider. Files: `results/protocol-baseline*.json`,
-`results/protocol-v2-*.json`, with `-jev` for the second judge and
+`results/protocol-v2-*.json`, with `-jev` and `-decider` for the decision-model
+judges (the `-decider` scores are rescores of the same stored answers, run
+2026-10-08; the baseline answers live in `protocol-answers.jsonl`; its bootstrap
+interval uses 4,000 resamples of answers within each model, seed 20260921) and
 `-openrouter` for `qwen3.8-27b`.
 
 ### Previous instructions: eight models (answers from 2026-09-22, scored 2026-09-25)
@@ -221,16 +224,17 @@ nothing. The README and the demo show its complement, *caught*.
 A wrong citation shown in green is worse than one flagged for review, so that
 rate matters more than the average.
 
-### Results (2026-09-21 and 2026-09-22; logprobs on 2026-09-23; `jev-1.13` on 2026-09-25)
+### Results (2026-09-21 and 2026-09-22; logprobs on 2026-09-23; `jev-1.13` on 2026-09-25; `pplx-decider` on 2026-10-08)
 
 Five open-weight models as chat judges with the shipped judge prompt, two of
-them also read through their logprobs, and one closed decision model; the same
+them also read through their logprobs, and two decision models; the same
 240 pairs (seed `20260921`) and temperature 0 for all. Judge errors are
 reported, not dropped; they are excluded from the scores.
 
 | judge model | false green ↓ | binary agreement | 3-class acc. | macro-F1 | κ | `partial` F1 | errors |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | `qwen3.5-397b-a17b` (logprobs) | **10.7%** | **81.3%** | **71.7%** | 0.666 | 0.526 | 0.478 | 0 |
+| `pplx-decider-v1.1-27b` (decision model, open) | 14.3% | **84.2%** | **76.3%** | **0.700** | **0.594** | 0.489 | 0 |
 | `jev-1.13` (decision model) | 12.5% | 79.6% | 69.2% | 0.641 | 0.497 | 0.430 | 0 |
 | `qwen3.6-35b-a3b` (logprobs) | 14.3% | 80.0% | 70.4% | 0.645 | 0.507 | 0.436 | 0 |
 | `glm-5.3-flash` | 16.1% | 80.3% | 71.5% | **0.668** | **0.529** | **0.509** | 1 |
@@ -260,8 +264,34 @@ Because it costs next to nothing ($0.007 for these 240 pairs, 6 seconds), it
 was also run on **all 2,896 pairs**: false green 10.3% (66 of 642, 95% interval
 about 8–13%), binary agreement 81.6%, 3-class accuracy 71.5%, κ 0.530, `partial`
 F1 0.505, no errors, $0.09 in 70 seconds
-([`results/full-alce/`](results/full-alce/)). It is a closed model and an
-optional backend; the chat models above are open.
+([`results/full-alce/`](results/full-alce/)). It is a closed model.
+
+`pplx-decider-v1.1-27b` (Perplexity, open weights, 2026-10-08) is a decision
+model of the same kind, and since 0.4.0 the judge ships with the library as
+`DecisionsJudge`, with the class descriptions, instructions and support values
+the benchmark adapter used for `jev-1.13` (`bench/lib/decisions-judge.mjs` now
+re-exports it, so the numbers are for the shipped code):
+
+```bash
+npm run build && node --env-file=.env bench/judge/run.mjs --decisions \
+  --model perplexity/pplx-decider-v1.1-27b --limit 240 \
+  --json bench/results/judge-perplexity-pplx-decider-v1.1-27b.json
+```
+
+On the 240 pairs it has the highest agreement, accuracy, macro-F1 and κ of
+any judge here, for $0.002 in 9 seconds; its false green (14.3%, 8 of 56) is
+level with the middle of the field. On **all 2,896 pairs**: false green 15.9%
+(102 of 642, 95% interval about 13–19%), binary agreement 81.9%, 3-class
+accuracy 73.6%, κ 0.550, `partial` F1 0.521, no errors, $0.028 in 74 seconds.
+So against `jev-1.13` on the full set it agrees with the annotators slightly
+more often and costs a third as much, but lets about half again as many
+unsupported citations through as fully supported (15.9% against 10.3%): it
+leans toward "fully supports" (recall on that class 87.9% against 81.4%).
+
+For scale: `glm-5.3-flash` as a chat judge with reasoning cost $0.0109 for 48
+of these pairs through OpenRouter on 2026-10-08 ($0.00023 per citation, about
+24 times `pplx-decider`'s $0.0000096) and took 1.4 s per citation against
+about 30 ms.
 
 The logprobs rows read open chat models the same way. The model gets a short
 prompt with three options (fully, partially, not supported), answers with one

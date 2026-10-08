@@ -245,7 +245,7 @@ function judgeFigure(t) {
     const noneN = none.full + none.partial + none.none;
     const n = d.binary.tp + d.binary.fp + d.binary.fn + d.binary.tn;
     return {
-      model: d.model.replace(/^openai-|^typesafe\//, '').replace(/-0731$/, '') +
+      model: d.model.replace(/^openai-|^[a-z-]+\//, '').replace(/-0731$/, '') +
         (d.kind === 'decisions' ? ' (decision model)' : d.kind === 'logprobs' ? ' (logprobs)' : d.thinking === false ? ', no reasoning' : ''),
       // "caught" = not called fully supported, so higher is better in both panels
       caught: 1 - none.full / noneN,
@@ -313,17 +313,21 @@ function protocolRows() {
   for (const name of runs) {
     const main = load(`${name}.json`);
     const second = load(`${name}-jev.json`);
+    const third = load(`${name}-decider.json`);
     for (const s of main.summary) {
       const j = second.summary.find((x) => x.model === s.model);
+      const k = third.summary.find((x) => x.model === s.model);
       rows.push({
         model: s.model.replace(/^[a-z-]+\//, '').replace(/-0731$/, ''),
         complete: s.completeRate,
         verbatim: s.verbatimRate,
         supported: s.strictSupport,
         supportedJev: j?.strictSupport ?? null,
+        supportedDecider: k?.strictSupport ?? null,
         answers: s.n,
         judge: main.judge.model.replace(/-0731$/, ''),
         judge2: second.judge.model,
+        judge3: third.judge.model,
       });
     }
   }
@@ -336,12 +340,13 @@ function protocolFigure(t) {
     { key: 'verbatim', name: 'Verbatim: the quote is in the source', color: t.cVerbatim },
     { key: 'supported', name: `Fully supported (${rows[0].judge})`, color: t.cComplete },
     { key: 'supportedJev', name: `Fully supported (${rows[0].judge2.replace(/^typesafe\//, '')})`, color: t.s1 },
+    { key: 'supportedDecider', name: `Fully supported (${rows[0].judge3.replace(/^[a-z-]+\//, '').replace(/-v1\.1-27b$/, '')})`, color: t.s2 },
   ];
   const W = 760;
   const labelRight = 206;
   const x0 = 222;
   const x1 = 700;
-  const top = 104;
+  const top = SERIES.length > 3 ? 122 : 104;
   const barH = 12;
   const groupH = SERIES.length * barH + (SERIES.length - 1) * 2 + 18;
   const bottom = top + rows.length * groupH;
@@ -352,11 +357,18 @@ function protocolFigure(t) {
     text(24, 52, 'Open answering models with the citation instructions: 18 tasks, 2 runs each. Every citation matched and judged.', { size: 12, fill: t.ink2 }),
     ...marks,
   ];
+  // Legend, wrapping to a second line when the series do not fit.
   let lx = 24;
+  let ly = 69;
   for (const s of SERIES) {
-    body.push(`<rect x="${lx}" y="69" width="10" height="10" rx="2" fill="${s.color}"/>`);
-    body.push(text(lx + 16, 78, s.name, { size: 12, fill: t.ink2 }));
-    lx += 16 + s.name.length * 6.2 + 22;
+    const w = 16 + s.name.length * 6.2 + 22;
+    if (lx > 24 && lx + w > W - 24) {
+      lx = 24;
+      ly += 18;
+    }
+    body.push(`<rect x="${lx}" y="${ly}" width="10" height="10" rx="2" fill="${s.color}"/>`);
+    body.push(text(lx + 16, ly + 9, s.name, { size: 12, fill: t.ink2 }));
+    lx += w;
   }
   rows.forEach((r, i) => {
     const gy = top + i * groupH;
@@ -399,7 +411,7 @@ function demoData() {
     const noneN = nn.full + nn.partial + nn.none;
     const n = d.binary.tp + d.binary.fp + d.binary.fn + d.binary.tn;
     return {
-      model: d.model.replace(/^openai-|^typesafe\//, '').replace(/-0731$/, '') + (d.kind === 'logprobs' ? ' (logprobs)' : ''),
+      model: d.model.replace(/^openai-|^[a-z-]+\//, '').replace(/-0731$/, '') + (d.kind === 'logprobs' ? ' (logprobs)' : ''),
       reasoning: d.thinking !== false,
       kind: d.kind ?? 'chat',
       falseGreen: nn.full / noneN, falseGreenCi: wilson(nn.full, noneN), unsupported: noneN,
@@ -428,11 +440,12 @@ function demoData() {
     judges, trueNli: 0.776,
     protocol: {
       tasks: 18, runs: 2,
-      models: protocolRows().map(({ model, complete, verbatim, supported, supportedJev, answers }) => ({
-        model, complete, verbatim, supported, supportedJev, answers,
+      models: protocolRows().map(({ model, complete, verbatim, supported, supportedJev, supportedDecider, answers }) => ({
+        model, complete, verbatim, supported, supportedJev, supportedDecider, answers,
       })),
       judge: protocolRows()[0].judge,
       judge2: protocolRows()[0].judge2,
+      judge3: protocolRows()[0].judge3,
     },
   };
 }
