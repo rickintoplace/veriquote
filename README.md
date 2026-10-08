@@ -132,7 +132,7 @@ fails every citation below 0.5 and leaves the rest to the judge.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/judges-dark.svg">
-  <img alt="Open judge models, asked as chat judges or read through their logprobs, and one closed decision model against the human labels of ALCE: they catch between 75% and 89.3% of unsupported citations, and agree with the annotators on 74.0% to 81.3% of pairs, around the 77.6% of the TRUE NLI model." src="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/judges-light.svg">
+  <img alt="Open judge models, asked as chat judges or read through their logprobs, and two decision models against the human labels of ALCE: they catch between 75% and 89.3% of unsupported citations, and agree with the annotators on 74.0% to 84.2% of pairs, around the 77.6% of the TRUE NLI model." src="https://raw.githubusercontent.com/rickintoplace/veriquote/main/bench/figures/judges-light.svg">
 </picture>
 
 The judge is measured against the human annotators of ALCE[^alce], with the
@@ -146,14 +146,27 @@ reaches Cohen's κ 0.53 on the three-way labels (full, partial or no support).
 For comparison, ALCE reports κ 0.525 between its automatic metric and the
 annotators on citation precision.
 
-`jev-1.13` is a different kind of judge: a closed decision model that returns
-a probability per class instead of text, so it gives no reasons. Through
-OpenRouter it judged the same 240 pairs in 6 seconds for under one cent, and
-let fewer unsupported citations through than any chat judge. On all 2,896 ALCE pairs it
-catches 89.7% (κ 0.530), for $0.09. It is an optional backend, not part of
-VeriQuote ([`bench/lib/decisions-judge.mjs`](bench/lib/decisions-judge.mjs)),
-and ALCE has been public since 2023, so training contamination cannot be ruled
-out for it or for any other judge here.
+Decision models are a different kind of judge: they return a probability per
+class instead of text, so they give no reasons, take one request of a few
+hundred tokens per citation, and pay nothing for output. VeriQuote ships one
+as `DecisionsJudge` (OpenRouter's decisions endpoint), and two were measured:
+
+- `pplx-decider-v1.1-27b` (Perplexity, **open weights**, the default) agreed
+  with the annotators more often than any other judge on the 240 pairs (84.2%,
+  κ 0.594) and caught 85.7% of the unsupported citations, for $0.002 in
+  9 seconds. On all 2,896 ALCE pairs: 81.9% agreement, κ 0.550, 84.1% caught,
+  for $0.028.
+- `jev-1.13` (TypeSafe, closed) caught more, 87.5% on the 240 pairs and 89.7%
+  on all 2,896, with less agreement overall (79.6% and 81.6%, κ 0.530), for
+  $0.09 on the full set.
+
+So the two trade places: the open model is the better judge overall and costs
+a third as much; the closed one lets fewer unsupported citations through. Both
+are far cheaper than a chat judge with reasoning: `glm-5.3-flash` costs about
+$0.00023 per citation through OpenRouter (measured on 48 pairs) against
+$0.00001 for `pplx-decider`, roughly 24 times as much, and takes about 1.4 s
+per citation against 30 ms. ALCE has been public since 2023, so training
+contamination cannot be ruled out for these or for any other judge here.
 
 The same idea works with open models. With `--logprobs`, a chat model answers
 with a single letter (fully, partially or not supported), and the judge reads
@@ -192,7 +205,8 @@ The instructions were revised on the strength of this benchmark: they now ask
 that the quotes of a sentence contain every number, population, condition and
 hedge it states, and otherwise drop the detail. On the same tasks and models,
 that raised full support by 7.6 points (95% interval 1.5–14.2) with the chat
-judge and by 14.1 points (7.6–21.5) with the decision model, while the answers
+judge, by 14.1 points (7.6–21.5) with `jev-1.13` and by 11.7 points (4.8–19.2)
+with `pplx-decider`, while the answers
 stated as many cited claims as before. Writing the evidence before the answer
 (`evidenceFirst`) added nothing reliable (+3.6 and −0.3 points, both intervals
 spanning zero), made one model drop quotes, and hides the answer until the
@@ -209,6 +223,7 @@ including weaker models under the previous instructions.
 | --- | ---: | ---: | ---: |
 | `qwen3.5-397b-a17b` (logprobs) | 89.3% | 81.3% | 0.526 |
 | `jev-1.13` (decision model) | 87.5% | 79.6% | 0.497 |
+| `pplx-decider-v1.1-27b` (decision model, open) | 85.7% | **84.2%** | **0.594** |
 | `qwen3.6-35b-a3b` (logprobs) | 85.7% | 80.0% | 0.507 |
 | `glm-5.3-flash` | 83.9% | 80.3% | 0.529 |
 | `deepseek-v4-flash` | 81.8% | 78.7% | 0.435 |
@@ -226,15 +241,15 @@ including weaker models under the previous instructions.
 | near-verbatim, meaning changed | 586 | 0.932 | 100.0% |
 | not in the source | 187 | 0.249 | 0.0% |
 
-| answering model | verbatim | complete | fully supported (deepseek-v4-flash) | fully supported (jev-1.13) |
-| --- | ---: | ---: | ---: | ---: |
-| qwen3.8-27b | 100.0% | 100.0% | 97.4% | 97.4% |
-| glm-5.3-flash | 100.0% | 100.0% | 95.1% | 93.0% |
-| deepseek-v4-flash | 100.0% | 100.0% | 88.0% | 90.0% |
-| qwen3.6-35b-a3b | 100.0% | 96.7% | 76.9% | 71.4% |
+| answering model | verbatim | complete | fully supported (deepseek-v4-flash) | fully supported (jev-1.13) | fully supported (pplx-decider) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| qwen3.8-27b | 100.0% | 100.0% | 97.4% | 97.4% | 97.4% |
+| glm-5.3-flash | 100.0% | 100.0% | 95.1% | 93.0% | 90.8% |
+| deepseek-v4-flash | 100.0% | 100.0% | 88.0% | 90.0% | 89.0% |
+| qwen3.6-35b-a3b | 100.0% | 96.7% | 76.9% | 71.4% | 71.4% |
 
-`deepseek-v4-flash` also judges its own answers here; the decision model is the
-independent check, and it ranks the models the same way.
+`deepseek-v4-flash` also judges its own answers here; the two decision models
+are the independent checks, and all three judges rank the models the same way.
 
 The figures are rendered from `bench/results/*.json` by
 [`bench/figures/render.mjs`](bench/figures/render.mjs).
@@ -282,13 +297,20 @@ const systemPrompt = `${yourAssistantPrompt}\n\n${buildCitationInstructions()}`;
 ```
 
 ```ts
-import { ChatCompletionsJudge, verifyAnswer } from 'veriquote';
+import { ChatCompletionsJudge, DecisionsJudge, verifyAnswer } from 'veriquote';
 
 const judge = new ChatCompletionsJudge({
   baseUrl: 'https://openrouter.ai/api/v1',   // any OpenAI-compatible endpoint
   apiKey: process.env.OPENROUTER_API_KEY,    // server-side only!
   model: 'your-judge-model',                 // pick one with bench/judge
 });
+
+// Or a decision model: one request per citation, ~$0.00001 each, no reasons.
+// const judge = new DecisionsJudge({
+//   apiKey: process.env.OPENROUTER_API_KEY,
+//   provider: { zdr: true, data_collection: 'deny' },  // zero retention
+// });
+// In a browser, pass `fetch` pointing at your own proxy and no apiKey.
 
 const report = await verifyAnswer({
   answer: rawModelOutput,          // including the EVI1 appendix
@@ -323,6 +345,7 @@ single source.
 | `stripForDisplay(text)` | The answer as a reader sees it, also mid-stream: no appendix, no `{cX}` markers, no half-streamed `EVI1` or `{c`. |
 | `matchQuoteAgainstSource(quote, source, options?)` | The deterministic matcher on its own. |
 | `ChatCompletionsJudge` | Judge for any OpenAI-compatible API. |
+| `DecisionsJudge` | Judge backed by a decision model (OpenRouter's decisions endpoint); default `perplexity/pplx-decider-v1.1-27b`. |
 | `EntailmentJudge` (interface) | Bring your own judge, such as a local NLI model. |
 | `gateReport(report, answer)` | Pass or revise, the list of problems, uncited sentences and a correction prompt. |
 | `fetchSource(url)` / `htmlToText(html)` | Fetch a source independently of the model and extract its text. |
@@ -374,8 +397,9 @@ with its judge measured against human labels.
 
 ## Security
 
-- **Keep your key on the server.** `ChatCompletionsJudge` needs an API key; in
-  your own app, call `verifyAnswer` from a backend. The demo runs the judge in
+- **Keep your key on the server.** `ChatCompletionsJudge` and `DecisionsJudge`
+  need an API key; in your own app, call `verifyAnswer` from a backend, or give
+  the judge a `fetch` that goes through a proxy holding the key. The demo runs the judge in
   the browser only with a key the visitor enters.
 - **Source text is untrusted.** Judge inputs are length-capped, stripped of
   control characters and HTML, and marked as data in the prompt. The judge's
@@ -405,4 +429,4 @@ are also in [`CITATION.cff`](CITATION.cff).
 
 [^zhang]: Zhang, J., Chen, Y., Commodore-Mensah, Y., & Oberst, M. (2026). *Verifiable by construction: Claim-level evaluation of verbatim citation in clinical question answering* (Version 2) [Preprint]. arXiv. https://doi.org/10.48550/arXiv.2609.15964
 
-[^veriquote]: Heilmann, E. (2026). *VeriQuote: Deterministic and semantic verification of quote-grounded LLM citations* (Version 0.3.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.21552379
+[^veriquote]: Heilmann, E. (2026). *VeriQuote: Deterministic and semantic verification of quote-grounded LLM citations* (Version 0.4.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.21552379

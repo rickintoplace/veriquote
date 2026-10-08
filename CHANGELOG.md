@@ -6,6 +6,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-08
+
+A decision-model judge ships with the library. On the ALCE benchmark the open
+`perplexity/pplx-decider-v1.1-27b` agrees with the human annotators more often
+than any judge measured so far (84.2%, κ 0.594 on the 240 benchmark pairs;
+81.9%, κ 0.550 on all 2,896), at about $0.00001 and 30 ms per citation. It
+lets more unsupported citations through than `jev-1.13` (15.9% against 10.3%
+on all pairs). Details in `bench/README.md`.
+
+### Added
+- `DecisionsJudge`: an `EntailmentJudge` backed by OpenRouter's decisions
+  endpoint. One `choice` question per citation over the five classes,
+  confidence = expected support under the class probabilities. Options:
+  `model` (default `perplexity/pplx-decider-v1.1-27b`), `apiKey`, `baseUrl`,
+  `headers`, `provider` (e.g. `{ zdr: true, data_collection: 'deny' }`),
+  `concurrency`, `timeoutMs`, `maxRetries`, `caps`, and `fetch` — so a
+  browser app can route requests through its own proxy without a key.
+  Exported with `DEFAULT_DECISION_MODEL`, `DECISION_CRITERIA` and
+  `DECISION_SUPPORT`.
+- Benchmarks: `pplx-decider-v1.1-27b` on the 240 judge pairs and on all 2,896
+  ALCE pairs, and as a third judge of the stored protocol answers (old and new
+  instructions: +11.7 points full support, 95% interval 4.8–19.2). Figures and
+  the demo show the third judge.
+
+### Changed
+- `bench/lib/decisions-judge.mjs` re-exports the library judge, so the
+  benchmark numbers are for the shipped code.
+
 ## [0.3.0] - 2026-09-25
 
 Measured on three open answering models with two judges: the revised citation

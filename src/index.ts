@@ -43,6 +43,15 @@ export {
   type ChatJudgeOptions,
 } from './judge/chat-judge.js';
 
+export {
+  DecisionsJudge,
+  DEFAULT_DECISION_MODEL,
+  DECISION_CRITERIA,
+  DECISION_SUPPORT,
+  type DecisionsJudgeOptions,
+  type DecisionsUsage,
+} from './judge/decisions-judge.js';
+
 export { verifyAnswer, type VerifyOptions } from './report.js';
 
 export { gateReport, type GateResult, type GateProblem, type GateThresholds, type ProblemType } from './gate.js';
