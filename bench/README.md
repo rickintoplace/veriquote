@@ -304,7 +304,7 @@ the command below reproduces the tables without a request (delete the file to
 query the model again):
 
 ```bash
-node --env-file=.env bench/judge/run.mjs --logprobs --model qwen3.5-397b-a17b \
+node --env-file=.env bench/judge/run.mjs --logprobs --model qwen3.5-397b-a17b --limit 240 \
   --json bench/results/judge-qwen3.5-397b-a17b-logprobs.json
 ```
 
@@ -312,7 +312,8 @@ Median request time was 289 ms (`qwen3.5-397b-a17b`) and 144 ms
 (`qwen3.6-35b-a3b`) on a shared endpoint. Its prompt differs from the chat
 judge's, which is the main caveat when comparing the two readouts of the same
 model. Only models that return logprobs and continue a prefilled assistant turn
-can be read this way; `glm-5.3-flash` could not on the endpoint used.
+can be read this way; `glm-5.3-flash` could not on the endpoint used at the
+time (2026-09-23).
 
 What this says:
 
@@ -359,6 +360,16 @@ cp .env.example .env    # fill in VERIQUOTE_JUDGE_API_KEY and VERIQUOTE_BASE_URL
 node --env-file=.env bench/probe.mjs
 ```
 
+The runs in `results/` used two endpoints. Models named without a vendor
+prefix (`qwen3.6-35b-a3b`, `glm-5.3-flash`, …) ran on GWDG's SAIA API with an
+academic API key;[^saia] `qwen/qwen3.8-27b` and the two decision models ran
+through OpenRouter. The runners translate the SAIA ids and the reasoning
+switch for OpenRouter ([`lib/endpoint.mjs`](lib/endpoint.mjs)), so every model
+except `mistral-medium-3.5-128b` can be queried there under its original name.
+Stored answers are reused whichever endpoint a command points at; to query
+again, write to a new `--json` (and, for `--logprobs`, a new `--cache`).
+OpenRouter routes to several providers, so expect small differences.
+
 `probe.mjs` is a quick triage before spending a run: for every model it checks
 that it responds, honours `response_format: {type: "json_object"}` (needed for
 a judge) and emits a parseable EVI1 appendix on a one-paragraph case.
@@ -390,3 +401,5 @@ Every result file records the model, seed, and a hash of the input data.
 [^alce]: Gao, T., Yen, H., Yu, J., & Chen, D. (2023). Enabling large language models to generate text with citations. In *Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing* (pp. 6465–6488). Association for Computational Linguistics. https://doi.org/10.18653/v1/2023.emnlp-main.398
 
 [^true]: Honovich, O., Aharoni, R., Herzig, J., Taitelbaum, H., Kukliansy, D., Cohen, V., Scialom, T., Szpektor, I., Hassidim, A., & Matias, Y. (2022). TRUE: Re-evaluating factual consistency evaluation. In *Proceedings of the 2022 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies* (pp. 3905–3920). Association for Computational Linguistics. https://doi.org/10.18653/v1/2022.naacl-main.287
+
+[^saia]: Doosthosseini, A., Decker, J., Nolte, H., & Kunkel, J. (2026). SAIA: a seamless Slurm-native solution for HPC-based services. *The Journal of Supercomputing*, *82*(7), 403. https://doi.org/10.1007/s11227-026-08508-3

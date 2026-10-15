@@ -30,6 +30,7 @@ import { makeRng } from '../lib/rng.mjs';
 import { RateLimitedClient } from '../lib/http.mjs';
 import { DecisionsJudge } from '../lib/decisions-judge.mjs';
 import { LogprobsJudge } from '../lib/logprobs-judge.mjs';
+import { endpointHost, endpointModel, logprobsExtraBody, noThinking } from '../lib/endpoint.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
@@ -40,6 +41,8 @@ const arg = (name, fallback) => {
 
 const MODEL = arg('model', process.env.VERIQUOTE_JUDGE_MODEL ?? '');
 const BASE_URL = arg('base-url', process.env.VERIQUOTE_BASE_URL ?? 'https://openrouter.ai/api/v1');
+// The id this endpoint knows the model by; results keep MODEL.
+const REQUEST_MODEL = endpointModel(MODEL, BASE_URL);
 const DATA = arg('data', join(HERE, 'alce.jsonl'));
 const LIMIT = Number(arg('limit', '600'));
 const SEED = Number(arg('seed', '20260921'));
@@ -111,18 +114,20 @@ const judge = DECISIONS
   : LOGPROBS
   ? new LogprobsJudge({
       apiKey,
-      model: MODEL,
+      model: REQUEST_MODEL,
+      keyModel: MODEL,
       baseUrl: BASE_URL,
       caps: { quote: CAP_QUOTE, context: CAP_CONTEXT },
+      extraBody: logprobsExtraBody(BASE_URL),
       cachePath: arg('cache', join(HERE, '..', 'results', `judge-${MODEL.replace(/\//g, '-')}-logprobs-raw.jsonl`)),
     })
   : new ChatCompletionsJudge({
       apiKey,
-      model: MODEL,
+      model: REQUEST_MODEL,
       baseUrl: BASE_URL,
       batchSize: BATCH_SIZE,
       seed: SEED,
-      extraBody: THINKING ? undefined : { chat_template_kwargs: { enable_thinking: false } },
+      extraBody: THINKING ? undefined : noThinking(BASE_URL),
       caps: { quote: CAP_QUOTE, context: CAP_CONTEXT },
       // Shared academic endpoints throttle; let the judge's own backoff absorb it.
       maxRetries: Number(arg('max-retries', '5')),
@@ -164,7 +169,7 @@ async function worker(queue) {
 // Refuse to start a run that cannot fit in what is left of the quota.
 if (KIND === 'chat') try {
   const probe = new RateLimitedClient({ baseUrl: BASE_URL, apiKey });
-  await probe.readBudget({ model: MODEL });
+  await probe.readBudget({ model: REQUEST_MODEL });
   probe.assertBudget(batches.length, { wait: WAIT });
   console.error(`budget: ${probe.describeLimits()}  |  this run needs ${batches.length} requests`);
 } catch (err) {
@@ -282,6 +287,14 @@ if (jsonFlag !== -1) {
       {
         generatedBy: 'bench/judge/run.mjs',
         model: MODEL,
+        // Only when this run asked the endpoint: answers read from the logprobs
+        // cache come from wherever the stored run asked.
+        ...(LOGPROBS && !judge.usage.requests
+          ? {}
+          : {
+              endpoint: DECISIONS ? 'openrouter.ai' : endpointHost(BASE_URL),
+              endpointModel: REQUEST_MODEL !== MODEL ? REQUEST_MODEL : undefined,
+            }),
         kind: KIND,
         thinking: KIND === 'chat' ? THINKING : null,
         usage: DECISIONS

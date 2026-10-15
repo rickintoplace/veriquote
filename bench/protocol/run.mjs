@@ -45,6 +45,7 @@ import {
 import { loadCorpus } from '../lib/corpus.mjs';
 import { DecisionsJudge } from '../lib/decisions-judge.mjs';
 import { RateLimitedClient } from '../lib/http.mjs';
+import { endpointHost, endpointModel, noThinking } from '../lib/endpoint.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
@@ -124,7 +125,7 @@ function renderSources(task) {
 
 async function complete(model, task) {
   const body = await client.post('/chat/completions', {
-    model,
+    model: endpointModel(model, BASE_URL),
     temperature: 0,
     messages: [
       {
@@ -193,9 +194,9 @@ const judge = JUDGE_MODEL && JUDGE_DECISIONS
   ? cachedJudge(
       new ChatCompletionsJudge({
         apiKey,
-        model: JUDGE_MODEL,
+        model: endpointModel(JUDGE_MODEL, BASE_URL),
         baseUrl: BASE_URL,
-        extraBody: JUDGE_THINKING ? undefined : { chat_template_kwargs: { enable_thinking: false } },
+        extraBody: JUDGE_THINKING ? undefined : noThinking(BASE_URL),
         // Judge requests share the key's budget with the answers, so they go
         // through the same paced client (which also does the retrying).
         fetch: async (_url, init) =>
@@ -271,7 +272,7 @@ async function assess(answer, task) {
 const plannedRequests = previous?.plannedRequests ?? MODELS.length * REPEATS * tasks.length;
 if (client) {
   try {
-    await client.readBudget({ model: previous ? JUDGE_MODEL : MODELS[0] });
+    await client.readBudget({ model: endpointModel(previous ? JUDGE_MODEL : MODELS[0], BASE_URL) });
     if (!previous) client.assertBudget(plannedRequests, { wait: WAIT });
     console.error(`budget: ${client.describeLimits()}` + (previous ? '' : `  |  this run needs ${plannedRequests} requests plus the judge`));
   } catch (err) {
@@ -304,8 +305,20 @@ function flush(partial) {
         rescored: previous ? true : undefined,
         prompt: PROMPT,
         instructionsSha256,
+        // Where the answers came from; a rescore keeps what the stored run recorded.
+        endpoint: previous ? previous.endpoint : endpointHost(BASE_URL),
         judge: JUDGE_MODEL
-          ? { model: JUDGE_MODEL, kind: JUDGE_DECISIONS ? 'decisions' : 'chat', thinking: JUDGE_DECISIONS ? null : JUDGE_THINKING }
+          ? {
+              model: JUDGE_MODEL,
+              // A rescore with the stored judge reads its verdicts from the cache.
+              endpoint: JUDGE_DECISIONS
+                ? 'openrouter.ai'
+                : previous?.judge?.model === JUDGE_MODEL
+                ? previous.judge.endpoint
+                : endpointHost(BASE_URL),
+              kind: JUDGE_DECISIONS ? 'decisions' : 'chat',
+              thinking: JUDGE_DECISIONS ? null : JUDGE_THINKING,
+            }
           : undefined,
         models: MODELS,
         modelsCompleted: [...new Set(runs.map((r) => r.model))],

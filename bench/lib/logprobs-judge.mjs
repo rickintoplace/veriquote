@@ -64,6 +64,7 @@ export class LogprobsJudge {
    * @param {string} opts.baseUrl          OpenAI-compatible, e.g. http://localhost:8080/v1
    * @param {{quote?: number, context?: number, claim?: number}} [opts.caps]
    * @param {object} [opts.extraBody]      provider-specific switches
+   * @param {string} [opts.keyModel]       model name the cache key uses (default `model`)
    * @param {string} [opts.cachePath]      JSONL file of answered requests
    * @param {number} [opts.concurrency]
    * @param {number} [opts.maxRetries]
@@ -99,7 +100,10 @@ export class LogprobsJudge {
 
   async #one(item) {
     const body = buildRequest(item, this.opts);
-    const key = requestKey(body);
+    // The key is the request as the benchmark states it, before an endpoint
+    // renames the model or adds its own switches, so stored answers are found
+    // whichever endpoint the command points at. To query again, use a new cache.
+    const key = requestKey(buildRequest(item, { ...this.opts, model: this.opts.keyModel ?? this.opts.model, extraBody: undefined }));
     let row = this.cache.get(key);
     if (row) {
       this.usage.cached++;

@@ -20,6 +20,7 @@
 
 import { buildCitationInstructions, parseAnswer } from '../dist/index.js';
 import { RateLimitedClient } from './lib/http.mjs';
+import { endpointModel } from './lib/endpoint.mjs';
 
 const arg = (name, fallback) => {
   const i = process.argv.indexOf(`--${name}`);
@@ -59,7 +60,7 @@ async function probeModel(model) {
   // 1. reachable + latency (the request itself, not time spent queued)
   try {
     const { body, fetchMs, attempts } = await client.postTimed('/chat/completions', {
-      model,
+      model: endpointModel(model, BASE_URL),
       temperature: 0,
       max_tokens: 32,
       messages: [{ role: 'user', content: 'Reply with the single word: ready' }],
@@ -79,7 +80,7 @@ async function probeModel(model) {
   // 2. JSON mode -- required to use the model as an entailment judge
   try {
     const body = await client.post('/chat/completions', {
-      model,
+      model: endpointModel(model, BASE_URL),
       temperature: 0,
       // Reasoning models spend tokens on a thinking trace before any content.
       max_tokens: 2048,
@@ -98,7 +99,7 @@ async function probeModel(model) {
   // 3. EVI1 compliance on a minimal case
   try {
     const body = await client.post('/chat/completions', {
-      model,
+      model: endpointModel(model, BASE_URL),
       temperature: 0,
       max_tokens: 900,
       messages: [
