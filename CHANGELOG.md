@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- Benchmarks can be repeated on OpenRouter: the runners translate the model ids
+  of GWDG's SAIA API, where most runs were made, and the reasoning switch, and
+  result files now record the endpoint. Stored answers are still reused
+  without a request. `bench/README.md` names the endpoints and cites SAIA.
+
 ## [0.4.0] - 2026-10-08
 
 A decision-model judge ships with the library. On the ALCE benchmark the open
