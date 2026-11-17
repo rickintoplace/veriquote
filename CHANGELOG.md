@@ -6,7 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-11-17
+
+### Fixed
+- `DecisionsJudge` works again: its default, `perplexity/pplx-decider-v1.1-27b`,
+  lost its last host on OpenRouter on 2026-10-17, so every citation came back
+  as `error`. The default is now `perplexity/pplx-decider-v1.2`, and `model`
+  takes a list: a model with no host left is skipped and the next one answers
+  (default fallback `liquid/d1.2`, another vendor). Errors now name the model
+  and the API's reason instead of only the HTTP status.
+
 ### Changed
+- Benchmarks: `pplx-decider-v1.2`, `pplx-decider-flash-v1.2`, `liquid/d1.1`
+  and `liquid/d1.2` on the 240 judge pairs (2026-11-17). All four agree with
+  the annotators 82.9–84.2% of the time; v1.2 lets the fewest unsupported
+  citations through (12.5%).
 - Benchmarks can be repeated on OpenRouter: the runners translate the model ids
   of GWDG's SAIA API, where most runs were made, and the reasoning switch, and
   result files now record the endpoint. Stored answers are still reused

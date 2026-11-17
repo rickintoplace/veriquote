@@ -46,6 +46,7 @@ export {
 export {
   DecisionsJudge,
   DEFAULT_DECISION_MODEL,
+  DEFAULT_DECISION_MODELS,
   DECISION_CRITERIA,
   DECISION_SUPPORT,
   type DecisionsJudgeOptions,

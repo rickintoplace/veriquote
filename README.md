@@ -151,11 +151,16 @@ class instead of text, so they give no reasons, take one request of a few
 hundred tokens per citation, and pay nothing for output. VeriQuote ships one
 as `DecisionsJudge` (OpenRouter's decisions endpoint), and two were measured:
 
-- `pplx-decider-v1.1-27b` (Perplexity, **open weights**, the default) agreed
-  with the annotators more often than any other judge on the 240 pairs (84.2%,
-  κ 0.594) and caught 85.7% of the unsupported citations, for $0.002 in
-  9 seconds. On all 2,896 ALCE pairs: 81.9% agreement, κ 0.550, 84.1% caught,
-  for $0.028.
+- `pplx-decider-v1.2` (Perplexity, **open weights**, the default since
+  0.4.1) caught 87.5% of the unsupported citations on the 240 pairs, with
+  83.3% agreement (κ 0.552), for $0.002 in 9 seconds. If it loses its host,
+  the judge moves on to `liquid/d1.2` (another vendor, 85.7% caught, 83.3%
+  agreement, κ 0.598).
+- `pplx-decider-v1.1-27b`, the default in 0.4.0, agreed with the annotators
+  more often than any other judge on the 240 pairs (84.2%, κ 0.594); on all
+  2,896 ALCE pairs 81.9%, κ 0.550, 84.1% caught, for $0.028. OpenRouter
+  stopped serving it on 2026-10-17, so 0.4.0's default fails; pass
+  `model` or update.
 - `jev-1.13` (TypeSafe, closed) caught more, 87.5% on the 240 pairs and 89.7%
   on all 2,896, with less agreement overall (79.6% and 81.6%, κ 0.530), for
   $0.09 on the full set.
@@ -223,7 +228,9 @@ including weaker models under the previous instructions.
 | --- | ---: | ---: | ---: |
 | `qwen3.5-397b-a17b` (logprobs) | 89.3% | 81.3% | 0.526 |
 | `jev-1.13` (decision model) | 87.5% | 79.6% | 0.497 |
-| `pplx-decider-v1.1-27b` (decision model, open) | 85.7% | **84.2%** | **0.594** |
+| `pplx-decider-v1.2` (decision model, open, default) | 87.5% | 83.3% | 0.552 |
+| `liquid/d1.2` (decision model, fallback) | 85.7% | 83.3% | **0.598** |
+| `pplx-decider-v1.1-27b` (decision model, open, retired) | 85.7% | **84.2%** | 0.594 |
 | `qwen3.6-35b-a3b` (logprobs) | 85.7% | 80.0% | 0.507 |
 | `glm-5.3-flash` | 83.9% | 80.3% | 0.529 |
 | `deepseek-v4-flash` | 81.8% | 78.7% | 0.435 |
@@ -345,7 +352,7 @@ single source.
 | `stripForDisplay(text)` | The answer as a reader sees it, also mid-stream: no appendix, no `{cX}` markers, no half-streamed `EVI1` or `{c`. |
 | `matchQuoteAgainstSource(quote, source, options?)` | The deterministic matcher on its own. |
 | `ChatCompletionsJudge` | Judge for any OpenAI-compatible API. |
-| `DecisionsJudge` | Judge backed by a decision model (OpenRouter's decisions endpoint); default `perplexity/pplx-decider-v1.1-27b`. |
+| `DecisionsJudge` | Judge backed by a decision model (OpenRouter's decisions endpoint); default `perplexity/pplx-decider-v1.2`, then `liquid/d1.2` when it has no host. |
 | `EntailmentJudge` (interface) | Bring your own judge, such as a local NLI model. |
 | `gateReport(report, answer)` | Pass or revise, the list of problems, uncited sentences and a correction prompt. |
 | `fetchSource(url)` / `htmlToText(html)` | Fetch a source independently of the model and extract its text. |
@@ -429,4 +436,4 @@ are also in [`CITATION.cff`](CITATION.cff).
 
 [^zhang]: Zhang, J., Chen, Y., Commodore-Mensah, Y., & Oberst, M. (2026). *Verifiable by construction: Claim-level evaluation of verbatim citation in clinical question answering* (Version 2) [Preprint]. arXiv. https://doi.org/10.48550/arXiv.2609.15964
 
-[^veriquote]: Heilmann, E. (2026). *VeriQuote: Deterministic and semantic verification of quote-grounded LLM citations* (Version 0.4.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.21552379
+[^veriquote]: Heilmann, E. (2026). *VeriQuote: Deterministic and semantic verification of quote-grounded LLM citations* (Version 0.4.1) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.21552379
