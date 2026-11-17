@@ -1,0 +1,85 @@
+{
+  "generatedBy": "bench/judge/run.mjs",
+  "model": "perplexity/pplx-decider-flash-v1.2",
+  "endpoint": "openrouter.ai",
+  "kind": "decisions",
+  "thinking": null,
+  "usage": {
+    "requests": 240,
+    "inputTokens": 114226,
+    "cost": 0.0011422599999999995
+  },
+  "seed": 20260921,
+  "dataset": "ALCE human_eval citations (MIT, princeton-nlp/ALCE)",
+  "datasetSha256": "044f6bc43409ba87",
+  "classMapping": {
+    "entailed": "full",
+    "partially_entailed": "partial",
+    "overstated": "partial",
+    "insufficient": "none",
+    "contradicted": "none"
+  },
+  "caps": {
+    "quote": 700,
+    "context": 1200
+  },
+  "itemsTruncatedByCap": 5,
+  "itemsRequested": 240,
+  "itemsScored": 240,
+  "judgeErrors": 0,
+  "failedBatches": 0,
+  "elapsedMs": 6133,
+  "accuracy": 0.7166666666666667,
+  "macroF1": 0.6635414871778509,
+  "kappa": 0.5300080635871444,
+  "binary": {
+    "accuracy": 0.8291666666666667,
+    "precision": 0.8257575757575758,
+    "recall": 0.8582677165354331,
+    "tp": 109,
+    "fp": 23,
+    "fn": 18,
+    "tn": 90
+  },
+  "falseGreen": 0.125,
+  "confusion": {
+    "full": {
+      "full": 109,
+      "partial": 14,
+      "none": 4
+    },
+    "partial": {
+      "full": 16,
+      "partial": 32,
+      "none": 9
+    },
+    "none": {
+      "full": 7,
+      "partial": 18,
+      "none": 31
+    }
+  },
+  "perClass": [
+    {
+      "level": "full",
+      "support": 127,
+      "precision": 0.8257575757575758,
+      "recall": 0.8582677165354331,
+      "f1": 0.8416988416988417
+    },
+    {
+      "level": "partial",
+      "support": 57,
+      "precision": 0.5,
+      "recall": 0.5614035087719298,
+      "f1": 0.5289256198347108
+    },
+    {
+      "level": "none",
+      "support": 56,
+      "precision": 0.7045454545454546,
+      "recall": 0.5535714285714286,
+      "f1": 0.62
+    }
+  ]
+}

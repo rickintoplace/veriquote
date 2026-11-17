@@ -1,0 +1,85 @@
+{
+  "generatedBy": "bench/judge/run.mjs",
+  "model": "liquid/d1.1",
+  "endpoint": "openrouter.ai",
+  "kind": "decisions",
+  "thinking": null,
+  "usage": {
+    "requests": 240,
+    "inputTokens": 100854,
+    "cost": 0.0020170800000000005
+  },
+  "seed": 20260921,
+  "dataset": "ALCE human_eval citations (MIT, princeton-nlp/ALCE)",
+  "datasetSha256": "044f6bc43409ba87",
+  "classMapping": {
+    "entailed": "full",
+    "partially_entailed": "partial",
+    "overstated": "partial",
+    "insufficient": "none",
+    "contradicted": "none"
+  },
+  "caps": {
+    "quote": 700,
+    "context": 1200
+  },
+  "itemsTruncatedByCap": 5,
+  "itemsRequested": 240,
+  "itemsScored": 240,
+  "judgeErrors": 0,
+  "failedBatches": 0,
+  "elapsedMs": 11660,
+  "accuracy": 0.7708333333333334,
+  "macroF1": 0.7235633247009496,
+  "kappa": 0.6096522356281051,
+  "binary": {
+    "accuracy": 0.8416666666666667,
+    "precision": 0.8068965517241379,
+    "recall": 0.9212598425196851,
+    "tp": 117,
+    "fp": 28,
+    "fn": 10,
+    "tn": 85
+  },
+  "falseGreen": 0.14285714285714285,
+  "confusion": {
+    "full": {
+      "full": 117,
+      "partial": 7,
+      "none": 3
+    },
+    "partial": {
+      "full": 20,
+      "partial": 31,
+      "none": 6
+    },
+    "none": {
+      "full": 8,
+      "partial": 11,
+      "none": 37
+    }
+  },
+  "perClass": [
+    {
+      "level": "full",
+      "support": 127,
+      "precision": 0.8068965517241379,
+      "recall": 0.9212598425196851,
+      "f1": 0.8602941176470588
+    },
+    {
+      "level": "partial",
+      "support": 57,
+      "precision": 0.6326530612244898,
+      "recall": 0.543859649122807,
+      "f1": 0.5849056603773586
+    },
+    {
+      "level": "none",
+      "support": 56,
+      "precision": 0.8043478260869565,
+      "recall": 0.6607142857142857,
+      "f1": 0.7254901960784315
+    }
+  ]
+}

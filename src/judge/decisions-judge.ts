@@ -4,12 +4,15 @@
  * probability per class instead of text: no reasons, no JSON to repair,
  * a few hundred input tokens per citation and free output.
  *
- * Measured on the ALCE benchmark (bench/README.md):
- *   - perplexity/pplx-decider-v1.1-27b (open weights, the default):
- *     2,896 pairs, binary agreement 81.9 %, kappa 0.550, false green
- *     15.9 %, $0.028 in 74 s.
- *   - typesafe/jev-1.13 (closed): 81.6 %, kappa 0.530, false green
- *     10.3 %, $0.090 in 70 s.
+ * Measured on the ALCE benchmark (bench/README.md), 240 pairs, 2026-11-17:
+ *   - perplexity/pplx-decider-v1.2 (open weights, the default): binary
+ *     agreement 83.3 %, kappa 0.552, false green 12.5 %, $0.002 in 9 s.
+ *   - liquid/d1.2 (the fallback, another vendor): 83.3 %, kappa 0.598,
+ *     false green 14.3 %.
+ *
+ * Checkpoints are retired without notice (v1.1-27b lost its last host on
+ * 2026-10-17), so `model` may be a list: a model with no host left is
+ * skipped for the rest of this judge's life and the next one answers.
  *
  * Each class has a description the model chooses among; confidence is the
  * expected degree of support under the class probabilities (the middle of
@@ -43,13 +46,19 @@ export const DECISION_SUPPORT: Readonly<Record<EntailmentClass, number>> = {
   contradicted: 0,
 };
 
-export const DEFAULT_DECISION_MODEL = 'perplexity/pplx-decider-v1.1-27b';
+export const DEFAULT_DECISION_MODEL = 'perplexity/pplx-decider-v1.2';
+
+/** Tried in order; the second is from another vendor. */
+export const DEFAULT_DECISION_MODELS: readonly string[] = [DEFAULT_DECISION_MODEL, 'liquid/d1.2'];
 
 export interface DecisionsJudgeOptions {
   /** API key. Leave empty when `fetch` goes through a proxy that adds it. */
   apiKey?: string;
-  /** Decision model. Default "perplexity/pplx-decider-v1.1-27b" (open weights). */
-  model?: string;
+  /**
+   * Decision model, or several tried in order when one has no host left.
+   * Default DEFAULT_DECISION_MODELS (pplx-decider-v1.2, then liquid/d1.2).
+   */
+  model?: string | readonly string[];
   /** Base URL of the decisions API. Default "https://openrouter.ai/api/alpha". */
   baseUrl?: string;
   /** Extra HTTP headers (e.g. OpenRouter attribution headers). */
@@ -101,7 +110,10 @@ export class DecisionsJudge implements EntailmentJudge {
   /** Totals over the lifetime of this judge, as reported by the API. */
   readonly usage: DecisionsUsage = { requests: 0, inputTokens: 0, cost: 0 };
 
-  private readonly opts: Required<Omit<DecisionsJudgeOptions, 'apiKey' | 'headers' | 'provider' | 'caps' | 'fetch'>> & {
+  /** Models still to try, the one in use first. */
+  private models: string[];
+
+  private readonly opts: Required<Omit<DecisionsJudgeOptions, 'apiKey' | 'headers' | 'provider' | 'caps' | 'fetch' | 'model'>> & {
     apiKey?: string;
     headers: Record<string, string>;
     provider?: Record<string, unknown>;
@@ -113,9 +125,12 @@ export class DecisionsJudge implements EntailmentJudge {
     const fetchImpl = options.fetch ?? globalThis.fetch;
     if (typeof fetchImpl !== 'function') throw new Error('DecisionsJudge: no fetch available');
 
+    const models = options.model ?? DEFAULT_DECISION_MODELS;
+    this.models = (typeof models === 'string' ? [models] : [...models]).filter(Boolean);
+    if (!this.models.length) throw new Error('DecisionsJudge: no model');
+
     this.opts = {
       apiKey: options.apiKey,
-      model: options.model ?? DEFAULT_DECISION_MODEL,
       baseUrl: (options.baseUrl ?? 'https://openrouter.ai/api/alpha').replace(/\/+$/, ''),
       headers: options.headers ?? {},
       provider: options.provider,
@@ -125,6 +140,11 @@ export class DecisionsJudge implements EntailmentJudge {
       caps: { claim: 700, quote: 700, context: 1200, ...options.caps },
       fetch: fetchImpl.bind(globalThis),
     };
+  }
+
+  /** The model answering now (it changes when one has no host left). */
+  get model(): string {
+    return this.models[0];
   }
 
   async judge(items: EntailmentInput[], options?: { signal?: AbortSignal }): Promise<EntailmentResult[]> {
@@ -151,7 +171,6 @@ export class DecisionsJudge implements EntailmentJudge {
   private async judgeOne(item: EntailmentInput, signal?: AbortSignal): Promise<EntailmentResult> {
     const { caps } = this.opts;
     const body: Record<string, unknown> = {
-      model: this.opts.model,
       state: {
         claim: String(item.claim ?? '').slice(0, caps.claim),
         quote: String(item.quote ?? '').slice(0, caps.quote),
@@ -190,6 +209,7 @@ export class DecisionsJudge implements EntailmentJudge {
       let res: Response | undefined;
       let failure: unknown;
 
+      const model = this.models[0];
       try {
         res = await this.opts.fetch(`${this.opts.baseUrl}/decisions`, {
           method: 'POST',
@@ -198,7 +218,7 @@ export class DecisionsJudge implements EntailmentJudge {
             ...(this.opts.apiKey ? { authorization: `Bearer ${this.opts.apiKey}` } : {}),
             ...this.opts.headers,
           },
-          body: JSON.stringify(body),
+          body: JSON.stringify({ model, ...body }),
           signal: controller.signal,
         });
       } catch (err) {
@@ -218,13 +238,33 @@ export class DecisionsJudge implements EntailmentJudge {
         return json;
       }
 
+      const message = res ? await errorMessage(res) : '';
+
+      // Retired or unknown: the next model takes over for good.
+      if (res && (res.status === 404 || res.status === 400) && /no endpoints|does not exist/i.test(message)) {
+        if (this.models[0] === model && this.models.length > 1) this.models.shift();
+        if (this.models[0] !== model) {
+          attempt--;
+          continue;
+        }
+      }
+
       const retryable = !res || res.status === 429 || res.status >= 500;
       if (!retryable || attempt >= this.opts.maxRetries) {
-        const detail = res ? `HTTP ${res.status}` : String((failure as Error)?.message ?? failure);
-        throw new Error(`decisions API: ${detail}`);
+        const detail = res ? `HTTP ${res.status}${message ? ` ${message}` : ''}` : String((failure as Error)?.message ?? failure);
+        throw new Error(`decisions API (${model}): ${detail}`);
       }
 
       await sleep(500 * 2 ** attempt, signal);
     }
+  }
+}
+
+async function errorMessage(res: Response): Promise<string> {
+  try {
+    const json = await res.json();
+    return String(json?.error?.message ?? '').slice(0, 200);
+  } catch {
+    return '';
   }
 }
